@@ -1,8 +1,13 @@
+'use client';
+
 import Image from 'next/image';
 import Link from 'next/link';
+import { useSession, signIn } from 'next-auth/react';
 import { Button } from '../ui/Button';
 
 export function Nav() {
+  const { data: session } = useSession();
+
   return (
     <nav className="fixed top-0 left-0 right-0 z-50 border-b border-border-default bg-bg-primary/80 backdrop-blur-xl">
       <div className="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
@@ -33,12 +38,34 @@ export function Nav() {
 
         {/* CTA Buttons */}
         <div className="flex items-center gap-3">
-          <Button variant="ghost" size="sm">
-            Sign in
-          </Button>
-          <Button variant="primary" size="sm">
-            Get Started →
-          </Button>
+          {session ? (
+            <>
+              <Link href="/dashboard">
+                <Button variant="ghost" size="sm">
+                  Dashboard
+                </Button>
+              </Link>
+              <Link href={`/${session.user?.username}`}>
+                <div className="w-8 h-8 rounded-full overflow-hidden border-2 border-brand-500">
+                  <Image
+                    src={session.user?.image || '/logo.svg'}
+                    alt={session.user?.name || 'User'}
+                    width={32}
+                    height={32}
+                  />
+                </div>
+              </Link>
+            </>
+          ) : (
+            <>
+              <Button variant="ghost" size="sm" onClick={() => signIn('github')}>
+                Sign in
+              </Button>
+              <Button variant="primary" size="sm" onClick={() => signIn('github')}>
+                Get Started →
+              </Button>
+            </>
+          )}
         </div>
       </div>
     </nav>
