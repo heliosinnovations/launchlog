@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" fill="none">
+  <!-- Log lines -->
+  <rect x="4" y="32" width="24" height="3" rx="1.5" fill="currentColor" opacity="0.4"/>
+  <rect x="4" y="24" width="28" height="3" rx="1.5" fill="currentColor" opacity="0.6"/>
+  <rect x="4" y="16" width="20" height="3" rx="1.5" fill="currentColor" opacity="0.8"/>
+  <!-- Launch arrow -->
+  <path d="M28 18L40 6M40 6L40 14M40 6L32 6" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>
