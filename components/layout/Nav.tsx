@@ -5,8 +5,18 @@ import Link from 'next/link';
 import { useSession, signIn, signOut } from 'next-auth/react';
 import { Button } from '../ui/Button';
 
+function AuthLoadingSkeleton() {
+  return (
+    <div className="flex items-center gap-3 animate-pulse">
+      <div className="w-16 h-8 bg-border-default rounded-lg" />
+      <div className="w-24 h-8 bg-border-default rounded-lg" />
+    </div>
+  );
+}
+
 export function Nav() {
-  const { data: session } = useSession();
+  const { data: session, status } = useSession();
+  const isLoading = status === 'loading';
 
   return (
     <nav className="fixed top-0 left-0 right-0 z-50 border-b border-border-default bg-bg-primary/80 backdrop-blur-xl">
@@ -38,7 +48,9 @@ export function Nav() {
 
         {/* CTA Buttons */}
         <div className="flex items-center gap-3">
-          {session ? (
+          {isLoading ? (
+            <AuthLoadingSkeleton />
+          ) : session ? (
             <>
               <Link href="/dashboard">
                 <Button variant="ghost" size="sm">
