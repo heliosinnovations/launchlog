@@ -2,7 +2,7 @@
 
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { Button } from '@/components/ui/Button';
 
 export default function NewProjectPage() {
@@ -11,12 +11,6 @@ export default function NewProjectPage() {
   const [loading, setLoading] = useState(false);
   const [githubUrl, setGithubUrl] = useState('');
   const [error, setError] = useState('');
-
-  useEffect(() => {
-    if (status === 'unauthenticated') {
-      router.push('/login');
-    }
-  }, [status, router]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();

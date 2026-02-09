@@ -1,20 +1,11 @@
 'use client';
 
 import { useSession } from 'next-auth/react';
-import { useRouter } from 'next/navigation';
-import { useEffect } from 'react';
 import { Button } from '@/components/ui/Button';
 import Link from 'next/link';
 
 export default function DashboardPage() {
   const { data: session, status } = useSession();
-  const router = useRouter();
-
-  useEffect(() => {
-    if (status === 'unauthenticated') {
-      router.push('/login');
-    }
-  }, [status, router]);
 
   if (status === 'loading') {
     return (
@@ -24,6 +15,7 @@ export default function DashboardPage() {
     );
   }
 
+  // Middleware handles unauthenticated redirect - this is a fallback
   if (!session) {
     return null;
   }
