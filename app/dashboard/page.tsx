@@ -55,7 +55,7 @@ export default function DashboardPage() {
           </div>
           <h2 className="text-2xl font-bold mb-2">No projects yet</h2>
           <p className="text-text-secondary mb-6 max-w-md mx-auto">
-            Add your first project to start showcasing what you've built.
+            Add your first project to start showcasing what you&apos;ve built.
           </p>
           <Link href="/projects/new">
             <Button variant="primary" size="lg">

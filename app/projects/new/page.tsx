@@ -4,10 +4,9 @@ import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/Button';
-import { supabase } from '@/lib/supabase';
 
 export default function NewProjectPage() {
-  const { data: session, status } = useSession();
+  const { status } = useSession();
   const router = useRouter();
   const [loading, setLoading] = useState(false);
   const [githubUrl, setGithubUrl] = useState('');
@@ -25,41 +24,23 @@ export default function NewProjectPage() {
     setLoading(true);
 
     try {
-      // Parse GitHub URL
-      const urlPattern = /github\.com\/([^\/]+)\/([^\/]+)/;
-      const match = githubUrl.match(urlPattern);
+      const res = await fetch('/api/projects', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ github_repo_url: githubUrl }),
+      });
 
-      if (!match) {
-        setError('Invalid GitHub URL. Please use format: https://github.com/owner/repo');
+      const data = await res.json();
+
+      if (!res.ok) {
+        setError(data.error || 'Failed to create project');
         setLoading(false);
         return;
       }
 
-      const [, owner, repo] = match;
-
-      // Insert project
-      const { data, error: insertError } = await supabase
-        .from('projects')
-        .insert({
-          user_id: session?.user?.id,
-          github_repo_url: githubUrl,
-          repo_owner: owner,
-          repo_name: repo,
-          status: 'analyzing'
-        })
-        .select()
-        .single();
-
-      if (insertError) {
-        setError(insertError.message);
-        setLoading(false);
-        return;
-      }
-
-      // Redirect to dashboard
       router.push('/dashboard');
-    } catch (err: any) {
-      setError(err.message || 'Something went wrong');
+    } catch {
+      setError('Something went wrong');
       setLoading(false);
     }
   };
@@ -72,7 +53,7 @@ export default function NewProjectPage() {
     );
   }
 
-  if (!session) {
+  if (status !== 'authenticated') {
     return null;
   }
 
@@ -102,7 +83,7 @@ export default function NewProjectPage() {
               disabled={loading}
             />
             <p className="text-sm text-text-tertiary mt-2">
-              We'll automatically analyze your repository and extract details
+              We&apos;ll automatically analyze your repository and extract details
             </p>
           </div>
 
@@ -140,7 +121,7 @@ export default function NewProjectPage() {
                 <svg className="w-5 h-5 text-brand-400 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                 </svg>
-                We'll fetch your repository details from GitHub
+                We&apos;ll fetch your repository details from GitHub
               </li>
               <li className="flex items-start gap-2">
                 <svg className="w-5 h-5 text-brand-400 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">

@@ -1,6 +1,14 @@
-import NextAuth from 'next-auth';
+import NextAuth, { Account, Profile, Session, User } from 'next-auth';
 import GitHubProvider from 'next-auth/providers/github';
 import { supabaseAdmin } from '@/lib/supabase';
+
+interface GitHubProfile extends Profile {
+  id: number;
+  login: string;
+  bio?: string;
+  twitter_username?: string;
+  blog?: string;
+}
 
 const handler = NextAuth({
   providers: [
@@ -10,21 +18,21 @@ const handler = NextAuth({
     }),
   ],
   callbacks: {
-    async signIn({ user, account, profile }: any) {
-      if (account.provider === 'github') {
-        // Upsert user in Supabase
+    async signIn({ user, account, profile }: { user: User; account: Account | null; profile?: Profile }) {
+      if (account?.provider === 'github' && profile) {
+        const ghProfile = profile as GitHubProfile;
         const { error } = await supabaseAdmin
           .from('users')
           .upsert({
-            github_id: profile.id.toString(),
-            username: profile.login,
+            github_id: ghProfile.id.toString(),
+            username: ghProfile.login,
             email: user.email,
-            name: profile.name || profile.login,
+            name: ghProfile.name || ghProfile.login,
             avatar_url: user.image,
-            bio: profile.bio,
-            github_username: profile.login,
-            twitter_username: profile.twitter_username,
-            website_url: profile.blog,
+            bio: ghProfile.bio,
+            github_username: ghProfile.login,
+            twitter_username: ghProfile.twitter_username,
+            website_url: ghProfile.blog,
             updated_at: new Date().toISOString(),
           }, {
             onConflict: 'github_id'
@@ -37,9 +45,8 @@ const handler = NextAuth({
       }
       return true;
     },
-    async session({ session, token }: any) {
-      // Add user ID to session
-      if (session?.user) {
+    async session({ session }: { session: Session }) {
+      if (session?.user?.email) {
         const { data } = await supabaseAdmin
           .from('users')
           .select('id, username, tier')

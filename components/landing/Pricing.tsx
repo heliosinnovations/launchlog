@@ -48,7 +48,7 @@ export function Pricing() {
             Simple, transparent pricing
           </h2>
           <p className="text-lg text-text-secondary max-w-2xl mx-auto">
-            Start for free. Upgrade when you're ready to do more.
+            Start for free. Upgrade when you&apos;re ready to do more.
           </p>
         </div>
 

@@ -1,5 +1,6 @@
 import { supabaseAdmin } from '@/lib/supabase';
 import Image from 'next/image';
+import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { Badge } from '@/components/ui/Badge';
 
@@ -219,9 +220,9 @@ export default async function ProfilePage({
         <div className="mt-12 pt-8 border-t border-border-default text-center">
           <p className="text-text-tertiary text-sm">
             Powered by{' '}
-            <a href="/" className="text-brand-400 hover:text-brand-500">
+            <Link href="/" className="text-brand-400 hover:text-brand-500">
               LaunchLog
-            </a>
+            </Link>
           </p>
         </div>
       </div>

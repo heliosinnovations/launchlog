@@ -23,7 +23,7 @@ export function Hero() {
 
         {/* Subheadline */}
         <p className="text-lg md:text-xl text-text-secondary max-w-2xl mx-auto mb-10">
-          Stop sharing GitHub repos. Start showcasing what you've actually built, launched, and shipped.
+          Stop sharing GitHub repos. Start showcasing what you&apos;ve actually built, launched, and shipped.
         </p>
 
         {/* CTA Buttons */}
