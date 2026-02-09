@@ -1,6 +1,7 @@
 import NextAuth, { Account, Profile, Session, User } from 'next-auth';
 import GitHubProvider from 'next-auth/providers/github';
 import { supabaseAdmin } from '@/lib/supabase';
+import { sanitizeRedirectUrl } from '@/lib/redirect-validator';
 
 interface GitHubProfile extends Profile {
   id: number;
@@ -18,6 +19,9 @@ const handler = NextAuth({
     }),
   ],
   callbacks: {
+    async redirect({ url, baseUrl }) {
+      return sanitizeRedirectUrl(url, baseUrl);
+    },
     async signIn({ user, account, profile }: { user: User; account: Account | null; profile?: Profile }) {
       if (account?.provider === 'github' && profile) {
         const ghProfile = profile as GitHubProfile;
