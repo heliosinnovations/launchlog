@@ -2,7 +2,7 @@
 
 import Image from 'next/image';
 import Link from 'next/link';
-import { useSession, signIn } from 'next-auth/react';
+import { useSession, signIn, signOut } from 'next-auth/react';
 import { Button } from '../ui/Button';
 
 export function Nav() {
@@ -55,6 +55,9 @@ export function Nav() {
                   />
                 </div>
               </Link>
+              <Button variant="ghost" size="sm" onClick={() => signOut({ callbackUrl: '/' })}>
+                Sign out
+              </Button>
             </>
           ) : (
             <>
