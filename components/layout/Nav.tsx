@@ -45,16 +45,22 @@ export function Nav() {
                   Dashboard
                 </Button>
               </Link>
-              <Link href={`/${session.user?.username}`}>
-                <div className="w-8 h-8 rounded-full overflow-hidden border-2 border-brand-500">
-                  <Image
-                    src={session.user?.image || '/logo.svg'}
-                    alt={session.user?.name || 'User'}
-                    width={32}
-                    height={32}
-                  />
+              {session.user?.username ? (
+                <Link href={`/${session.user.username}`}>
+                  <div className="w-8 h-8 rounded-full overflow-hidden border-2 border-brand-500">
+                    <Image
+                      src={session.user.image || '/logo.svg'}
+                      alt={session.user.name || 'User'}
+                      width={32}
+                      height={32}
+                    />
+                  </div>
+                </Link>
+              ) : (
+                <div className="w-8 h-8 rounded-full bg-brand-500 flex items-center justify-center border-2 border-brand-500">
+                  <span className="text-white text-sm font-medium">{session.user?.name?.[0]?.toUpperCase() || '?'}</span>
                 </div>
-              </Link>
+              )}
               <Button variant="ghost" size="sm" onClick={() => signOut({ callbackUrl: '/' })}>
                 Sign out
               </Button>
