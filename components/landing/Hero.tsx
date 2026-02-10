@@ -4,6 +4,7 @@ import { signIn } from 'next-auth/react';
 import Link from 'next/link';
 import { Badge } from '../ui/Badge';
 import { Button } from '../ui/Button';
+import { DemoProfile } from './DemoProfile';
 
 export function Hero() {
   return (
@@ -48,9 +49,7 @@ export function Hero() {
         {/* Hero Visual */}
         <div className="mt-16 rounded-xl border border-border-default overflow-hidden"
              style={{ boxShadow: 'var(--shadow-lg), var(--shadow-glow-indigo)' }}>
-          <div className="aspect-video bg-bg-tertiary flex items-center justify-center">
-            <p className="text-text-tertiary text-sm">Screenshot placeholder</p>
-          </div>
+          <DemoProfile />
         </div>
       </div>
     </section>
