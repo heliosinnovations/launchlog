@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getSession } from '@/lib/auth';
-import { supabaseAdmin } from '@/lib/supabase';
+import { getSupabaseAdmin } from '@/lib/supabase';
 import type { ProjectUpdatePayload } from '@/types/project';
 
 type Params = { params: Promise<{ id: string }> };
@@ -15,7 +15,7 @@ export async function GET(_request: NextRequest, { params }: Params) {
   const { id } = await params;
   const session = await getSession();
 
-  const { data, error } = await supabaseAdmin
+  const { data, error } = await getSupabaseAdmin()
     .from('projects')
     .select('*')
     .eq('id', id)
@@ -42,7 +42,7 @@ export async function PATCH(request: NextRequest, { params }: Params) {
   }
 
   // Verify ownership
-  const { data: project } = await supabaseAdmin
+  const { data: project } = await getSupabaseAdmin()
     .from('projects')
     .select('user_id, screenshots')
     .eq('id', id)
@@ -78,7 +78,7 @@ export async function PATCH(request: NextRequest, { params }: Params) {
     }
   }
 
-  const { data, error } = await supabaseAdmin
+  const { data, error } = await getSupabaseAdmin()
     .from('projects')
     .update(sanitizedBody)
     .eq('id', id)
@@ -108,7 +108,7 @@ export async function DELETE(request: NextRequest, { params }: Params) {
   const hardDelete = searchParams.get('hard') === 'true';
 
   // Verify ownership
-  const { data: project } = await supabaseAdmin
+  const { data: project } = await getSupabaseAdmin()
     .from('projects')
     .select('user_id')
     .eq('id', id)
@@ -119,13 +119,13 @@ export async function DELETE(request: NextRequest, { params }: Params) {
   }
 
   if (hardDelete) {
-    const { error } = await supabaseAdmin.from('projects').delete().eq('id', id);
+    const { error } = await getSupabaseAdmin().from('projects').delete().eq('id', id);
     if (error) {
       return NextResponse.json({ error: error.message }, { status: 500 });
     }
   } else {
     // Soft delete
-    const { error } = await supabaseAdmin
+    const { error } = await getSupabaseAdmin()
       .from('projects')
       .update({ deleted_at: new Date().toISOString() })
       .eq('id', id);

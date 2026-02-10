@@ -1,7 +1,7 @@
 import { createServerClient } from '@supabase/ssr';
 import { cookies } from 'next/headers';
 import { NextResponse, type NextRequest } from 'next/server';
-import { supabaseAdmin } from '@/lib/supabase';
+import { getSupabaseAdmin } from '@/lib/supabase';
 
 export async function GET(request: NextRequest) {
   const { searchParams, origin } = new URL(request.url);
@@ -39,7 +39,7 @@ export async function GET(request: NextRequest) {
   const user = data.user;
   const metadata = user.user_metadata;
 
-  const { error: upsertError } = await supabaseAdmin
+  const { error: upsertError } = await getSupabaseAdmin()
     .from('users')
     .upsert({
       auth_id: user.id,

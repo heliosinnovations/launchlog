@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getSession } from '@/lib/auth';
-import { supabaseAdmin } from '@/lib/supabase';
+import { getSupabaseAdmin } from '@/lib/supabase';
 
 type Params = { params: Promise<{ id: string }> };
 
@@ -17,7 +17,7 @@ export async function POST(request: NextRequest, { params }: Params) {
   }
 
   // Verify project ownership
-  const { data: project } = await supabaseAdmin
+  const { data: project } = await getSupabaseAdmin()
     .from('projects')
     .select('user_id, screenshots')
     .eq('id', id)
@@ -70,7 +70,7 @@ export async function POST(request: NextRequest, { params }: Params) {
 
     // Upload to Supabase Storage
     const buffer = await file.arrayBuffer();
-    const { error: uploadError } = await supabaseAdmin.storage
+    const { error: uploadError } = await getSupabaseAdmin().storage
       .from('screenshots')
       .upload(filename, buffer, {
         contentType: file.type,
@@ -83,7 +83,7 @@ export async function POST(request: NextRequest, { params }: Params) {
     }
 
     // Get public URL
-    const { data: urlData } = supabaseAdmin.storage
+    const { data: urlData } = getSupabaseAdmin().storage
       .from('screenshots')
       .getPublicUrl(filename);
 
@@ -92,7 +92,7 @@ export async function POST(request: NextRequest, { params }: Params) {
 
   // Update project with new screenshots
   const newScreenshots = [...currentScreenshots, ...uploadedUrls];
-  const { data, error } = await supabaseAdmin
+  const { data, error } = await getSupabaseAdmin()
     .from('projects')
     .update({ screenshots: newScreenshots })
     .eq('id', id)
@@ -124,7 +124,7 @@ export async function DELETE(request: NextRequest, { params }: Params) {
   const index = parseInt(indexStr, 10);
 
   // Verify project ownership
-  const { data: project } = await supabaseAdmin
+  const { data: project } = await getSupabaseAdmin()
     .from('projects')
     .select('user_id, screenshots, primary_screenshot_index')
     .eq('id', id)
@@ -145,7 +145,7 @@ export async function DELETE(request: NextRequest, { params }: Params) {
   const urlToRemove = screenshots[index];
   const pathMatch = urlToRemove.match(/screenshots\/(.+)$/);
   if (pathMatch) {
-    await supabaseAdmin.storage.from('screenshots').remove([pathMatch[1]]);
+    await getSupabaseAdmin().storage.from('screenshots').remove([pathMatch[1]]);
   }
 
   // Remove from array
@@ -162,7 +162,7 @@ export async function DELETE(request: NextRequest, { params }: Params) {
     newPrimaryIndex = Math.max(0, newScreenshots.length - 1);
   }
 
-  const { data, error } = await supabaseAdmin
+  const { data, error } = await getSupabaseAdmin()
     .from('projects')
     .update({ screenshots: newScreenshots, primary_screenshot_index: newPrimaryIndex })
     .eq('id', id)

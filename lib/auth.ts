@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import { createServerSupabase } from './supabase-server';
-import { supabaseAdmin } from './supabase';
+import { getSupabaseAdmin } from './supabase';
 
 export interface UserSession {
   id: string;
@@ -17,7 +17,7 @@ export async function getSession(): Promise<UserSession | null> {
   if (!user) return null;
 
   // Fetch user details from public.users
-  const { data } = await supabaseAdmin
+  const { data } = await getSupabaseAdmin()
     .from('users')
     .select('id, username, tier')
     .eq('auth_id', user.id)

@@ -1,4 +1,4 @@
-import { supabaseAdmin } from '@/lib/supabase';
+import { getSupabaseAdmin } from '@/lib/supabase';
 import Image from 'next/image';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
@@ -9,6 +9,8 @@ export default async function ProfilePage({
 }: {
   params: { username: string };
 }) {
+  const supabaseAdmin = getSupabaseAdmin();
+
   // Fetch user profile
   const { data: user } = await supabaseAdmin
     .from('users')

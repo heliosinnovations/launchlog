@@ -1,16 +1,29 @@
-import { createClient } from '@supabase/supabase-js';
+import { createClient, SupabaseClient } from '@supabase/supabase-js';
 import { createBrowserClient } from '@supabase/ssr';
 
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
-const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
+function getEnvVar(name: string): string {
+  const value = process.env[name];
+  if (!value) throw new Error(`Missing env var: ${name}`);
+  return value;
+}
 
 /** Browser client for client components */
 export function createClientSupabase() {
-  return createBrowserClient(supabaseUrl, supabaseAnonKey);
+  return createBrowserClient(
+    getEnvVar('NEXT_PUBLIC_SUPABASE_URL'),
+    getEnvVar('NEXT_PUBLIC_SUPABASE_ANON_KEY')
+  );
 }
 
+let _supabaseAdmin: SupabaseClient | null = null;
+
 /** Admin client for server-side operations (bypasses RLS) */
-export const supabaseAdmin = createClient(
-  supabaseUrl,
-  process.env.SUPABASE_SERVICE_ROLE_KEY!
-);
+export function getSupabaseAdmin(): SupabaseClient {
+  if (!_supabaseAdmin) {
+    _supabaseAdmin = createClient(
+      getEnvVar('NEXT_PUBLIC_SUPABASE_URL'),
+      getEnvVar('SUPABASE_SERVICE_ROLE_KEY')
+    );
+  }
+  return _supabaseAdmin;
+}
