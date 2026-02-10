@@ -3,6 +3,8 @@
 import Link from 'next/link';
 import { TechStackBadges } from './TechStackBadges';
 import { GithubStats } from './GithubStats';
+import { ProjectStatusBadge } from './ProjectStatusBadge';
+import type { ProjectStatus } from '@/types/project';
 
 export interface Project {
   id: string;
@@ -18,28 +20,35 @@ export interface Project {
   primary_language: string | null;
   deployment_url: string | null;
   screenshot_url: string | null;
+  screenshots?: string[];
+  primary_screenshot_index?: number;
   status: 'analyzing' | 'ready' | 'error';
+  project_status?: ProjectStatus;
+  updated_at?: string;
   created_at: string;
 }
 
 interface ProjectCardProps {
   project: Project;
+  showActions?: boolean;
+  onDelete?: (id: string) => void;
 }
 
-export function ProjectCard({ project }: ProjectCardProps) {
+export function ProjectCard({ project, showActions = false, onDelete }: ProjectCardProps) {
   const name = project.custom_name || project.repo_name;
   const description = project.custom_description || project.description;
   const isAnalyzing = project.status === 'analyzing';
   const hasError = project.status === 'error';
+  const primaryScreenshot = project.screenshots?.[project.primary_screenshot_index || 0] || project.screenshot_url;
 
   return (
     <article className="group bg-bg-secondary border border-border-default rounded-xl overflow-hidden hover:border-border-hover transition-all">
       {/* Screenshot or Placeholder */}
       <div className="aspect-video bg-bg-tertiary relative overflow-hidden">
-        {project.screenshot_url ? (
+        {primaryScreenshot ? (
           // eslint-disable-next-line @next/next/no-img-element
           <img
-            src={project.screenshot_url}
+            src={primaryScreenshot}
             alt={`Screenshot of ${name}`}
             className="w-full h-full object-cover"
           />
@@ -118,6 +127,44 @@ export function ProjectCard({ project }: ProjectCardProps) {
           language={project.primary_language}
           size="sm"
         />
+
+        {/* Project Status & Actions */}
+        {showActions && (
+          <div className="flex items-center justify-between pt-2 border-t border-border-default mt-3">
+            <div className="flex items-center gap-2">
+              {project.project_status && (
+                <ProjectStatusBadge status={project.project_status} size="sm" />
+              )}
+              {project.updated_at && (
+                <span className="text-xs text-text-tertiary">
+                  Updated {new Date(project.updated_at).toLocaleDateString()}
+                </span>
+              )}
+            </div>
+            <div className="flex gap-1">
+              <Link
+                href={`/projects/${project.id}/edit`}
+                className="p-1.5 rounded hover:bg-bg-tertiary text-text-tertiary hover:text-text-primary transition-colors"
+                title="Edit"
+              >
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                </svg>
+              </Link>
+              {onDelete && (
+                <button
+                  onClick={() => onDelete(project.id)}
+                  className="p-1.5 rounded hover:bg-danger-500/10 text-text-tertiary hover:text-danger-400 transition-colors"
+                  title="Delete"
+                >
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                  </svg>
+                </button>
+              )}
+            </div>
+          </div>
+        )}
       </div>
     </article>
   );

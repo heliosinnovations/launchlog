@@ -183,7 +183,7 @@ function detectTechStackFromFiles(files: string[]): string[] {
   return Array.from(detected);
 }
 
-function detectTechStackFromDependencies(content: string, type: 'npm' | 'python' | 'go' | 'rust' | 'ruby' | 'php'): string[] {
+function detectTechStackFromDependencies(content: string): string[] {
   const detected = new Set<string>();
 
   for (const [tech, { dependencies }] of Object.entries(TECH_PATTERNS)) {
@@ -263,7 +263,7 @@ export async function analyzeGitHubRepo(owner: string, repo: string, token?: str
   if (fileNames.some((f) => f === 'package.json')) {
     const packageJson = await getFileContent(owner, repo, 'package.json', token);
     if (packageJson) {
-      const npmTech = detectTechStackFromDependencies(packageJson, 'npm');
+      const npmTech = detectTechStackFromDependencies(packageJson);
       techStack = [...new Set([...techStack, ...npmTech])];
     }
   }
@@ -272,7 +272,7 @@ export async function analyzeGitHubRepo(owner: string, repo: string, token?: str
   if (fileNames.some((f) => f === 'requirements.txt')) {
     const requirements = await getFileContent(owner, repo, 'requirements.txt', token);
     if (requirements) {
-      const pythonTech = detectTechStackFromDependencies(requirements, 'python');
+      const pythonTech = detectTechStackFromDependencies(requirements);
       techStack = [...new Set([...techStack, ...pythonTech])];
     }
   }
@@ -281,7 +281,7 @@ export async function analyzeGitHubRepo(owner: string, repo: string, token?: str
   if (fileNames.some((f) => f === 'go.mod')) {
     const goMod = await getFileContent(owner, repo, 'go.mod', token);
     if (goMod) {
-      const goTech = detectTechStackFromDependencies(goMod, 'go');
+      const goTech = detectTechStackFromDependencies(goMod);
       techStack = [...new Set([...techStack, ...goTech])];
     }
   }
@@ -290,7 +290,7 @@ export async function analyzeGitHubRepo(owner: string, repo: string, token?: str
   if (fileNames.some((f) => f === 'Cargo.toml')) {
     const cargoToml = await getFileContent(owner, repo, 'Cargo.toml', token);
     if (cargoToml) {
-      const rustTech = detectTechStackFromDependencies(cargoToml, 'rust');
+      const rustTech = detectTechStackFromDependencies(cargoToml);
       techStack = [...new Set([...techStack, ...rustTech])];
     }
   }

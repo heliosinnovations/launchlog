@@ -13,6 +13,7 @@ export async function GET() {
     .from('projects')
     .select('*')
     .eq('user_id', session.user.id)
+    .is('deleted_at', null)
     .order('created_at', { ascending: false });
 
   if (error) {
