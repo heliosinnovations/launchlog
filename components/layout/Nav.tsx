@@ -79,10 +79,10 @@ export function Nav() {
             </>
           ) : (
             <>
-              <Button variant="ghost" size="sm" onClick={() => signIn('github')}>
+              <Button variant="ghost" size="sm" onClick={() => signIn('github', { callbackUrl: '/dashboard' })}>
                 Sign in
               </Button>
-              <Button variant="primary" size="sm" onClick={() => signIn('github')}>
+              <Button variant="primary" size="sm" onClick={() => signIn('github', { callbackUrl: '/dashboard' })}>
                 Get Started →
               </Button>
             </>

@@ -98,7 +98,7 @@ export function Pricing() {
                 variant={plan.variant}
                 size="lg"
                 className="w-full"
-                onClick={() => signIn('github')}
+                onClick={() => signIn('github', { callbackUrl: '/dashboard' })}
               >
                 {plan.cta}
               </Button>
