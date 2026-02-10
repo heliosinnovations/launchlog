@@ -2,7 +2,7 @@
 
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/Button';
 
 export default function NewProjectPage() {
@@ -11,6 +11,12 @@ export default function NewProjectPage() {
   const [loading, setLoading] = useState(false);
   const [githubUrl, setGithubUrl] = useState('');
   const [error, setError] = useState('');
+
+  useEffect(() => {
+    if (status === 'unauthenticated') {
+      router.replace('/login');
+    }
+  }, [status, router]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -39,16 +45,15 @@ export default function NewProjectPage() {
     }
   };
 
-  if (status === 'loading') {
+  if (status !== 'authenticated') {
     return (
       <div className="min-h-screen flex items-center justify-center">
-        <p className="text-text-secondary">Loading...</p>
+        <div className="animate-pulse flex flex-col items-center gap-4">
+          <div className="w-12 h-12 rounded-full bg-border-default" />
+          <div className="h-4 w-24 bg-border-default rounded" />
+        </div>
       </div>
     );
-  }
-
-  if (status !== 'authenticated') {
-    return null;
   }
 
   return (

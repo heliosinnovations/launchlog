@@ -1,23 +1,30 @@
 'use client';
 
 import { useSession } from 'next-auth/react';
+import { useRouter } from 'next/navigation';
+import { useEffect } from 'react';
 import { Button } from '@/components/ui/Button';
 import Link from 'next/link';
 
 export default function DashboardPage() {
   const { data: session, status } = useSession();
+  const router = useRouter();
 
-  if (status === 'loading') {
+  useEffect(() => {
+    if (status === 'unauthenticated') {
+      router.replace('/login');
+    }
+  }, [status, router]);
+
+  if (status !== 'authenticated') {
     return (
       <div className="min-h-screen flex items-center justify-center">
-        <p className="text-text-secondary">Loading...</p>
+        <div className="animate-pulse flex flex-col items-center gap-4">
+          <div className="w-12 h-12 rounded-full bg-border-default" />
+          <div className="h-4 w-24 bg-border-default rounded" />
+        </div>
       </div>
     );
-  }
-
-  // Middleware handles unauthenticated redirect - this is a fallback
-  if (!session) {
-    return null;
   }
 
   return (
