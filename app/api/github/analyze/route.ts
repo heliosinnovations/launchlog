@@ -64,3 +64,4 @@ export async function POST(request: NextRequest): Promise<NextResponse<AnalyzeRe
     return NextResponse.json({ success: false, error: message }, { status: 500 });
   }
 }
+
