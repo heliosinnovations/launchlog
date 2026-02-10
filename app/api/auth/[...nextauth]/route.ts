@@ -43,8 +43,16 @@ const handler = NextAuth({
           });
 
         if (error) {
-          console.error('Error upserting user:', error);
-          return false;
+          console.error('Supabase upsert error:', error);
+          console.error('Full error details:', JSON.stringify(error, null, 2));
+          console.error('Attempted user data:', JSON.stringify({
+            github_id: ghProfile.id.toString(),
+            username: ghProfile.login,
+            email: user.email,
+          }, null, 2));
+          // TEMPORARY: Allow sign-in anyway while database is being fixed
+          // This unblocks OAuth - user can proceed to dashboard
+          return true;
         }
       }
       return true;
