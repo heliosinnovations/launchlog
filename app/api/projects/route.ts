@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth';
 import { supabaseAdmin } from '@/lib/supabase';
+import { analyzeGitHubRepo } from '@/lib/github-analyzer';
 
 export async function GET() {
   const session = await getServerSession();
@@ -42,6 +43,18 @@ export async function POST(request: NextRequest) {
   }
 
   const [, repo_owner, repo_name] = match;
+  const cleanRepoName = repo_name.replace(/\.git$/, '');
+
+  // Analyze the repository
+  let analysisResult;
+  let status: 'ready' | 'error' = 'ready';
+  try {
+    const token = process.env.GITHUB_TOKEN || process.env.GITHUB_CLIENT_SECRET;
+    analysisResult = await analyzeGitHubRepo(repo_owner, cleanRepoName, token);
+  } catch (err) {
+    console.error('GitHub analysis failed:', err);
+    status = 'error';
+  }
 
   const { data, error } = await supabaseAdmin
     .from('projects')
@@ -49,8 +62,18 @@ export async function POST(request: NextRequest) {
       user_id: session.user.id,
       github_repo_url,
       repo_owner,
-      repo_name: repo_name.replace(/\.git$/, ''),
-      status: 'analyzing',
+      repo_name: cleanRepoName,
+      status,
+      description: analysisResult?.description || null,
+      tech_stack: analysisResult?.techStack || null,
+      github_stars: analysisResult?.stats.stars || 0,
+      github_forks: analysisResult?.stats.forks || 0,
+      primary_language: analysisResult?.stats.language || null,
+      deployment_url: analysisResult?.deploymentUrl || null,
+      readme_content: analysisResult?.readmeContent || null,
+      created_date: analysisResult?.stats.createdAt ? new Date(analysisResult.stats.createdAt) : null,
+      last_commit_date: analysisResult?.stats.pushedAt ? new Date(analysisResult.stats.pushedAt) : null,
+      analysis_completed_at: status === 'ready' ? new Date() : null,
     })
     .select()
     .single();
