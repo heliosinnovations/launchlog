@@ -1,12 +1,11 @@
 /**
  * Report Sprint 1.1 completion to Convex
  */
-import { ConvexHttpClient } from 'convex/browser';
+// This script uses fetch directly to avoid requiring convex as a dependency
 
 const CONVEX_URL = 'https://friendly-lemming-692.convex.cloud';
 
 async function reportCompletion() {
-  const client = new ConvexHttpClient(CONVEX_URL);
 
   const description = `# Sprint 1.1: GitHub Auto-Analysis & Auto-Detection - ✅ Complete
 
