@@ -51,6 +51,7 @@ export function ProjectCard({ project, showActions = false, onDelete }: ProjectC
             src={primaryScreenshot}
             alt={`Screenshot of ${name}`}
             className="w-full h-full object-cover"
+            loading="lazy"
           />
         ) : (
           <div className="w-full h-full flex items-center justify-center">
