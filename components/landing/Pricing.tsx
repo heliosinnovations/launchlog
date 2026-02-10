@@ -1,10 +1,21 @@
 'use client';
 
-import { signIn } from 'next-auth/react';
+import { createClientSupabase } from '@/lib/supabase';
 import { Button } from '../ui/Button';
 import { analytics } from '../analytics/GoogleAnalytics';
 
 export function Pricing() {
+  const handleSignIn = async (planName: string) => {
+    analytics.ctaClick(`pricing_${planName.toLowerCase()}`);
+    const supabase = createClientSupabase();
+    await supabase.auth.signInWithOAuth({
+      provider: 'github',
+      options: {
+        redirectTo: `${window.location.origin}/auth/callback?next=/dashboard`,
+      },
+    });
+  };
+
   const plans = [
     {
       name: "Starter",
@@ -99,10 +110,7 @@ export function Pricing() {
                 variant={plan.variant}
                 size="lg"
                 className="w-full"
-                onClick={() => {
-                  analytics.ctaClick(`pricing_${plan.name.toLowerCase()}`);
-                  signIn('github', { callbackUrl: '/dashboard' });
-                }}
+                onClick={() => handleSignIn(plan.name)}
               >
                 {plan.cta}
               </Button>

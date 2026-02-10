@@ -1,18 +1,18 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getServerSession } from 'next-auth';
+import { getSession } from '@/lib/auth';
 import { supabaseAdmin } from '@/lib/supabase';
 import { analyzeGitHubRepo } from '@/lib/github-analyzer';
 
 export async function GET() {
-  const session = await getServerSession();
-  if (!session?.user?.id) {
+  const session = await getSession();
+  if (!session) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
 
   const { data, error } = await supabaseAdmin
     .from('projects')
     .select('*')
-    .eq('user_id', session.user.id)
+    .eq('user_id', session.id)
     .is('deleted_at', null)
     .order('created_at', { ascending: false });
 
@@ -24,8 +24,8 @@ export async function GET() {
 }
 
 export async function POST(request: NextRequest) {
-  const session = await getServerSession();
-  if (!session?.user?.id) {
+  const session = await getSession();
+  if (!session) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
 
@@ -60,7 +60,7 @@ export async function POST(request: NextRequest) {
   const { data, error } = await supabaseAdmin
     .from('projects')
     .insert({
-      user_id: session.user.id,
+      user_id: session.id,
       github_repo_url,
       repo_owner,
       repo_name: cleanRepoName,

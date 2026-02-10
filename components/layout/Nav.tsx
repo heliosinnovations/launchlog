@@ -2,8 +2,9 @@
 
 import Image from 'next/image';
 import Link from 'next/link';
-import { useSession, signIn, signOut } from 'next-auth/react';
+import { useAuth } from '@/lib/hooks/useAuth';
 import { Button } from '../ui/Button';
+import { createClientSupabase } from '@/lib/supabase';
 
 function AuthLoadingSkeleton() {
   return (
@@ -15,8 +16,17 @@ function AuthLoadingSkeleton() {
 }
 
 export function Nav() {
-  const { data: session, status } = useSession();
-  const isLoading = status === 'loading';
+  const { user, loading, signOut } = useAuth();
+
+  const handleSignIn = async () => {
+    const supabase = createClientSupabase();
+    await supabase.auth.signInWithOAuth({
+      provider: 'github',
+      options: {
+        redirectTo: `${window.location.origin}/auth/callback?next=/dashboard`,
+      },
+    });
+  };
 
   return (
     <nav className="fixed top-0 left-0 right-0 z-50 border-b border-border-default bg-bg-primary/80 backdrop-blur-xl">
@@ -48,21 +58,21 @@ export function Nav() {
 
         {/* CTA Buttons */}
         <div className="flex items-center gap-3">
-          {isLoading ? (
+          {loading ? (
             <AuthLoadingSkeleton />
-          ) : session ? (
+          ) : user ? (
             <>
               <Link href="/dashboard">
                 <Button variant="ghost" size="sm">
                   Dashboard
                 </Button>
               </Link>
-              {session.user?.username ? (
-                <Link href={`/${session.user.username}`}>
+              {user.username ? (
+                <Link href={`/${user.username}`}>
                   <div className="w-8 h-8 rounded-full overflow-hidden border-2 border-brand-500">
                     <Image
-                      src={session.user.image || '/logo.svg'}
-                      alt={session.user.name || 'User'}
+                      src={user.avatar_url || '/logo.svg'}
+                      alt={user.name || 'User'}
                       width={32}
                       height={32}
                     />
@@ -70,19 +80,19 @@ export function Nav() {
                 </Link>
               ) : (
                 <div className="w-8 h-8 rounded-full bg-brand-500 flex items-center justify-center border-2 border-brand-500">
-                  <span className="text-white text-sm font-medium">{session.user?.name?.[0]?.toUpperCase() || '?'}</span>
+                  <span className="text-white text-sm font-medium">{user.name?.[0]?.toUpperCase() || '?'}</span>
                 </div>
               )}
-              <Button variant="ghost" size="sm" onClick={() => signOut({ callbackUrl: '/' })}>
+              <Button variant="ghost" size="sm" onClick={signOut}>
                 Sign out
               </Button>
             </>
           ) : (
             <>
-              <Button variant="ghost" size="sm" onClick={() => signIn('github', { callbackUrl: '/dashboard' })}>
+              <Button variant="ghost" size="sm" onClick={handleSignIn}>
                 Sign in
               </Button>
-              <Button variant="primary" size="sm" onClick={() => signIn('github', { callbackUrl: '/dashboard' })}>
+              <Button variant="primary" size="sm" onClick={handleSignIn}>
                 Get Started →
               </Button>
             </>

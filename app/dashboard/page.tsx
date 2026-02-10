@@ -1,32 +1,43 @@
 'use client';
 
-import { useSession } from 'next-auth/react';
+import { useAuth } from '@/lib/hooks/useAuth';
 import { useRouter } from 'next/navigation';
-import { useEffect, useState, useRef } from 'react';
+import { useEffect, useState, useRef, useMemo, useCallback } from 'react';
 import { Button } from '@/components/ui/Button';
 import { ProjectCard, type Project } from '@/components/projects/ProjectCard';
 import { DeleteProjectModal } from '@/components/projects/DeleteProjectModal';
+import { EmptyState } from '@/components/dashboard/EmptyState';
+import { DashboardFilters, type FilterState, type SortOption } from '@/components/dashboard/DashboardFilters';
 import Link from 'next/link';
 
 type ViewMode = 'grid' | 'list';
 
+const PROJECTS_PER_PAGE = 20;
+
 export default function DashboardPage() {
-  const { data: session, status } = useSession();
+  const { user, loading: authLoading } = useAuth();
   const router = useRouter();
   const [projects, setProjects] = useState<Project[]>([]);
   const [loading, setLoading] = useState(true);
   const hasFetched = useRef(false);
   const [viewMode, setViewMode] = useState<ViewMode>('grid');
   const [deleteTarget, setDeleteTarget] = useState<Project | null>(null);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [filters, setFilters] = useState<FilterState>({
+    status: 'all',
+    techStack: 'all',
+    search: '',
+  });
+  const [sortBy, setSortBy] = useState<SortOption>('date_added');
 
   useEffect(() => {
-    if (status === 'unauthenticated') {
+    if (!authLoading && !user) {
       router.replace('/login');
     }
-  }, [status, router]);
+  }, [authLoading, user, router]);
 
   useEffect(() => {
-    if (status === 'authenticated' && !hasFetched.current) {
+    if (user && !hasFetched.current) {
       hasFetched.current = true;
       fetch('/api/projects')
         .then((res) => res.json())
@@ -36,7 +47,65 @@ export default function DashboardPage() {
         .catch(console.error)
         .finally(() => setLoading(false));
     }
-  }, [status]);
+  }, [user]);
+
+  // Extract unique tech stacks for filter dropdown
+  const availableTechStacks = useMemo(() => {
+    const stacks = new Set<string>();
+    projects.forEach((p) => p.tech_stack?.forEach((t) => stacks.add(t)));
+    return Array.from(stacks).sort();
+  }, [projects]);
+
+  // Filter and sort projects
+  const filteredProjects = useMemo(() => {
+    let result = [...projects];
+
+    // Filter by status
+    if (filters.status !== 'all') {
+      result = result.filter((p) => p.project_status === filters.status);
+    }
+
+    // Filter by tech stack
+    if (filters.techStack !== 'all') {
+      result = result.filter((p) => p.tech_stack?.includes(filters.techStack));
+    }
+
+    // Filter by search
+    if (filters.search.trim()) {
+      const search = filters.search.toLowerCase();
+      result = result.filter((p) => {
+        const name = (p.custom_name || p.repo_name).toLowerCase();
+        const desc = (p.custom_description || p.description || '').toLowerCase();
+        return name.includes(search) || desc.includes(search);
+      });
+    }
+
+    // Sort
+    switch (sortBy) {
+      case 'date_added':
+        result.sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
+        break;
+      case 'stars':
+        result.sort((a, b) => (b.github_stars || 0) - (a.github_stars || 0));
+        break;
+      case 'name':
+        result.sort((a, b) => {
+          const nameA = (a.custom_name || a.repo_name).toLowerCase();
+          const nameB = (b.custom_name || b.repo_name).toLowerCase();
+          return nameA.localeCompare(nameB);
+        });
+        break;
+    }
+
+    return result;
+  }, [projects, filters, sortBy]);
+
+  // Pagination
+  const totalPages = Math.ceil(filteredProjects.length / PROJECTS_PER_PAGE);
+  const paginatedProjects = useMemo(() => {
+    const start = (currentPage - 1) * PROJECTS_PER_PAGE;
+    return filteredProjects.slice(start, start + PROJECTS_PER_PAGE);
+  }, [filteredProjects, currentPage]);
 
   const handleDelete = async (hardDelete: boolean) => {
     if (!deleteTarget) return;
@@ -54,7 +123,17 @@ export default function DashboardPage() {
     setDeleteTarget(null);
   };
 
-  if (status !== 'authenticated') {
+  const handleFilterChange = useCallback((newFilters: FilterState) => {
+    setFilters(newFilters);
+    setCurrentPage(1); // Reset to page 1 when filters change
+  }, []);
+
+  const handleSortChange = useCallback((newSort: SortOption) => {
+    setSortBy(newSort);
+    setCurrentPage(1); // Reset to page 1 when sort changes
+  }, []);
+
+  if (authLoading || !user) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="animate-pulse flex flex-col items-center gap-4">
@@ -69,14 +148,14 @@ export default function DashboardPage() {
   const shippedCount = projects.filter((p) => p.project_status === 'shipped').length;
 
   return (
-    <div className="min-h-screen pt-24 px-6 pb-12">
+    <div className="min-h-screen pt-24 px-4 sm:px-6 pb-12">
       <div className="max-w-6xl mx-auto">
         {/* Header */}
-        <div className="flex items-center justify-between mb-8">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
           <div>
-            <h1 className="text-3xl font-bold mb-2">Your Projects</h1>
-            <p className="text-text-secondary">
-              Welcome back, {session.user?.name}!
+            <h1 className="text-2xl sm:text-3xl font-bold mb-1 sm:mb-2">Your Projects</h1>
+            <p className="text-text-secondary text-sm sm:text-base">
+              Welcome back, {user.name}!
             </p>
           </div>
           <div className="flex items-center gap-3">
@@ -108,28 +187,40 @@ export default function DashboardPage() {
         </div>
 
         {/* Quick Stats */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
-          <div className="bg-bg-secondary border border-border-default rounded-lg p-4">
-            <p className="text-text-tertiary text-sm mb-1">Total Projects</p>
-            <p className="text-2xl font-bold">{projects.length}</p>
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4 mb-6 sm:mb-8">
+          <div className="bg-bg-secondary border border-border-default rounded-lg p-3 sm:p-4">
+            <p className="text-text-tertiary text-xs sm:text-sm mb-1">Total Projects</p>
+            <p className="text-xl sm:text-2xl font-bold">{projects.length}</p>
           </div>
-          <div className="bg-bg-secondary border border-border-default rounded-lg p-4">
-            <p className="text-text-tertiary text-sm mb-1">Shipped</p>
-            <p className="text-2xl font-bold text-success-500">{shippedCount}</p>
+          <div className="bg-bg-secondary border border-border-default rounded-lg p-3 sm:p-4">
+            <p className="text-text-tertiary text-xs sm:text-sm mb-1">Shipped</p>
+            <p className="text-xl sm:text-2xl font-bold text-success-500">{shippedCount}</p>
           </div>
-          <div className="bg-bg-secondary border border-border-default rounded-lg p-4">
-            <p className="text-text-tertiary text-sm mb-1">Total Stars</p>
-            <p className="text-2xl font-bold">{totalStars.toLocaleString()}</p>
+          <div className="bg-bg-secondary border border-border-default rounded-lg p-3 sm:p-4">
+            <p className="text-text-tertiary text-xs sm:text-sm mb-1">Total Stars</p>
+            <p className="text-xl sm:text-2xl font-bold">{totalStars.toLocaleString()}</p>
           </div>
-          <div className="bg-bg-secondary border border-border-default rounded-lg p-4">
-            <p className="text-text-tertiary text-sm mb-1">Your Tier</p>
-            <p className="text-2xl font-bold text-brand-500 capitalize">{session.user?.tier || 'Free'}</p>
+          <div className="bg-bg-secondary border border-border-default rounded-lg p-3 sm:p-4">
+            <p className="text-text-tertiary text-xs sm:text-sm mb-1">Your Tier</p>
+            <p className="text-xl sm:text-2xl font-bold text-brand-500 capitalize">{user.tier || 'Free'}</p>
           </div>
         </div>
 
+        {/* Filters and Search */}
+        {projects.length > 0 && (
+          <DashboardFilters
+            filters={filters}
+            sortBy={sortBy}
+            availableTechStacks={availableTechStacks}
+            onFilterChange={handleFilterChange}
+            onSortChange={handleSortChange}
+            resultCount={filteredProjects.length}
+          />
+        )}
+
         {/* Projects Grid/List or Empty State */}
         {loading ? (
-          <div className={viewMode === 'grid' ? 'grid sm:grid-cols-2 lg:grid-cols-3 gap-6' : 'space-y-4'}>
+          <div className={viewMode === 'grid' ? 'grid sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6' : 'space-y-4'}>
             {[1, 2, 3].map((i) => (
               <div key={i} className="bg-bg-secondary border border-border-default rounded-xl overflow-hidden animate-pulse">
                 {viewMode === 'grid' && <div className="aspect-video bg-bg-tertiary" />}
@@ -145,23 +236,29 @@ export default function DashboardPage() {
             ))}
           </div>
         ) : projects.length === 0 ? (
-          <div className="bg-bg-secondary border border-border-default rounded-xl p-12 text-center">
-            <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-brand-500/10 flex items-center justify-center text-brand-400">
-              <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
+          <EmptyState />
+        ) : filteredProjects.length === 0 ? (
+          <div className="bg-bg-secondary border border-border-default rounded-xl p-8 sm:p-12 text-center">
+            <div className="w-12 h-12 mx-auto mb-4 rounded-full bg-bg-tertiary flex items-center justify-center">
+              <svg className="w-6 h-6 text-text-tertiary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
               </svg>
             </div>
-            <h2 className="text-2xl font-bold mb-2">No projects yet</h2>
-            <p className="text-text-secondary mb-6 max-w-md mx-auto">
-              Add your first project to start showcasing what you&apos;ve built.
+            <h3 className="text-lg font-semibold mb-2">No projects found</h3>
+            <p className="text-text-secondary text-sm mb-4">
+              Try adjusting your filters or search query
             </p>
-            <Link href="/projects/new">
-              <Button variant="primary" size="lg">Add Your First Project</Button>
-            </Link>
+            <Button
+              variant="secondary"
+              size="sm"
+              onClick={() => setFilters({ status: 'all', techStack: 'all', search: '' })}
+            >
+              Clear Filters
+            </Button>
           </div>
         ) : viewMode === 'grid' ? (
-          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            {projects.map((project) => (
+          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
+            {paginatedProjects.map((project) => (
               <ProjectCard
                 key={project.id}
                 project={project}
@@ -172,13 +269,64 @@ export default function DashboardPage() {
           </div>
         ) : (
           <div className="space-y-3">
-            {projects.map((project) => (
+            {paginatedProjects.map((project) => (
               <ProjectListItem
                 key={project.id}
                 project={project}
                 onDelete={() => setDeleteTarget(project)}
               />
             ))}
+          </div>
+        )}
+
+        {/* Pagination */}
+        {totalPages > 1 && (
+          <div className="flex items-center justify-center gap-2 mt-8">
+            <button
+              onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
+              disabled={currentPage === 1}
+              className="p-2 rounded-lg border border-border-default hover:bg-bg-secondary disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+              </svg>
+            </button>
+            <div className="flex items-center gap-1">
+              {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
+                let pageNum: number;
+                if (totalPages <= 5) {
+                  pageNum = i + 1;
+                } else if (currentPage <= 3) {
+                  pageNum = i + 1;
+                } else if (currentPage >= totalPages - 2) {
+                  pageNum = totalPages - 4 + i;
+                } else {
+                  pageNum = currentPage - 2 + i;
+                }
+                return (
+                  <button
+                    key={pageNum}
+                    onClick={() => setCurrentPage(pageNum)}
+                    className={`w-10 h-10 rounded-lg text-sm font-medium transition-colors ${
+                      currentPage === pageNum
+                        ? 'bg-brand-500 text-white'
+                        : 'hover:bg-bg-secondary'
+                    }`}
+                  >
+                    {pageNum}
+                  </button>
+                );
+              })}
+            </div>
+            <button
+              onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
+              disabled={currentPage === totalPages}
+              className="p-2 rounded-lg border border-border-default hover:bg-bg-secondary disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+              </svg>
+            </button>
           </div>
         )}
       </div>
@@ -208,6 +356,7 @@ function ProjectListItem({ project, onDelete }: { project: Project; onDelete: ()
             src={project.screenshots?.[0] || project.screenshot_url || ''}
             alt={name}
             className="w-full h-full object-cover"
+            loading="lazy"
           />
         ) : (
           <div className="w-full h-full flex items-center justify-center">

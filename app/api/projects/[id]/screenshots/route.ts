@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getServerSession } from 'next-auth';
+import { getSession } from '@/lib/auth';
 import { supabaseAdmin } from '@/lib/supabase';
 
 type Params = { params: Promise<{ id: string }> };
@@ -10,9 +10,9 @@ const ALLOWED_TYPES = ['image/jpeg', 'image/png', 'image/webp', 'image/gif'];
 
 export async function POST(request: NextRequest, { params }: Params) {
   const { id } = await params;
-  const session = await getServerSession();
+  const session = await getSession();
 
-  if (!session?.user?.id) {
+  if (!session) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
 
@@ -24,7 +24,7 @@ export async function POST(request: NextRequest, { params }: Params) {
     .is('deleted_at', null)
     .single();
 
-  if (!project || project.user_id !== session.user.id) {
+  if (!project || project.user_id !== session.id) {
     return NextResponse.json({ error: 'Project not found' }, { status: 404 });
   }
 
@@ -108,9 +108,9 @@ export async function POST(request: NextRequest, { params }: Params) {
 
 export async function DELETE(request: NextRequest, { params }: Params) {
   const { id } = await params;
-  const session = await getServerSession();
+  const session = await getSession();
 
-  if (!session?.user?.id) {
+  if (!session) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
 
@@ -131,7 +131,7 @@ export async function DELETE(request: NextRequest, { params }: Params) {
     .is('deleted_at', null)
     .single();
 
-  if (!project || project.user_id !== session.user.id) {
+  if (!project || project.user_id !== session.id) {
     return NextResponse.json({ error: 'Project not found' }, { status: 404 });
   }
 

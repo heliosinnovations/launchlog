@@ -1,13 +1,13 @@
 'use client';
 
-import { useSession } from 'next-auth/react';
+import { useAuth } from '@/lib/hooks/useAuth';
 import { useRouter, useParams } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { ProjectEditForm } from '@/components/projects/ProjectEditForm';
 import type { Project } from '@/types/project';
 
 export default function EditProjectPage() {
-  const { data: session, status } = useSession();
+  const { user, loading: authLoading } = useAuth();
   const router = useRouter();
   const params = useParams();
   const projectId = params.id as string;
@@ -17,13 +17,13 @@ export default function EditProjectPage() {
   const [error, setError] = useState('');
 
   useEffect(() => {
-    if (status === 'unauthenticated') {
+    if (!authLoading && !user) {
       router.replace('/login');
     }
-  }, [status, router]);
+  }, [authLoading, user, router]);
 
   useEffect(() => {
-    if (status === 'authenticated' && projectId) {
+    if (user && projectId) {
       fetch(`/api/projects/${projectId}`)
         .then((res) => {
           if (!res.ok) throw new Error('Project not found');
@@ -31,7 +31,7 @@ export default function EditProjectPage() {
         })
         .then((data) => {
           // Verify ownership
-          if (data.user_id !== session?.user?.id) {
+          if (data.user_id !== user.id) {
             setError('You do not have permission to edit this project');
             return;
           }
@@ -40,9 +40,9 @@ export default function EditProjectPage() {
         .catch((err) => setError(err.message))
         .finally(() => setLoading(false));
     }
-  }, [status, projectId, session?.user?.id]);
+  }, [user, projectId]);
 
-  if (status !== 'authenticated' || loading) {
+  if (authLoading || !user || loading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="animate-pulse flex flex-col items-center gap-4">
