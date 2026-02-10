@@ -1,3 +1,6 @@
+'use client';
+
+import { signIn } from 'next-auth/react';
 import { Button } from '../ui/Button';
 
 export function Pricing() {
@@ -95,6 +98,7 @@ export function Pricing() {
                 variant={plan.variant}
                 size="lg"
                 className="w-full"
+                onClick={() => signIn('github')}
               >
                 {plan.cta}
               </Button>
