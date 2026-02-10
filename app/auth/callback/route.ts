@@ -39,19 +39,28 @@ export async function GET(request: NextRequest) {
   const user = data.user;
   const metadata = user.user_metadata;
 
+  // GitHub OAuth: sub = user id, user_name/preferred_username = login
+  const githubId = String(metadata.sub || metadata.provider_id || '');
+  const username = metadata.user_name || metadata.preferred_username || '';
+
+  if (!githubId || !username) {
+    console.error('Missing required GitHub metadata:', { githubId, username, metadata });
+    return NextResponse.redirect(`${origin}/login?error=missing_metadata`);
+  }
+
   const { error: upsertError } = await getSupabaseAdmin()
     .from('users')
     .upsert({
       auth_id: user.id,
-      github_id: metadata.provider_id || metadata.sub,
-      username: metadata.user_name || metadata.preferred_username,
-      email: user.email,
-      name: metadata.full_name || metadata.name || metadata.user_name,
-      avatar_url: metadata.avatar_url,
-      bio: metadata.bio,
-      github_username: metadata.user_name,
-      twitter_username: metadata.twitter_username,
-      website_url: metadata.website,
+      github_id: githubId,
+      username,
+      email: user.email!,
+      name: metadata.full_name || metadata.name || username,
+      avatar_url: metadata.avatar_url || null,
+      bio: metadata.bio || null,
+      github_username: username,
+      twitter_username: metadata.twitter_username || null,
+      website_url: metadata.website || null,
       updated_at: new Date().toISOString(),
     }, {
       onConflict: 'auth_id'
@@ -59,7 +68,7 @@ export async function GET(request: NextRequest) {
 
   if (upsertError) {
     console.error('User sync error:', upsertError);
-    // Continue anyway - user can sign in, profile may be incomplete
+    return NextResponse.redirect(`${origin}/login?error=user_sync_failed`);
   }
 
   return NextResponse.redirect(`${origin}${next}`);

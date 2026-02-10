@@ -28,6 +28,8 @@ function LoginForm() {
           <p className="text-danger-400 text-sm">
             {error === 'no_code' ? 'Authentication failed. Please try again.' :
              error === 'auth_failed' ? 'Could not complete sign in. Please try again.' :
+             error === 'missing_metadata' ? 'Could not retrieve GitHub profile. Please try again.' :
+             error === 'user_sync_failed' ? 'Could not create account. Please try again.' :
              'An error occurred. Please try again.'}
           </p>
         </div>
