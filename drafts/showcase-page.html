@@ -1,0 +1,1004 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tanner Linsley | LaunchLog</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #0a0a0b;
+            --bg-card: #141416;
+            --bg-hover: #1a1a1d;
+            --border: #27272a;
+            --text: #fafafa;
+            --text-muted: #71717a;
+            --primary: #6366f1;
+            --primary-light: #818cf8;
+            --accent: #f59e0b;
+            --success: #22c55e;
+            --hn: #ff6600;
+            --ph: #da552f;
+            --twitter: #1da1f2;
+            --reddit: #ff4500;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            line-height: 1.6;
+            min-height: 100vh;
+        }
+
+        /* Header */
+        header {
+            border-bottom: 1px solid var(--border);
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            background: rgba(10, 10, 11, 0.9);
+            backdrop-filter: blur(20px);
+            z-index: 100;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-weight: 700;
+            font-size: 1.25rem;
+            color: var(--text);
+            text-decoration: none;
+        }
+
+        .logo-icon {
+            width: 28px;
+            height: 28px;
+            background: var(--primary);
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 14px;
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+        }
+
+        .btn {
+            padding: 0.5rem 1rem;
+            border-radius: 6px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+            border: none;
+            font-size: 0.875rem;
+            font-family: inherit;
+            text-decoration: none;
+        }
+
+        .btn-ghost {
+            background: transparent;
+            color: var(--text-muted);
+        }
+
+        .btn-ghost:hover {
+            color: var(--text);
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: var(--primary-light);
+        }
+
+        /* Main Layout */
+        main {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 3rem 2rem;
+        }
+
+        /* Profile Section */
+        .profile {
+            display: flex;
+            gap: 2rem;
+            margin-bottom: 3rem;
+            padding-bottom: 3rem;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .profile-avatar {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #6366f1, #8b5cf6);
+            flex-shrink: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 3rem;
+            font-weight: 700;
+            color: white;
+        }
+
+        .profile-info {
+            flex: 1;
+        }
+
+        .profile-header {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .profile-name {
+            font-size: 2rem;
+            font-weight: 700;
+        }
+
+        .profile-verified {
+            display: flex;
+            align-items: center;
+            gap: 0.25rem;
+            padding: 0.25rem 0.5rem;
+            background: rgba(34, 197, 94, 0.15);
+            color: var(--success);
+            border-radius: 4px;
+            font-size: 0.75rem;
+            font-weight: 500;
+        }
+
+        .profile-handle {
+            color: var(--text-muted);
+            font-size: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .profile-bio {
+            color: var(--text);
+            font-size: 1rem;
+            margin-bottom: 1.5rem;
+            max-width: 600px;
+        }
+
+        .profile-links {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .profile-link {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: var(--text-muted);
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: color 0.2s;
+        }
+
+        .profile-link:hover {
+            color: var(--primary-light);
+        }
+
+        .profile-link svg {
+            width: 16px;
+            height: 16px;
+        }
+
+        /* Stats Bar */
+        .stats-bar {
+            display: flex;
+            gap: 3rem;
+            margin-bottom: 3rem;
+        }
+
+        .stat {
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--text);
+        }
+
+        .stat-label {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+        }
+
+        .stat-value.accent {
+            color: var(--accent);
+        }
+
+        /* Filter Tabs */
+        .filter-tabs {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 2rem;
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 1rem;
+        }
+
+        .filter-tab {
+            padding: 0.5rem 1rem;
+            border-radius: 6px;
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            cursor: pointer;
+            transition: all 0.2s;
+            background: transparent;
+            border: none;
+            font-family: inherit;
+        }
+
+        .filter-tab:hover {
+            background: var(--bg-hover);
+            color: var(--text);
+        }
+
+        .filter-tab.active {
+            background: var(--primary);
+            color: white;
+        }
+
+        /* Projects Grid */
+        .projects-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 1.5rem;
+        }
+
+        /* Project Card */
+        .project-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            overflow: hidden;
+            transition: all 0.3s;
+        }
+
+        .project-card:hover {
+            border-color: var(--primary);
+            transform: translateY(-4px);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+        }
+
+        .project-screenshot {
+            width: 100%;
+            height: 180px;
+            background: linear-gradient(135deg, #1e1e2e 0%, #2a2a3e 100%);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .project-screenshot img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .project-screenshot-placeholder {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+        }
+
+        .project-screenshot-placeholder svg {
+            width: 48px;
+            height: 48px;
+            color: var(--text-muted);
+            opacity: 0.5;
+        }
+
+        .project-content {
+            padding: 1.5rem;
+        }
+
+        .project-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 0.75rem;
+        }
+
+        .project-name {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: var(--text);
+        }
+
+        .project-lang {
+            display: flex;
+            align-items: center;
+            gap: 0.25rem;
+            font-size: 0.8rem;
+            color: var(--text-muted);
+        }
+
+        .project-lang .dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+        }
+
+        .project-lang .dot.ts { background: #3178c6; }
+        .project-lang .dot.js { background: #f7df1e; }
+        .project-lang .dot.py { background: #3776ab; }
+        .project-lang .dot.go { background: #00add8; }
+        .project-lang .dot.rust { background: #dea584; }
+
+        .project-description {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            margin-bottom: 1rem;
+            line-height: 1.5;
+        }
+
+        .project-stats {
+            display: flex;
+            gap: 1.5rem;
+            margin-bottom: 1rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .project-stat {
+            display: flex;
+            align-items: center;
+            gap: 0.25rem;
+            font-size: 0.85rem;
+            color: var(--text-muted);
+        }
+
+        .project-stat svg {
+            width: 14px;
+            height: 14px;
+        }
+
+        /* Mentions Section */
+        .project-mentions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+        }
+
+        .mention-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.35rem;
+            padding: 0.35rem 0.6rem;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .mention-badge.hn {
+            background: rgba(255, 102, 0, 0.15);
+            color: var(--hn);
+        }
+
+        .mention-badge.hn:hover {
+            background: rgba(255, 102, 0, 0.25);
+        }
+
+        .mention-badge.ph {
+            background: rgba(218, 85, 47, 0.15);
+            color: var(--ph);
+        }
+
+        .mention-badge.ph:hover {
+            background: rgba(218, 85, 47, 0.25);
+        }
+
+        .mention-badge.twitter {
+            background: rgba(29, 161, 242, 0.15);
+            color: var(--twitter);
+        }
+
+        .mention-badge.twitter:hover {
+            background: rgba(29, 161, 242, 0.25);
+        }
+
+        .mention-badge.reddit {
+            background: rgba(255, 69, 0, 0.15);
+            color: var(--reddit);
+        }
+
+        .mention-badge.reddit:hover {
+            background: rgba(255, 69, 0, 0.25);
+        }
+
+        /* Expanded Mentions Panel */
+        .mentions-expanded {
+            margin-top: 1rem;
+            padding-top: 1rem;
+            border-top: 1px solid var(--border);
+        }
+
+        .mentions-expanded-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .mentions-expanded-title {
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: var(--text);
+        }
+
+        .mentions-expanded-close {
+            background: none;
+            border: none;
+            color: var(--text-muted);
+            cursor: pointer;
+            font-size: 0.85rem;
+        }
+
+        .mention-thread {
+            padding: 0.75rem;
+            background: var(--bg);
+            border-radius: 6px;
+            margin-bottom: 0.5rem;
+        }
+
+        .mention-thread-header {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .mention-thread-source {
+            font-size: 0.7rem;
+            font-weight: 700;
+            padding: 0.15rem 0.4rem;
+            border-radius: 3px;
+            color: white;
+        }
+
+        .mention-thread-source.hn { background: var(--hn); }
+        .mention-thread-source.ph { background: var(--ph); }
+
+        .mention-thread-date {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+        }
+
+        .mention-thread-title {
+            font-size: 0.85rem;
+            color: var(--text);
+            margin-bottom: 0.35rem;
+        }
+
+        .mention-thread-stats {
+            display: flex;
+            gap: 1rem;
+            font-size: 0.75rem;
+            color: var(--text-muted);
+        }
+
+        /* View More Link */
+        .view-more {
+            display: block;
+            text-align: center;
+            padding: 0.5rem;
+            color: var(--primary-light);
+            font-size: 0.85rem;
+            text-decoration: none;
+            transition: color 0.2s;
+        }
+
+        .view-more:hover {
+            color: var(--primary);
+        }
+
+        /* Footer */
+        footer {
+            margin-top: 4rem;
+            padding: 2rem;
+            text-align: center;
+            border-top: 1px solid var(--border);
+        }
+
+        .footer-branding {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            color: var(--text-muted);
+            font-size: 0.85rem;
+        }
+
+        .footer-branding a {
+            color: var(--primary-light);
+            text-decoration: none;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .profile {
+                flex-direction: column;
+                text-align: center;
+            }
+
+            .profile-avatar {
+                margin: 0 auto;
+            }
+
+            .profile-links {
+                justify-content: center;
+            }
+
+            .stats-bar {
+                justify-content: center;
+            }
+
+            .projects-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .filter-tabs {
+                overflow-x: auto;
+                flex-wrap: nowrap;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header>
+        <a href="/" class="logo">
+            <div class="logo-icon">L</div>
+            LaunchLog
+        </a>
+        <div class="header-actions">
+            <a href="#" class="btn btn-ghost">Sign In</a>
+            <a href="#" class="btn btn-primary">Create Yours</a>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main>
+        <!-- Profile Section -->
+        <section class="profile">
+            <div class="profile-avatar">TL</div>
+            <div class="profile-info">
+                <div class="profile-header">
+                    <h1 class="profile-name">Tanner Linsley</h1>
+                    <span class="profile-verified">
+                        <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/>
+                        </svg>
+                        Verified
+                    </span>
+                </div>
+                <p class="profile-handle">@tannerlinsley</p>
+                <p class="profile-bio">
+                    Building @tanstack. Creator of React Query, React Table, React Router, and more.
+                    Open source enthusiast. Making frontend development delightful.
+                </p>
+                <div class="profile-links">
+                    <a href="#" class="profile-link">
+                        <svg viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
+                        </svg>
+                        GitHub
+                    </a>
+                    <a href="#" class="profile-link">
+                        <svg viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M23 3a10.9 10.9 0 0 1-3.14 1.53 4.48 4.48 0 0 0-7.86 3v1A10.66 10.66 0 0 1 3 4s-4 9 5 13a11.64 11.64 0 0 1-7 2c9 5 20 0 20-11.5a4.5 4.5 0 0 0-.08-.83A7.72 7.72 0 0 0 23 3z"/>
+                        </svg>
+                        @tannerlinsley
+                    </a>
+                    <a href="#" class="profile-link">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="12" cy="12" r="10"/>
+                            <line x1="2" y1="12" x2="22" y2="12"/>
+                            <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/>
+                        </svg>
+                        tanstack.com
+                    </a>
+                </div>
+            </div>
+        </section>
+
+        <!-- Stats Bar -->
+        <section class="stats-bar">
+            <div class="stat">
+                <div class="stat-value">12</div>
+                <div class="stat-label">Projects</div>
+            </div>
+            <div class="stat">
+                <div class="stat-value">284k</div>
+                <div class="stat-label">Total Stars</div>
+            </div>
+            <div class="stat">
+                <div class="stat-value accent">847</div>
+                <div class="stat-label">Mentions</div>
+            </div>
+            <div class="stat">
+                <div class="stat-value">156k</div>
+                <div class="stat-label">npm/week</div>
+            </div>
+        </section>
+
+        <!-- Filter Tabs -->
+        <div class="filter-tabs">
+            <button class="filter-tab active">All Projects</button>
+            <button class="filter-tab">Most Starred</button>
+            <button class="filter-tab">Most Mentioned</button>
+            <button class="filter-tab">Recent</button>
+        </div>
+
+        <!-- Projects Grid -->
+        <div class="projects-grid">
+            <!-- Project Card 1 - React Query -->
+            <div class="project-card">
+                <div class="project-screenshot">
+                    <div class="project-screenshot-placeholder">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                            <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
+                            <circle cx="8.5" cy="8.5" r="1.5"/>
+                            <polyline points="21 15 16 10 5 21"/>
+                        </svg>
+                    </div>
+                </div>
+                <div class="project-content">
+                    <div class="project-header">
+                        <h3 class="project-name">react-query</h3>
+                        <span class="project-lang">
+                            <span class="dot ts"></span>
+                            TypeScript
+                        </span>
+                    </div>
+                    <p class="project-description">
+                        Powerful asynchronous state management, server-state utilities and data fetching for React, Vue, Solid, and more.
+                    </p>
+                    <div class="project-stats">
+                        <span class="project-stat">
+                            <svg viewBox="0 0 24 24" fill="currentColor">
+                                <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
+                            </svg>
+                            38.2k
+                        </span>
+                        <span class="project-stat">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <circle cx="12" cy="12" r="3"/>
+                                <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/>
+                            </svg>
+                            847
+                        </span>
+                        <span class="project-stat">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+                                <circle cx="9" cy="7" r="4"/>
+                                <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
+                                <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+                            </svg>
+                            1.2k contributors
+                        </span>
+                    </div>
+                    <div class="project-mentions">
+                        <span class="mention-badge hn">HN 23 threads</span>
+                        <span class="mention-badge ph">#2 PH</span>
+                        <span class="mention-badge twitter">1.2k tweets</span>
+                    </div>
+
+                    <!-- Expandable Mentions -->
+                    <div class="mentions-expanded">
+                        <div class="mentions-expanded-header">
+                            <span class="mentions-expanded-title">Recent Mentions</span>
+                            <button class="mentions-expanded-close">Hide</button>
+                        </div>
+                        <div class="mention-thread">
+                            <div class="mention-thread-header">
+                                <span class="mention-thread-source hn">HN</span>
+                                <span class="mention-thread-date">2 days ago</span>
+                            </div>
+                            <p class="mention-thread-title">"React Query is the best thing to happen to React data fetching"</p>
+                            <div class="mention-thread-stats">
+                                <span>&#9650; 423 points</span>
+                                <span>187 comments</span>
+                            </div>
+                        </div>
+                        <div class="mention-thread">
+                            <div class="mention-thread-header">
+                                <span class="mention-thread-source ph">PH</span>
+                                <span class="mention-thread-date">1 week ago</span>
+                            </div>
+                            <p class="mention-thread-title">"TanStack Query v5 - Powerful async state management"</p>
+                            <div class="mention-thread-stats">
+                                <span>&#9650; 892 upvotes</span>
+                                <span>#2 of the day</span>
+                            </div>
+                        </div>
+                        <a href="#" class="view-more">View all 23 mentions &rarr;</a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Project Card 2 - React Table -->
+            <div class="project-card">
+                <div class="project-screenshot">
+                    <div class="project-screenshot-placeholder">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                            <rect x="3" y="3" width="18" height="18" rx="2"/>
+                            <line x1="3" y1="9" x2="21" y2="9"/>
+                            <line x1="3" y1="15" x2="21" y2="15"/>
+                            <line x1="9" y1="3" x2="9" y2="21"/>
+                            <line x1="15" y1="3" x2="15" y2="21"/>
+                        </svg>
+                    </div>
+                </div>
+                <div class="project-content">
+                    <div class="project-header">
+                        <h3 class="project-name">react-table</h3>
+                        <span class="project-lang">
+                            <span class="dot ts"></span>
+                            TypeScript
+                        </span>
+                    </div>
+                    <p class="project-description">
+                        Headless UI for building powerful tables & datagrids. Lightweight, composable, and feature-rich.
+                    </p>
+                    <div class="project-stats">
+                        <span class="project-stat">
+                            <svg viewBox="0 0 24 24" fill="currentColor">
+                                <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
+                            </svg>
+                            24.1k
+                        </span>
+                        <span class="project-stat">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <circle cx="12" cy="12" r="3"/>
+                            </svg>
+                            312
+                        </span>
+                        <span class="project-stat">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+                            </svg>
+                            580 contributors
+                        </span>
+                    </div>
+                    <div class="project-mentions">
+                        <span class="mention-badge hn">HN 18 threads</span>
+                        <span class="mention-badge twitter">847 tweets</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Project Card 3 - React Router -->
+            <div class="project-card">
+                <div class="project-screenshot">
+                    <div class="project-screenshot-placeholder">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                            <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
+                            <polyline points="9 22 9 12 15 12 15 22"/>
+                        </svg>
+                    </div>
+                </div>
+                <div class="project-content">
+                    <div class="project-header">
+                        <h3 class="project-name">react-router</h3>
+                        <span class="project-lang">
+                            <span class="dot ts"></span>
+                            TypeScript
+                        </span>
+                    </div>
+                    <p class="project-description">
+                        Declarative routing for React. Type-safe, feature-rich, and built for modern apps.
+                    </p>
+                    <div class="project-stats">
+                        <span class="project-stat">
+                            <svg viewBox="0 0 24 24" fill="currentColor">
+                                <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
+                            </svg>
+                            52.3k
+                        </span>
+                        <span class="project-stat">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <circle cx="12" cy="12" r="3"/>
+                            </svg>
+                            524
+                        </span>
+                        <span class="project-stat">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+                            </svg>
+                            890 contributors
+                        </span>
+                    </div>
+                    <div class="project-mentions">
+                        <span class="mention-badge hn">HN 45 threads</span>
+                        <span class="mention-badge ph">#1 PH</span>
+                        <span class="mention-badge reddit">r/reactjs 234</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Project Card 4 - React Virtual -->
+            <div class="project-card">
+                <div class="project-screenshot">
+                    <div class="project-screenshot-placeholder">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                            <rect x="2" y="3" width="20" height="14" rx="2" ry="2"/>
+                            <line x1="8" y1="21" x2="16" y2="21"/>
+                            <line x1="12" y1="17" x2="12" y2="21"/>
+                        </svg>
+                    </div>
+                </div>
+                <div class="project-content">
+                    <div class="project-header">
+                        <h3 class="project-name">react-virtual</h3>
+                        <span class="project-lang">
+                            <span class="dot ts"></span>
+                            TypeScript
+                        </span>
+                    </div>
+                    <p class="project-description">
+                        Headless UI for virtualizing large lists, grids, and other scrolling containers.
+                    </p>
+                    <div class="project-stats">
+                        <span class="project-stat">
+                            <svg viewBox="0 0 24 24" fill="currentColor">
+                                <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
+                            </svg>
+                            4.8k
+                        </span>
+                        <span class="project-stat">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <circle cx="12" cy="12" r="3"/>
+                            </svg>
+                            89
+                        </span>
+                        <span class="project-stat">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+                            </svg>
+                            124 contributors
+                        </span>
+                    </div>
+                    <div class="project-mentions">
+                        <span class="mention-badge hn">HN 8 threads</span>
+                        <span class="mention-badge twitter">312 tweets</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Project Card 5 - React Form -->
+            <div class="project-card">
+                <div class="project-screenshot">
+                    <div class="project-screenshot-placeholder">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                            <polyline points="14 2 14 8 20 8"/>
+                            <line x1="16" y1="13" x2="8" y2="13"/>
+                            <line x1="16" y1="17" x2="8" y2="17"/>
+                            <polyline points="10 9 9 9 8 9"/>
+                        </svg>
+                    </div>
+                </div>
+                <div class="project-content">
+                    <div class="project-header">
+                        <h3 class="project-name">react-form</h3>
+                        <span class="project-lang">
+                            <span class="dot ts"></span>
+                            TypeScript
+                        </span>
+                    </div>
+                    <p class="project-description">
+                        High-performance, type-safe form library with first-class validation and accessibility.
+                    </p>
+                    <div class="project-stats">
+                        <span class="project-stat">
+                            <svg viewBox="0 0 24 24" fill="currentColor">
+                                <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
+                            </svg>
+                            2.1k
+                        </span>
+                        <span class="project-stat">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <circle cx="12" cy="12" r="3"/>
+                            </svg>
+                            45
+                        </span>
+                        <span class="project-stat">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+                            </svg>
+                            67 contributors
+                        </span>
+                    </div>
+                    <div class="project-mentions">
+                        <span class="mention-badge hn">HN 5 threads</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Project Card 6 - React Location -->
+            <div class="project-card">
+                <div class="project-screenshot">
+                    <div class="project-screenshot-placeholder">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                            <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/>
+                            <circle cx="12" cy="10" r="3"/>
+                        </svg>
+                    </div>
+                </div>
+                <div class="project-content">
+                    <div class="project-header">
+                        <h3 class="project-name">react-location</h3>
+                        <span class="project-lang">
+                            <span class="dot ts"></span>
+                            TypeScript
+                        </span>
+                    </div>
+                    <p class="project-description">
+                        Enterprise-grade routing for React with data fetching, caching, and search params.
+                    </p>
+                    <div class="project-stats">
+                        <span class="project-stat">
+                            <svg viewBox="0 0 24 24" fill="currentColor">
+                                <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
+                            </svg>
+                            5.2k
+                        </span>
+                        <span class="project-stat">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <circle cx="12" cy="12" r="3"/>
+                            </svg>
+                            78
+                        </span>
+                        <span class="project-stat">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+                            </svg>
+                            98 contributors
+                        </span>
+                    </div>
+                    <div class="project-mentions">
+                        <span class="mention-badge hn">HN 12 threads</span>
+                        <span class="mention-badge twitter">567 tweets</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer>
+        <div class="footer-branding">
+            Showcase powered by <a href="/">LaunchLog</a> &bull; Create your own free portfolio
+        </div>
+    </footer>
+</body>
+</html>

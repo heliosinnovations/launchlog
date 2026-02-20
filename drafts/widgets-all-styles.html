@@ -1,0 +1,780 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LaunchLog Widgets - All Styles</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        /* ==========================================
+           LAUNCHLOG WIDGET SYSTEM
+           CSS Variables for theme inheritance
+           ========================================== */
+
+        :root {
+            /* Base colors - these get overridden by parent site */
+            --ll-bg: #ffffff;
+            --ll-bg-hover: #f9fafb;
+            --ll-border: #e5e7eb;
+            --ll-text: #111827;
+            --ll-text-muted: #6b7280;
+            --ll-primary: #6366f1;
+            --ll-primary-light: #818cf8;
+
+            /* Mention colors - fixed across themes */
+            --ll-hn: #ff6600;
+            --ll-ph: #da552f;
+            --ll-twitter: #1da1f2;
+            --ll-reddit: #ff4500;
+            --ll-devto: #0a0a0a;
+
+            /* Spacing */
+            --ll-radius: 8px;
+            --ll-radius-sm: 4px;
+        }
+
+        /* Dark theme override */
+        .dark-theme {
+            --ll-bg: #18181b;
+            --ll-bg-hover: #27272a;
+            --ll-border: #3f3f46;
+            --ll-text: #fafafa;
+            --ll-text-muted: #a1a1aa;
+            --ll-devto: #ffffff;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            line-height: 1.6;
+            padding: 2rem;
+        }
+
+        /* Demo page styles (not part of widget) */
+        .demo-page {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .demo-header {
+            text-align: center;
+            margin-bottom: 4rem;
+            padding-bottom: 2rem;
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        .demo-header h1 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            color: #111827;
+        }
+
+        .demo-header p {
+            color: #6b7280;
+            font-size: 1.1rem;
+        }
+
+        .demo-section {
+            margin-bottom: 4rem;
+        }
+
+        .demo-section h2 {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+            color: #111827;
+        }
+
+        .demo-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+        }
+
+        .demo-box {
+            padding: 2rem;
+            border-radius: 12px;
+        }
+
+        .demo-box.light {
+            background: #f9fafb;
+            border: 1px solid #e5e7eb;
+        }
+
+        .demo-box.dark {
+            background: #0a0a0b;
+        }
+
+        .demo-box h3 {
+            font-size: 0.85rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-bottom: 1rem;
+        }
+
+        .demo-box.light h3 {
+            color: #6b7280;
+        }
+
+        .demo-box.dark h3 {
+            color: #71717a;
+        }
+
+        .code-block {
+            background: #1f2937;
+            color: #e5e7eb;
+            padding: 1rem;
+            border-radius: 8px;
+            font-family: 'Fira Code', monospace;
+            font-size: 0.85rem;
+            margin-top: 2rem;
+            overflow-x: auto;
+        }
+
+        .code-block code {
+            color: #a5b4fc;
+        }
+
+        .code-block .comment {
+            color: #6b7280;
+        }
+
+        /* ==========================================
+           CARD WIDGET STYLE
+           Full project cards with screenshots
+           ========================================== */
+
+        .ll-widget-card {
+            background: var(--ll-bg);
+            border: 1px solid var(--ll-border);
+            border-radius: var(--ll-radius);
+            overflow: hidden;
+            transition: all 0.2s ease;
+            max-width: 400px;
+        }
+
+        .ll-widget-card:hover {
+            border-color: var(--ll-primary);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        .ll-widget-card-img {
+            width: 100%;
+            height: 160px;
+            background: linear-gradient(135deg, #e0e7ff 0%, #c7d2fe 100%);
+            position: relative;
+        }
+
+        .dark-theme .ll-widget-card-img {
+            background: linear-gradient(135deg, #312e81 0%, #4c1d95 100%);
+        }
+
+        .ll-widget-card-content {
+            padding: 1.25rem;
+        }
+
+        .ll-widget-card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 0.5rem;
+        }
+
+        .ll-widget-card-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--ll-text);
+        }
+
+        .ll-widget-card-lang {
+            display: flex;
+            align-items: center;
+            gap: 0.25rem;
+            font-size: 0.75rem;
+            color: var(--ll-text-muted);
+        }
+
+        .ll-widget-card-lang .dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #3178c6;
+        }
+
+        .ll-widget-card-desc {
+            font-size: 0.9rem;
+            color: var(--ll-text-muted);
+            margin-bottom: 1rem;
+            line-height: 1.5;
+        }
+
+        .ll-widget-card-stats {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 0.75rem;
+            padding-bottom: 0.75rem;
+            border-bottom: 1px solid var(--ll-border);
+        }
+
+        .ll-widget-card-stat {
+            display: flex;
+            align-items: center;
+            gap: 0.25rem;
+            font-size: 0.8rem;
+            color: var(--ll-text-muted);
+        }
+
+        .ll-widget-card-stat svg {
+            width: 14px;
+            height: 14px;
+        }
+
+        .ll-widget-mentions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+        }
+
+        .ll-mention-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.25rem;
+            padding: 0.25rem 0.5rem;
+            border-radius: var(--ll-radius-sm);
+            font-size: 0.7rem;
+            font-weight: 600;
+        }
+
+        .ll-mention-badge.hn {
+            background: rgba(255, 102, 0, 0.12);
+            color: var(--ll-hn);
+        }
+
+        .ll-mention-badge.ph {
+            background: rgba(218, 85, 47, 0.12);
+            color: var(--ll-ph);
+        }
+
+        .ll-mention-badge.twitter {
+            background: rgba(29, 161, 242, 0.12);
+            color: var(--ll-twitter);
+        }
+
+        .ll-mention-badge.reddit {
+            background: rgba(255, 69, 0, 0.12);
+            color: var(--ll-reddit);
+        }
+
+        /* ==========================================
+           COMPACT WIDGET STYLE
+           Space-efficient list view
+           ========================================== */
+
+        .ll-widget-compact {
+            background: var(--ll-bg);
+            border: 1px solid var(--ll-border);
+            border-radius: var(--ll-radius);
+            overflow: hidden;
+            max-width: 350px;
+        }
+
+        .ll-widget-compact-header {
+            padding: 0.75rem 1rem;
+            border-bottom: 1px solid var(--ll-border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .ll-widget-compact-title {
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: var(--ll-text);
+        }
+
+        .ll-widget-compact-link {
+            font-size: 0.75rem;
+            color: var(--ll-primary);
+            text-decoration: none;
+        }
+
+        .ll-widget-compact-link:hover {
+            text-decoration: underline;
+        }
+
+        .ll-widget-compact-list {
+            list-style: none;
+        }
+
+        .ll-widget-compact-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.75rem 1rem;
+            border-bottom: 1px solid var(--ll-border);
+            transition: background 0.15s ease;
+        }
+
+        .ll-widget-compact-item:last-child {
+            border-bottom: none;
+        }
+
+        .ll-widget-compact-item:hover {
+            background: var(--ll-bg-hover);
+        }
+
+        .ll-widget-compact-name {
+            font-size: 0.9rem;
+            font-weight: 500;
+            color: var(--ll-text);
+        }
+
+        .ll-widget-compact-meta {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .ll-widget-compact-stars {
+            display: flex;
+            align-items: center;
+            gap: 0.25rem;
+            font-size: 0.8rem;
+            color: var(--ll-text-muted);
+        }
+
+        .ll-widget-compact-stars svg {
+            width: 12px;
+            height: 12px;
+            fill: currentColor;
+        }
+
+        .ll-widget-compact-mentions {
+            font-size: 0.7rem;
+            font-weight: 600;
+            padding: 0.2rem 0.4rem;
+            background: rgba(245, 158, 11, 0.12);
+            color: #d97706;
+            border-radius: var(--ll-radius-sm);
+        }
+
+        /* ==========================================
+           MINIMAL WIDGET STYLE
+           Just project names + mention badges
+           ========================================== */
+
+        .ll-widget-minimal {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            max-width: 400px;
+        }
+
+        .ll-widget-minimal-item {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem 0.75rem;
+            background: var(--ll-bg);
+            border: 1px solid var(--ll-border);
+            border-radius: var(--ll-radius);
+            font-size: 0.85rem;
+            color: var(--ll-text);
+            transition: all 0.15s ease;
+            text-decoration: none;
+        }
+
+        .ll-widget-minimal-item:hover {
+            border-color: var(--ll-primary);
+            background: var(--ll-bg-hover);
+        }
+
+        .ll-widget-minimal-name {
+            font-weight: 500;
+        }
+
+        .ll-widget-minimal-count {
+            font-size: 0.7rem;
+            font-weight: 600;
+            padding: 0.15rem 0.35rem;
+            background: rgba(245, 158, 11, 0.12);
+            color: #d97706;
+            border-radius: 3px;
+        }
+
+        /* ==========================================
+           INLINE WIDGET STYLE (Bonus)
+           Single line for READMEs
+           ========================================== */
+
+        .ll-widget-inline {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.5rem 1rem;
+            background: var(--ll-bg);
+            border: 1px solid var(--ll-border);
+            border-radius: 50px;
+            font-size: 0.85rem;
+        }
+
+        .ll-widget-inline-logo {
+            width: 18px;
+            height: 18px;
+            background: var(--ll-primary);
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 10px;
+            font-weight: 700;
+        }
+
+        .ll-widget-inline-text {
+            color: var(--ll-text);
+            font-weight: 500;
+        }
+
+        .ll-widget-inline-count {
+            display: flex;
+            align-items: center;
+            gap: 0.35rem;
+            font-weight: 600;
+            color: #d97706;
+        }
+
+        .ll-widget-inline-count svg {
+            width: 14px;
+            height: 14px;
+        }
+
+        @media (max-width: 768px) {
+            .demo-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="demo-page">
+        <header class="demo-header">
+            <h1>LaunchLog Widget Styles</h1>
+            <p>Embeddable widgets that inherit your site's styling</p>
+        </header>
+
+        <!-- CARD STYLE -->
+        <section class="demo-section">
+            <h2>1. Card Style</h2>
+            <p style="color: #6b7280; margin-bottom: 1.5rem;">Full project cards with screenshots, stats, and mentions. Best for portfolio pages and project showcases.</p>
+
+            <div class="demo-grid">
+                <div class="demo-box light">
+                    <h3>Light Theme</h3>
+                    <div class="ll-widget-card">
+                        <div class="ll-widget-card-img"></div>
+                        <div class="ll-widget-card-content">
+                            <div class="ll-widget-card-header">
+                                <span class="ll-widget-card-title">react-query</span>
+                                <span class="ll-widget-card-lang">
+                                    <span class="dot"></span>
+                                    TypeScript
+                                </span>
+                            </div>
+                            <p class="ll-widget-card-desc">Powerful asynchronous state management, server-state utilities and data fetching for React.</p>
+                            <div class="ll-widget-card-stats">
+                                <span class="ll-widget-card-stat">
+                                    <svg viewBox="0 0 24 24" fill="currentColor">
+                                        <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
+                                    </svg>
+                                    38.2k
+                                </span>
+                                <span class="ll-widget-card-stat">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+                                        <circle cx="9" cy="7" r="4"/>
+                                    </svg>
+                                    847 forks
+                                </span>
+                            </div>
+                            <div class="ll-widget-mentions">
+                                <span class="ll-mention-badge hn">HN 23</span>
+                                <span class="ll-mention-badge ph">PH #2</span>
+                                <span class="ll-mention-badge twitter">1.2k</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="demo-box dark">
+                    <h3 style="color: #71717a;">Dark Theme</h3>
+                    <div class="ll-widget-card dark-theme">
+                        <div class="ll-widget-card-img"></div>
+                        <div class="ll-widget-card-content">
+                            <div class="ll-widget-card-header">
+                                <span class="ll-widget-card-title">react-query</span>
+                                <span class="ll-widget-card-lang">
+                                    <span class="dot"></span>
+                                    TypeScript
+                                </span>
+                            </div>
+                            <p class="ll-widget-card-desc">Powerful asynchronous state management, server-state utilities and data fetching for React.</p>
+                            <div class="ll-widget-card-stats">
+                                <span class="ll-widget-card-stat">
+                                    <svg viewBox="0 0 24 24" fill="currentColor">
+                                        <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
+                                    </svg>
+                                    38.2k
+                                </span>
+                                <span class="ll-widget-card-stat">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+                                        <circle cx="9" cy="7" r="4"/>
+                                    </svg>
+                                    847 forks
+                                </span>
+                            </div>
+                            <div class="ll-widget-mentions">
+                                <span class="ll-mention-badge hn">HN 23</span>
+                                <span class="ll-mention-badge ph">PH #2</span>
+                                <span class="ll-mention-badge twitter">1.2k</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="code-block">
+                <code>&lt;script src="https://launchlog.com/widget.js"<br/>
+        data-user="tannerlinsley"<br/>
+        data-project="react-query"<br/>
+        data-style="card"&gt;&lt;/script&gt;</code>
+            </div>
+        </section>
+
+        <!-- COMPACT STYLE -->
+        <section class="demo-section">
+            <h2>2. Compact Style</h2>
+            <p style="color: #6b7280; margin-bottom: 1.5rem;">Space-efficient list view. Perfect for sidebars, footers, and smaller spaces.</p>
+
+            <div class="demo-grid">
+                <div class="demo-box light">
+                    <h3>Light Theme</h3>
+                    <div class="ll-widget-compact">
+                        <div class="ll-widget-compact-header">
+                            <span class="ll-widget-compact-title">@tannerlinsley projects</span>
+                            <a href="#" class="ll-widget-compact-link">View all</a>
+                        </div>
+                        <ul class="ll-widget-compact-list">
+                            <li class="ll-widget-compact-item">
+                                <span class="ll-widget-compact-name">react-query</span>
+                                <div class="ll-widget-compact-meta">
+                                    <span class="ll-widget-compact-stars">
+                                        <svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+                                        38.2k
+                                    </span>
+                                    <span class="ll-widget-compact-mentions">23 mentions</span>
+                                </div>
+                            </li>
+                            <li class="ll-widget-compact-item">
+                                <span class="ll-widget-compact-name">react-table</span>
+                                <div class="ll-widget-compact-meta">
+                                    <span class="ll-widget-compact-stars">
+                                        <svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+                                        24.1k
+                                    </span>
+                                    <span class="ll-widget-compact-mentions">18 mentions</span>
+                                </div>
+                            </li>
+                            <li class="ll-widget-compact-item">
+                                <span class="ll-widget-compact-name">react-router</span>
+                                <div class="ll-widget-compact-meta">
+                                    <span class="ll-widget-compact-stars">
+                                        <svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+                                        52.3k
+                                    </span>
+                                    <span class="ll-widget-compact-mentions">45 mentions</span>
+                                </div>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="demo-box dark">
+                    <h3 style="color: #71717a;">Dark Theme</h3>
+                    <div class="ll-widget-compact dark-theme">
+                        <div class="ll-widget-compact-header">
+                            <span class="ll-widget-compact-title">@tannerlinsley projects</span>
+                            <a href="#" class="ll-widget-compact-link">View all</a>
+                        </div>
+                        <ul class="ll-widget-compact-list">
+                            <li class="ll-widget-compact-item">
+                                <span class="ll-widget-compact-name">react-query</span>
+                                <div class="ll-widget-compact-meta">
+                                    <span class="ll-widget-compact-stars">
+                                        <svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+                                        38.2k
+                                    </span>
+                                    <span class="ll-widget-compact-mentions">23 mentions</span>
+                                </div>
+                            </li>
+                            <li class="ll-widget-compact-item">
+                                <span class="ll-widget-compact-name">react-table</span>
+                                <div class="ll-widget-compact-meta">
+                                    <span class="ll-widget-compact-stars">
+                                        <svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+                                        24.1k
+                                    </span>
+                                    <span class="ll-widget-compact-mentions">18 mentions</span>
+                                </div>
+                            </li>
+                            <li class="ll-widget-compact-item">
+                                <span class="ll-widget-compact-name">react-router</span>
+                                <div class="ll-widget-compact-meta">
+                                    <span class="ll-widget-compact-stars">
+                                        <svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+                                        52.3k
+                                    </span>
+                                    <span class="ll-widget-compact-mentions">45 mentions</span>
+                                </div>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <div class="code-block">
+                <code>&lt;script src="https://launchlog.com/widget.js"<br/>
+        data-user="tannerlinsley"<br/>
+        data-style="compact"<br/>
+        data-limit="5"&gt;&lt;/script&gt;</code>
+            </div>
+        </section>
+
+        <!-- MINIMAL STYLE -->
+        <section class="demo-section">
+            <h2>3. Minimal Style</h2>
+            <p style="color: #6b7280; margin-bottom: 1.5rem;">Just project names with mention badges. Ideal for inline use, navigation, or minimal designs.</p>
+
+            <div class="demo-grid">
+                <div class="demo-box light">
+                    <h3>Light Theme</h3>
+                    <div class="ll-widget-minimal">
+                        <a href="#" class="ll-widget-minimal-item">
+                            <span class="ll-widget-minimal-name">react-query</span>
+                            <span class="ll-widget-minimal-count">23</span>
+                        </a>
+                        <a href="#" class="ll-widget-minimal-item">
+                            <span class="ll-widget-minimal-name">react-table</span>
+                            <span class="ll-widget-minimal-count">18</span>
+                        </a>
+                        <a href="#" class="ll-widget-minimal-item">
+                            <span class="ll-widget-minimal-name">react-router</span>
+                            <span class="ll-widget-minimal-count">45</span>
+                        </a>
+                        <a href="#" class="ll-widget-minimal-item">
+                            <span class="ll-widget-minimal-name">react-virtual</span>
+                            <span class="ll-widget-minimal-count">8</span>
+                        </a>
+                    </div>
+                </div>
+
+                <div class="demo-box dark">
+                    <h3 style="color: #71717a;">Dark Theme</h3>
+                    <div class="ll-widget-minimal dark-theme">
+                        <a href="#" class="ll-widget-minimal-item">
+                            <span class="ll-widget-minimal-name">react-query</span>
+                            <span class="ll-widget-minimal-count">23</span>
+                        </a>
+                        <a href="#" class="ll-widget-minimal-item">
+                            <span class="ll-widget-minimal-name">react-table</span>
+                            <span class="ll-widget-minimal-count">18</span>
+                        </a>
+                        <a href="#" class="ll-widget-minimal-item">
+                            <span class="ll-widget-minimal-name">react-router</span>
+                            <span class="ll-widget-minimal-count">45</span>
+                        </a>
+                        <a href="#" class="ll-widget-minimal-item">
+                            <span class="ll-widget-minimal-name">react-virtual</span>
+                            <span class="ll-widget-minimal-count">8</span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="code-block">
+                <code>&lt;script src="https://launchlog.com/widget.js"<br/>
+        data-user="tannerlinsley"<br/>
+        data-style="minimal"&gt;&lt;/script&gt;</code>
+            </div>
+        </section>
+
+        <!-- INLINE STYLE (Bonus) -->
+        <section class="demo-section">
+            <h2>4. Inline Style (Bonus)</h2>
+            <p style="color: #6b7280; margin-bottom: 1.5rem;">Single-line badge for READMEs and documentation. Shows total mentions count.</p>
+
+            <div class="demo-grid">
+                <div class="demo-box light">
+                    <h3>Light Theme</h3>
+                    <div class="ll-widget-inline">
+                        <span class="ll-widget-inline-logo">L</span>
+                        <span class="ll-widget-inline-text">react-query</span>
+                        <span class="ll-widget-inline-count">
+                            <svg viewBox="0 0 24 24" fill="currentColor">
+                                <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
+                            </svg>
+                            23 mentions
+                        </span>
+                    </div>
+                </div>
+
+                <div class="demo-box dark">
+                    <h3 style="color: #71717a;">Dark Theme</h3>
+                    <div class="ll-widget-inline dark-theme">
+                        <span class="ll-widget-inline-logo">L</span>
+                        <span class="ll-widget-inline-text">react-query</span>
+                        <span class="ll-widget-inline-count">
+                            <svg viewBox="0 0 24 24" fill="currentColor">
+                                <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
+                            </svg>
+                            23 mentions
+                        </span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="code-block">
+                <code><span class="comment">&lt;!-- Markdown badge for README --&gt;</span><br/>
+[![LaunchLog](https://launchlog.com/badge/tannerlinsley/react-query)](https://launchlog.com/tannerlinsley)</code>
+            </div>
+        </section>
+
+        <!-- CSS Variables Documentation -->
+        <section class="demo-section">
+            <h2>Theme Customization</h2>
+            <p style="color: #6b7280; margin-bottom: 1.5rem;">Override CSS variables to match your site's design system.</p>
+
+            <div class="code-block">
+                <code><span class="comment">/* Override LaunchLog widget theme */</span><br/>
+:root {<br/>
+  --ll-bg: #your-background;<br/>
+  --ll-bg-hover: #your-hover-bg;<br/>
+  --ll-border: #your-border-color;<br/>
+  --ll-text: #your-text-color;<br/>
+  --ll-text-muted: #your-muted-text;<br/>
+  --ll-primary: #your-brand-color;<br/>
+  --ll-radius: 8px;<br/>
+}</code>
+            </div>
+        </section>
+    </div>
+</body>
+</html>
