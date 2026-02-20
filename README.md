@@ -1,15 +1,50 @@
 # LaunchLog
 
-Embeddable product showcase widgets for makers who ship.
+Your developer portfolio, always up-to-date. Automatically.
 
-## Features
-- Embeddable widgets
-- Showcase pages
-- Metrics display
+## The Problem
 
-## Use cases
-- Portfolios
-- Newsletters
-- Product Hunt
-- Twitter bio
-- Email signatures
+You build cool stuff. You push to GitHub. Your portfolio site? Still showing that project from 2023.
+
+Updating portfolios manually sucks. So nobody does it. Your best work stays hidden.
+
+## The Solution
+
+Connect your GitHub. LaunchLog auto-generates beautiful showcase pages that update themselves.
+
+- **Auto-sync from GitHub:** README changes, new commits, stars, releases - all reflected instantly
+- **Embeddable widgets:** Drop a script tag in your portfolio. It stays fresh forever.
+- **Zero maintenance:** Build. Push. Showcase. That's it.
+
+## How It Works
+
+1. **Connect GitHub** - Sign in, select repos to showcase
+2. **Get your page** - `launchlog.com/yourusername`
+3. **Embed anywhere** - `<script src="launchlog.com/embed/yourusername.js"></script>`
+4. **Ship and forget** - Updates automatically when you push code
+
+## What Gets Showcased
+
+- Project cards with README excerpts
+- Live activity status ("Updated 2 days ago")
+- GitHub stats (stars, forks, language)
+- Links to repo + live demo (parsed from README)
+- Release history and version info
+
+## Use Cases
+
+- **Portfolio sites** - Always current without manual updates
+- **Personal sites** - Show what you're actively building
+- **Dev profiles** - Embed in About pages, blogs, newsletters
+- **GitHub profiles** - Enhanced README with live project grid
+- **Job applications** - Proof of consistent shipping
+
+## Vision
+
+Free forever. Built for makers who ship.
+
+Your portfolio should reflect your work, not your ability to maintain a portfolio.
+
+---
+
+**Status:** In development. First version coming soon.
