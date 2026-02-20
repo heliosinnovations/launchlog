@@ -14,6 +14,8 @@ Connect your GitHub. LaunchLog auto-generates beautiful showcase pages that upda
 
 - **Auto-sync from GitHub:** README changes, new commits, stars, releases - all reflected instantly
 - **Embeddable widgets:** Drop a script tag in your portfolio. It stays fresh forever.
+- **Matches your site:** Widgets inherit your site's styling - fonts, colors, spacing. Looks native, not embedded.
+- **Smart screenshots:** Auto-captures project screenshots from live URLs or repo images.
 - **Zero maintenance:** Build. Push. Showcase. That's it.
 
 ## How It Works
@@ -25,11 +27,24 @@ Connect your GitHub. LaunchLog auto-generates beautiful showcase pages that upda
 
 ## What Gets Showcased
 
-- Project cards with README excerpts
-- Live activity status ("Updated 2 days ago")
-- GitHub stats (stars, forks, language)
-- Links to repo + live demo (parsed from README)
-- Release history and version info
+- **Project cards** with README excerpts and descriptions
+- **Screenshots** auto-captured from live demos or repo images
+- **Live activity status** ("Updated 2 days ago", "Active development")
+- **GitHub stats** (stars, forks, primary language)
+- **Links** to repo + live demo (parsed from README)
+- **Release history** and version info
+- **Tech stack** extracted from package.json, requirements.txt, go.mod, etc.
+
+## Design Philosophy
+
+**Widgets should feel native, not foreign.**
+
+- Inherit parent site's CSS variables (fonts, colors, spacing)
+- Responsive by default
+- No iframe jank
+- Minimal footprint (~5KB gzipped)
+- Works with dark mode
+- Accessible (WCAG AA compliant)
 
 ## Use Cases
 
