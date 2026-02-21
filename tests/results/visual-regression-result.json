@@ -1,0 +1,12 @@
+{
+  "timestamp": "2026-02-21T07:40:29.759Z",
+  "test": "Footer Visual Regression",
+  "designReference": "/workspace/launchlog/tests/screenshots/footer-design-reference.png",
+  "deployedImplementation": "/workspace/launchlog/tests/screenshots/footer-deployed-desktop-large.png",
+  "diffImage": "/workspace/launchlog/tests/screenshots/footer-visual-diff.png",
+  "matchPercent": 1.93,
+  "diffPixels": 237261,
+  "totalPixels": 241920,
+  "passed": false,
+  "threshold": 98
+}

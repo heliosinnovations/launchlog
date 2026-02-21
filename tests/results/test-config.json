@@ -1,0 +1,62 @@
+{
+  "deployedUrl": "https://launchlog-lac.vercel.app",
+  "designReference": "file:///workspace/launchlog/drafts/landing-variation-1.html",
+  "breakpoints": [
+    {
+      "name": "mobile-small",
+      "width": 375,
+      "height": 667
+    },
+    {
+      "name": "tablet",
+      "width": 768,
+      "height": 1024
+    },
+    {
+      "name": "desktop-medium",
+      "width": 1024,
+      "height": 768
+    },
+    {
+      "name": "desktop-large",
+      "width": 1440,
+      "height": 900
+    }
+  ],
+  "browsers": [
+    "chromium",
+    "firefox",
+    "webkit"
+  ],
+  "accessibility": {
+    "standard": "WCAG AA",
+    "checks": [
+      "semantic-footer-element",
+      "aria-labels",
+      "external-links-security",
+      "keyboard-navigation",
+      "color-contrast"
+    ]
+  },
+  "content": {
+    "logo": "LaunchLog with rocket icon",
+    "tagline": "Track your open source impact",
+    "copyright": "© 2026 LaunchLog. All rights reserved.",
+    "navigationLinks": [
+      "Features",
+      "Pricing",
+      "Docs",
+      "Blog",
+      "GitHub"
+    ],
+    "socialLinks": [
+      "Twitter",
+      "GitHub",
+      "Discord"
+    ],
+    "legalLinks": [
+      "Privacy Policy",
+      "Terms of Service"
+    ]
+  }
+}
