@@ -41,33 +41,57 @@ const LANGUAGE_COLORS: Record<string, string> = {
   Scala: "#c22d40",
 }
 
-async function getUserByUsername(username: string) {
-  const supabase = getSupabaseAdmin()
-  // First try to find user by GitHub username in accounts table
-  const { data: account } = await supabase
-    .from("accounts")
-    .select("userId")
-    .eq("provider", "github")
-    .ilike("providerAccountId", username)
-    .single()
+interface SupabaseUser {
+  id: string
+  email: string | null
+  raw_user_meta_data: {
+    avatar_url?: string
+    full_name?: string
+    name?: string
+    user_name?: string
+    preferred_username?: string
+  }
+}
 
-  if (account) {
-    const { data: user } = await supabase
-      .from("users")
-      .select("*")
-      .eq("id", account.userId)
-      .single()
-    return user
+async function getUserByUsername(
+  username: string
+): Promise<SupabaseUser | null> {
+  const supabase = getSupabaseAdmin()
+
+  // Query auth.users through Supabase admin API
+  // Look for users where the GitHub username matches
+  const { data: users, error } = await supabase.auth.admin.listUsers()
+
+  if (error || !users) {
+    console.error("Error listing users:", error)
+    return null
   }
 
-  // Fallback: try to find user by name
-  const { data: user } = await supabase
-    .from("users")
-    .select("*")
-    .ilike("name", username)
-    .single()
+  // Find user by GitHub username in their metadata or identities
+  const user = users.users.find((u) => {
+    const githubIdentity = u.identities?.find(
+      (identity) => identity.provider === "github"
+    )
+    const githubUsername =
+      githubIdentity?.identity_data?.user_name ||
+      u.user_metadata?.user_name ||
+      u.user_metadata?.preferred_username
 
-  return user
+    return (
+      githubUsername?.toLowerCase() === username.toLowerCase() ||
+      u.user_metadata?.name?.toLowerCase() === username.toLowerCase()
+    )
+  })
+
+  if (!user) {
+    return null
+  }
+
+  return {
+    id: user.id,
+    email: user.email || null,
+    raw_user_meta_data: user.user_metadata || {},
+  }
 }
 
 async function getUserRepos(userId: string): Promise<UserRepo[]> {
@@ -119,15 +143,22 @@ export default async function ProfilePage({ params }: PageProps) {
 
   const repos = await getUserRepos(user.id)
 
+  const displayName =
+    user.raw_user_meta_data?.full_name ||
+    user.raw_user_meta_data?.name ||
+    user.raw_user_meta_data?.user_name ||
+    username
+  const avatarUrl = user.raw_user_meta_data?.avatar_url
+
   return (
     <div className="min-h-screen bg-[var(--color-bg)] py-16 px-4">
       <div className="max-w-4xl mx-auto">
         {/* Profile header */}
         <div className="text-center mb-12">
-          {user.image ? (
+          {avatarUrl ? (
             <Image
-              src={user.image}
-              alt={user.name || username}
+              src={avatarUrl}
+              alt={displayName}
               width={96}
               height={96}
               className="w-24 h-24 rounded-full mx-auto mb-6 border-4 border-[var(--color-border)]"
@@ -135,7 +166,7 @@ export default async function ProfilePage({ params }: PageProps) {
           ) : (
             <div className="w-24 h-24 rounded-full bg-gradient-to-br from-indigo-500 via-purple-500 to-fuchsia-500 mx-auto mb-6 flex items-center justify-center">
               <span className="text-4xl text-white font-bold">
-                {(user.name || username).charAt(0).toUpperCase()}
+                {displayName.charAt(0).toUpperCase()}
               </span>
             </div>
           )}
@@ -143,7 +174,7 @@ export default async function ProfilePage({ params }: PageProps) {
             className="text-3xl md:text-4xl font-bold mb-2"
             style={{ fontFamily: "var(--font-space-grotesk)" }}
           >
-            {user.name || username}
+            {displayName}
           </h1>
           {user.email && (
             <p className="text-[var(--color-text-secondary)]">{user.email}</p>

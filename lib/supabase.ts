@@ -1,10 +1,15 @@
 import { createClient, SupabaseClient } from "@supabase/supabase-js"
+import { createBrowserClient } from "@supabase/ssr"
 
-let supabaseInstance: SupabaseClient | null = null
+let supabaseAdminInstance: SupabaseClient | null = null
 
+/**
+ * Creates a Supabase admin client with service role key.
+ * Use this for server-side operations that need full access (not user-scoped).
+ */
 export function getSupabaseAdmin(): SupabaseClient {
-  if (supabaseInstance) {
-    return supabaseInstance
+  if (supabaseAdminInstance) {
+    return supabaseAdminInstance
   }
 
   const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
@@ -14,6 +19,17 @@ export function getSupabaseAdmin(): SupabaseClient {
     throw new Error("Missing Supabase environment variables")
   }
 
-  supabaseInstance = createClient(supabaseUrl, supabaseKey)
-  return supabaseInstance
+  supabaseAdminInstance = createClient(supabaseUrl, supabaseKey)
+  return supabaseAdminInstance
+}
+
+/**
+ * Creates a Supabase browser client for client-side auth operations.
+ * Uses the anon key which respects RLS policies.
+ */
+export function createSupabaseBrowserClient() {
+  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!
+  const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+
+  return createBrowserClient(supabaseUrl, supabaseAnonKey)
 }

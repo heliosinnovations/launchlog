@@ -1,4 +1,4 @@
-import { auth } from "@/auth"
+import { createSupabaseServerClient } from "@/lib/supabase/server"
 import { getSupabaseAdmin } from "@/lib/supabase"
 import { NextResponse } from "next/server"
 
@@ -14,13 +14,13 @@ interface RepoSelection {
 
 export async function POST(request: Request) {
   try {
-    const session = await auth()
+    const supabase = await createSupabaseServerClient()
+    const {
+      data: { user },
+    } = await supabase.auth.getUser()
 
-    if (!session?.user?.id) {
-      return NextResponse.json(
-        { error: "Unauthorized" },
-        { status: 401 }
-      )
+    if (!user) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
     }
 
     const body = await request.json()
@@ -33,13 +33,13 @@ export async function POST(request: Request) {
       )
     }
 
-    const supabase = getSupabaseAdmin()
+    const supabaseAdmin = getSupabaseAdmin()
 
     // Delete existing user repos (replace with new selection)
-    const { error: deleteError } = await supabase
+    const { error: deleteError } = await supabaseAdmin
       .from("user_repos")
       .delete()
-      .eq("user_id", session.user.id)
+      .eq("user_id", user.id)
 
     if (deleteError) {
       console.error("Error deleting existing repos:", deleteError)
@@ -48,7 +48,7 @@ export async function POST(request: Request) {
 
     // Insert new selections
     const repoRecords = repos.map((repo, index) => ({
-      user_id: session.user.id,
+      user_id: user.id,
       repo_id: repo.id,
       repo_name: repo.name,
       repo_full_name: repo.fullName,
@@ -60,7 +60,7 @@ export async function POST(request: Request) {
       created_at: new Date().toISOString(),
     }))
 
-    const { error: insertError } = await supabase
+    const { error: insertError } = await supabaseAdmin
       .from("user_repos")
       .insert(repoRecords)
 
@@ -72,41 +72,19 @@ export async function POST(request: Request) {
       )
     }
 
-    // Get the user's GitHub username for redirect
-    const { data: account } = await supabase
-      .from("accounts")
-      .select("providerAccountId")
-      .eq("userId", session.user.id)
-      .eq("provider", "github")
-      .single()
+    // Get the GitHub username from the user's identity
+    const githubIdentity = user.identities?.find(
+      (identity) => identity.provider === "github"
+    )
 
-    // Fetch GitHub username from the user's profile
-    let username = session.user.name?.replace(/\s+/g, "") || "user"
+    let username = user.user_metadata?.user_name ||
+      user.user_metadata?.preferred_username ||
+      user.email?.split("@")[0] ||
+      "user"
 
-    if (account?.providerAccountId) {
-      // Get actual GitHub username
-      const { data: user } = await supabase
-        .from("users")
-        .select("name")
-        .eq("id", session.user.id)
-        .single()
-
-      if (user?.name) {
-        // Try to get GitHub username from account
-        const accessToken = await getAccessToken(session.user.id)
-        if (accessToken) {
-          const ghUser = await fetch("https://api.github.com/user", {
-            headers: {
-              Authorization: `Bearer ${accessToken}`,
-              "User-Agent": "LaunchLog",
-            },
-          })
-          if (ghUser.ok) {
-            const userData = await ghUser.json()
-            username = userData.login
-          }
-        }
-      }
+    // Try to get actual GitHub username from the identity
+    if (githubIdentity?.identity_data?.user_name) {
+      username = githubIdentity.identity_data.user_name
     }
 
     return NextResponse.json({
@@ -123,34 +101,22 @@ export async function POST(request: Request) {
   }
 }
 
-async function getAccessToken(userId: string): Promise<string | null> {
-  const supabase = getSupabaseAdmin()
-  const { data } = await supabase
-    .from("accounts")
-    .select("access_token")
-    .eq("userId", userId)
-    .eq("provider", "github")
-    .single()
-
-  return data?.access_token || null
-}
-
 export async function GET() {
   try {
-    const session = await auth()
+    const supabase = await createSupabaseServerClient()
+    const {
+      data: { user },
+    } = await supabase.auth.getUser()
 
-    if (!session?.user?.id) {
-      return NextResponse.json(
-        { error: "Unauthorized" },
-        { status: 401 }
-      )
+    if (!user) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
     }
 
-    const supabase = getSupabaseAdmin()
-    const { data: repos, error } = await supabase
+    const supabaseAdmin = getSupabaseAdmin()
+    const { data: repos, error } = await supabaseAdmin
       .from("user_repos")
       .select("*")
-      .eq("user_id", session.user.id)
+      .eq("user_id", user.id)
       .order("display_order", { ascending: true })
 
     if (error) {

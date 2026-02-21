@@ -1,5 +1,4 @@
-import { auth } from "@/auth"
-import { getSupabaseAdmin } from "@/lib/supabase"
+import { createSupabaseServerClient } from "@/lib/supabase/server"
 import { NextResponse } from "next/server"
 
 interface GitHubRepo {
@@ -21,27 +20,38 @@ interface GitHubRepo {
 
 export async function GET() {
   try {
-    const session = await auth()
+    const supabase = await createSupabaseServerClient()
+    const {
+      data: { user },
+    } = await supabase.auth.getUser()
 
-    if (!session?.user?.id) {
+    if (!user) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
+    }
+
+    // Get the user's GitHub access token from the auth provider
+    // Supabase stores provider tokens in identities
+    const githubIdentity = user.identities?.find(
+      (identity) => identity.provider === "github"
+    )
+
+    if (!githubIdentity) {
       return NextResponse.json(
-        { error: "Unauthorized" },
-        { status: 401 }
+        { error: "GitHub account not linked" },
+        { status: 400 }
       )
     }
 
-    // Get the user's GitHub access token from the accounts table
-    const supabase = getSupabaseAdmin()
-    const { data: account, error: accountError } = await supabase
-      .from("accounts")
-      .select("access_token")
-      .eq("userId", session.user.id)
-      .eq("provider", "github")
-      .single()
+    // Get the access token from the session
+    const {
+      data: { session },
+    } = await supabase.auth.getSession()
 
-    if (accountError || !account?.access_token) {
+    const accessToken = session?.provider_token
+
+    if (!accessToken) {
       return NextResponse.json(
-        { error: "GitHub account not linked" },
+        { error: "GitHub access token not available" },
         { status: 400 }
       )
     }
@@ -56,7 +66,7 @@ export async function GET() {
         `https://api.github.com/user/repos?sort=updated&per_page=${perPage}&page=${page}&type=owner`,
         {
           headers: {
-            Authorization: `Bearer ${account.access_token}`,
+            Authorization: `Bearer ${accessToken}`,
             Accept: "application/vnd.github.v3+json",
             "User-Agent": "LaunchLog",
           },
