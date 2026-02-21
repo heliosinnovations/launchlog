@@ -6,7 +6,10 @@
     "dev": "next dev --turbopack",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "test": "PLAYWRIGHT_BROWSERS_PATH=/tmp/playwright playwright test",
+    "test:ui": "PLAYWRIGHT_BROWSERS_PATH=/tmp/playwright playwright test --ui",
+    "test:report": "PLAYWRIGHT_BROWSERS_PATH=/tmp/playwright playwright show-report"
   },
   "dependencies": {
     "lucide-react": "^0.575.0",
@@ -15,13 +18,17 @@
     "react-dom": "^19.0.0"
   },
   "devDependencies": {
-    "typescript": "^5.7.2",
+    "@axe-core/playwright": "^4.11.1",
+    "@playwright/test": "^1.58.2",
+    "@tailwindcss/postcss": "^4.0.0",
     "@types/node": "^22",
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "eslint": "^9",
     "eslint-config-next": "^15.1.0",
+    "pixelmatch": "^7.1.0",
+    "pngjs": "^7.0.0",
     "tailwindcss": "^4.0.0",
-    "@tailwindcss/postcss": "^4.0.0"
+    "typescript": "^5.7.2"
   }
 }
