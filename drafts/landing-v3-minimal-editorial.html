@@ -1,0 +1,920 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LaunchLog — Your Projects Deserve an Audience</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --color-bg: #FFFDF9;
+            --color-surface: #FFFFFF;
+            --color-text: #1A1A1A;
+            --color-text-secondary: #666666;
+            --color-text-muted: #999999;
+            --color-accent: #D4A574;
+            --color-accent-dark: #B8956A;
+            --color-border: #E8E4DE;
+            --color-highlight: #FFF8E6;
+            --font-display: 'Playfair Display', Georgia, serif;
+            --font-body: 'Inter', -apple-system, sans-serif;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: var(--font-body);
+            background: var(--color-bg);
+            color: var(--color-text);
+            line-height: 1.7;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        /* Navigation - Ultra minimal */
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 32px 64px;
+            max-width: 1440px;
+            margin: 0 auto;
+        }
+
+        @media (max-width: 768px) {
+            nav {
+                padding: 24px 24px;
+            }
+        }
+
+        .logo {
+            font-family: var(--font-display);
+            font-size: 24px;
+            font-weight: 600;
+            letter-spacing: -0.02em;
+            color: var(--color-text);
+            text-decoration: none;
+        }
+
+        .nav-links {
+            display: flex;
+            align-items: center;
+            gap: 40px;
+        }
+
+        .nav-links a {
+            color: var(--color-text-secondary);
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 500;
+            transition: color 0.3s ease;
+            letter-spacing: 0.02em;
+            text-transform: uppercase;
+        }
+
+        .nav-links a:hover {
+            color: var(--color-text);
+        }
+
+        .btn-signin {
+            background: transparent;
+            border: 1.5px solid var(--color-text);
+            color: var(--color-text);
+            padding: 12px 28px;
+            font-size: 13px;
+            font-weight: 600;
+            letter-spacing: 0.05em;
+            text-transform: uppercase;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-signin:hover {
+            background: var(--color-text);
+            color: var(--color-bg);
+        }
+
+        .btn-signin svg {
+            width: 16px;
+            height: 16px;
+        }
+
+        @media (max-width: 768px) {
+            .nav-links {
+                display: none;
+            }
+        }
+
+        /* Hero - Editorial asymmetric */
+        .hero {
+            max-width: 1440px;
+            margin: 0 auto;
+            padding: 80px 64px 120px;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 80px;
+            align-items: center;
+        }
+
+        @media (max-width: 1024px) {
+            .hero {
+                grid-template-columns: 1fr;
+                padding: 40px 24px 80px;
+                gap: 60px;
+            }
+        }
+
+        .hero-content {
+            max-width: 560px;
+        }
+
+        .hero-tag {
+            display: inline-block;
+            font-size: 12px;
+            font-weight: 600;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            color: var(--color-accent-dark);
+            margin-bottom: 24px;
+            padding: 8px 16px;
+            background: var(--color-highlight);
+            border-radius: 4px;
+        }
+
+        .hero-title {
+            font-family: var(--font-display);
+            font-size: clamp(40px, 5vw, 64px);
+            font-weight: 500;
+            line-height: 1.15;
+            letter-spacing: -0.02em;
+            margin-bottom: 32px;
+            color: var(--color-text);
+        }
+
+        .hero-title em {
+            font-style: italic;
+            color: var(--color-accent-dark);
+        }
+
+        .hero-description {
+            font-size: 18px;
+            color: var(--color-text-secondary);
+            margin-bottom: 48px;
+            max-width: 480px;
+            line-height: 1.8;
+        }
+
+        .hero-cta {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .btn-primary {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            background: var(--color-text);
+            color: var(--color-bg);
+            padding: 18px 36px;
+            font-size: 14px;
+            font-weight: 600;
+            letter-spacing: 0.03em;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            width: fit-content;
+        }
+
+        .btn-primary:hover {
+            background: var(--color-accent-dark);
+            transform: translateY(-2px);
+        }
+
+        .btn-primary svg {
+            width: 20px;
+            height: 20px;
+        }
+
+        .hero-note {
+            font-size: 13px;
+            color: var(--color-text-muted);
+        }
+
+        /* Hero visual - Editorial mockup */
+        .hero-visual {
+            position: relative;
+        }
+
+        .profile-preview {
+            background: var(--color-surface);
+            border: 1px solid var(--color-border);
+            padding: 40px;
+            box-shadow: 0 24px 80px rgba(0, 0, 0, 0.08);
+            position: relative;
+        }
+
+        .profile-preview::before {
+            content: '';
+            position: absolute;
+            top: -20px;
+            right: -20px;
+            width: 100%;
+            height: 100%;
+            border: 1px solid var(--color-border);
+            z-index: -1;
+        }
+
+        .profile-header {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            margin-bottom: 32px;
+            padding-bottom: 24px;
+            border-bottom: 1px solid var(--color-border);
+        }
+
+        .profile-avatar {
+            width: 64px;
+            height: 64px;
+            background: linear-gradient(135deg, var(--color-accent), var(--color-accent-dark));
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: var(--font-display);
+            font-size: 24px;
+            color: white;
+            font-weight: 500;
+        }
+
+        .profile-info h3 {
+            font-family: var(--font-display);
+            font-size: 20px;
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+
+        .profile-info p {
+            font-size: 14px;
+            color: var(--color-text-secondary);
+        }
+
+        .profile-projects {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .project-card {
+            padding: 20px;
+            border: 1px solid var(--color-border);
+            transition: all 0.3s ease;
+        }
+
+        .project-card:hover {
+            border-color: var(--color-accent);
+            background: var(--color-highlight);
+        }
+
+        .project-card h4 {
+            font-size: 15px;
+            font-weight: 600;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .project-card h4 span {
+            font-size: 12px;
+            color: var(--color-accent-dark);
+            font-weight: 500;
+        }
+
+        .project-card p {
+            font-size: 13px;
+            color: var(--color-text-secondary);
+            margin-bottom: 12px;
+        }
+
+        .project-mentions {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .mention-badge {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            font-size: 11px;
+            font-weight: 600;
+            padding: 4px 8px;
+            border-radius: 4px;
+            background: var(--color-bg);
+        }
+
+        .mention-badge.hn {
+            color: #FF6600;
+        }
+
+        .mention-badge.ph {
+            color: #DA552F;
+        }
+
+        .mention-badge.reddit {
+            color: #FF4500;
+        }
+
+        /* Features - Editorial grid */
+        .features {
+            background: var(--color-surface);
+            border-top: 1px solid var(--color-border);
+            border-bottom: 1px solid var(--color-border);
+            padding: 120px 64px;
+        }
+
+        @media (max-width: 768px) {
+            .features {
+                padding: 80px 24px;
+            }
+        }
+
+        .features-container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .section-header {
+            text-align: center;
+            margin-bottom: 80px;
+        }
+
+        .section-tag {
+            font-size: 12px;
+            font-weight: 600;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            color: var(--color-accent-dark);
+            margin-bottom: 16px;
+        }
+
+        .section-title {
+            font-family: var(--font-display);
+            font-size: clamp(32px, 4vw, 48px);
+            font-weight: 500;
+            letter-spacing: -0.02em;
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 40px;
+        }
+
+        @media (max-width: 768px) {
+            .features-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .feature-item {
+            padding: 40px;
+            border: 1px solid var(--color-border);
+            transition: all 0.3s ease;
+        }
+
+        .feature-item:hover {
+            border-color: var(--color-accent);
+            background: var(--color-highlight);
+        }
+
+        .feature-number {
+            font-family: var(--font-display);
+            font-size: 48px;
+            color: var(--color-border);
+            font-weight: 400;
+            margin-bottom: 24px;
+        }
+
+        .feature-item h3 {
+            font-family: var(--font-display);
+            font-size: 24px;
+            font-weight: 500;
+            margin-bottom: 16px;
+        }
+
+        .feature-item p {
+            font-size: 15px;
+            color: var(--color-text-secondary);
+            line-height: 1.7;
+        }
+
+        /* How it works - Timeline */
+        .how-it-works {
+            padding: 120px 64px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        @media (max-width: 768px) {
+            .how-it-works {
+                padding: 80px 24px;
+            }
+        }
+
+        .steps {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 48px;
+            margin-top: 80px;
+        }
+
+        @media (max-width: 768px) {
+            .steps {
+                grid-template-columns: 1fr;
+                gap: 60px;
+            }
+        }
+
+        .step {
+            position: relative;
+        }
+
+        .step::after {
+            content: '';
+            position: absolute;
+            top: 40px;
+            right: -24px;
+            width: calc(100% - 80px);
+            height: 1px;
+            background: var(--color-border);
+        }
+
+        .step:last-child::after {
+            display: none;
+        }
+
+        @media (max-width: 768px) {
+            .step::after {
+                display: none;
+            }
+        }
+
+        .step-number {
+            width: 80px;
+            height: 80px;
+            border: 1px solid var(--color-border);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: var(--font-display);
+            font-size: 32px;
+            font-weight: 400;
+            margin-bottom: 32px;
+        }
+
+        .step h3 {
+            font-family: var(--font-display);
+            font-size: 22px;
+            font-weight: 500;
+            margin-bottom: 12px;
+        }
+
+        .step p {
+            font-size: 15px;
+            color: var(--color-text-secondary);
+            line-height: 1.7;
+        }
+
+        /* Profile Preview Section */
+        .profile-section {
+            background: var(--color-text);
+            color: var(--color-bg);
+            padding: 120px 64px;
+        }
+
+        @media (max-width: 768px) {
+            .profile-section {
+                padding: 80px 24px;
+            }
+        }
+
+        .profile-section-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: 1fr 1.2fr;
+            gap: 80px;
+            align-items: center;
+        }
+
+        @media (max-width: 1024px) {
+            .profile-section-container {
+                grid-template-columns: 1fr;
+                gap: 60px;
+            }
+        }
+
+        .profile-section-content .section-tag {
+            color: var(--color-accent);
+        }
+
+        .profile-section-content .section-title {
+            color: var(--color-bg);
+        }
+
+        .profile-section-content p {
+            font-size: 16px;
+            color: rgba(255, 255, 255, 0.7);
+            margin-top: 24px;
+            line-height: 1.8;
+        }
+
+        .profile-example {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 32px;
+        }
+
+        .profile-example-header {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            margin-bottom: 24px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .profile-example-avatar {
+            width: 56px;
+            height: 56px;
+            background: linear-gradient(135deg, var(--color-accent), var(--color-accent-dark));
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: var(--font-display);
+            font-size: 20px;
+            color: white;
+        }
+
+        .profile-example-header h4 {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+
+        .profile-example-header span {
+            font-size: 13px;
+            color: rgba(255, 255, 255, 0.5);
+        }
+
+        .profile-example-stats {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+
+        .stat-item {
+            text-align: center;
+            padding: 16px;
+            background: rgba(255, 255, 255, 0.03);
+        }
+
+        .stat-item .number {
+            font-family: var(--font-display);
+            font-size: 28px;
+            font-weight: 500;
+            margin-bottom: 4px;
+        }
+
+        .stat-item .label {
+            font-size: 12px;
+            color: rgba(255, 255, 255, 0.5);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .profile-example-projects h5 {
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            color: rgba(255, 255, 255, 0.5);
+            margin-bottom: 16px;
+        }
+
+        .example-project {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 16px;
+            background: rgba(255, 255, 255, 0.03);
+            margin-bottom: 8px;
+        }
+
+        .example-project span:first-child {
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        .example-project span:last-child {
+            font-size: 12px;
+            color: var(--color-accent);
+        }
+
+        /* Footer */
+        footer {
+            padding: 64px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        @media (max-width: 768px) {
+            footer {
+                padding: 48px 24px;
+            }
+        }
+
+        .footer-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-top: 32px;
+            border-top: 1px solid var(--color-border);
+        }
+
+        @media (max-width: 768px) {
+            .footer-content {
+                flex-direction: column;
+                gap: 24px;
+                text-align: center;
+            }
+        }
+
+        .footer-logo {
+            font-family: var(--font-display);
+            font-size: 20px;
+            font-weight: 600;
+            color: var(--color-text);
+            text-decoration: none;
+        }
+
+        .footer-links {
+            display: flex;
+            gap: 32px;
+        }
+
+        .footer-links a {
+            color: var(--color-text-secondary);
+            text-decoration: none;
+            font-size: 13px;
+            transition: color 0.3s ease;
+        }
+
+        .footer-links a:hover {
+            color: var(--color-text);
+        }
+
+        .footer-social {
+            display: flex;
+            gap: 16px;
+        }
+
+        .footer-social a {
+            color: var(--color-text-secondary);
+            transition: color 0.3s ease;
+        }
+
+        .footer-social a:hover {
+            color: var(--color-text);
+        }
+
+        .footer-social svg {
+            width: 20px;
+            height: 20px;
+        }
+
+        /* Mobile nav toggle */
+        .mobile-menu-toggle {
+            display: none;
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 8px;
+        }
+
+        @media (max-width: 768px) {
+            .mobile-menu-toggle {
+                display: block;
+            }
+        }
+
+        .mobile-menu-toggle svg {
+            width: 24px;
+            height: 24px;
+            color: var(--color-text);
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav>
+        <a href="/" class="logo">LaunchLog</a>
+        <div class="nav-links">
+            <a href="#features">Features</a>
+            <a href="#how-it-works">How it works</a>
+            <a href="#" class="btn-signin">
+                <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/></svg>
+                Sign in
+            </a>
+        </div>
+        <button class="mobile-menu-toggle">
+            <svg fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/></svg>
+        </button>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="hero-content">
+            <span class="hero-tag">For Indie Makers</span>
+            <h1 class="hero-title">Your projects deserve <em>an audience</em></h1>
+            <p class="hero-description">
+                LaunchLog automatically syncs your GitHub repos and tracks mentions across HackerNews, Reddit, Product Hunt, and more. Build your portfolio. Let us handle the rest.
+            </p>
+            <div class="hero-cta">
+                <a href="#" class="btn-primary">
+                    <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/></svg>
+                    Sign in with GitHub
+                </a>
+                <p class="hero-note">Free forever. No credit card required.</p>
+            </div>
+        </div>
+        <div class="hero-visual">
+            <div class="profile-preview">
+                <div class="profile-header">
+                    <div class="profile-avatar">A</div>
+                    <div class="profile-info">
+                        <h3>Alex Chen</h3>
+                        <p>@alexchen · Building indie tools</p>
+                    </div>
+                </div>
+                <div class="profile-projects">
+                    <div class="project-card">
+                        <h4>notionbackup <span>TypeScript</span></h4>
+                        <p>Automatic backups for your Notion workspace to GitHub</p>
+                        <div class="project-mentions">
+                            <span class="mention-badge hn">HN 234 pts</span>
+                            <span class="mention-badge ph">PH #4</span>
+                        </div>
+                    </div>
+                    <div class="project-card">
+                        <h4>clippy-ai <span>Python</span></h4>
+                        <p>AI-powered clipboard manager for developers</p>
+                        <div class="project-mentions">
+                            <span class="mention-badge reddit">r/programming 1.2k</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section class="features" id="features">
+        <div class="features-container">
+            <div class="section-header">
+                <p class="section-tag">Features</p>
+                <h2 class="section-title">Everything synced, nothing manual</h2>
+            </div>
+            <div class="features-grid">
+                <div class="feature-item">
+                    <span class="feature-number">01</span>
+                    <h3>GitHub Auto-Sync</h3>
+                    <p>Connect once, update forever. Your repos, READMEs, stars, and releases sync automatically. No manual updates needed.</p>
+                </div>
+                <div class="feature-item">
+                    <span class="feature-number">02</span>
+                    <h3>Mention Tracking</h3>
+                    <p>We crawl HackerNews, Reddit, Product Hunt, Twitter, and blogs to find every mention of your projects. Like citations for code.</p>
+                </div>
+                <div class="feature-item">
+                    <span class="feature-number">03</span>
+                    <h3>Embeddable Widgets</h3>
+                    <p>Drop a script tag anywhere. The widget inherits your site's styles—fonts, colors, spacing. Looks native, not embedded.</p>
+                </div>
+                <div class="feature-item">
+                    <span class="feature-number">04</span>
+                    <h3>Beautiful Profiles</h3>
+                    <p>Your work deserves better than a GitHub profile. Get a polished showcase page at launchlog.com/yourname.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- How It Works -->
+    <section class="how-it-works" id="how-it-works">
+        <div class="section-header">
+            <p class="section-tag">Getting Started</p>
+            <h2 class="section-title">Three steps to your portfolio</h2>
+        </div>
+        <div class="steps">
+            <div class="step">
+                <div class="step-number">1</div>
+                <h3>Sign in with GitHub</h3>
+                <p>One-click authentication. We only request read access to your public repos.</p>
+            </div>
+            <div class="step">
+                <div class="step-number">2</div>
+                <h3>Select your projects</h3>
+                <p>Choose which repos to showcase. We handle descriptions, screenshots, and stats.</p>
+            </div>
+            <div class="step">
+                <div class="step-number">3</div>
+                <h3>Share your profile</h3>
+                <p>Get your unique URL. Embed widgets. Let your work speak for itself.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Profile Preview Section -->
+    <section class="profile-section">
+        <div class="profile-section-container">
+            <div class="profile-section-content">
+                <p class="section-tag">Social Proof</p>
+                <h2 class="section-title">Show impact, not just code</h2>
+                <p>Other tools show stars and forks. LaunchLog shows real-world impact—the discussions, the upvotes, the mentions that prove people actually care about what you built.</p>
+            </div>
+            <div class="profile-example">
+                <div class="profile-example-header">
+                    <div class="profile-example-avatar">M</div>
+                    <div>
+                        <h4>Maya Rodriguez</h4>
+                        <span>@mayabuilds · Full-stack developer</span>
+                    </div>
+                </div>
+                <div class="profile-example-stats">
+                    <div class="stat-item">
+                        <div class="number">12</div>
+                        <div class="label">Projects</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="number">847</div>
+                        <div class="label">Mentions</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="number">23K</div>
+                        <div class="label">Total Reach</div>
+                    </div>
+                </div>
+                <div class="profile-example-projects">
+                    <h5>Featured Projects</h5>
+                    <div class="example-project">
+                        <span>formbuilder-react</span>
+                        <span>HN #1 · 432 pts</span>
+                    </div>
+                    <div class="example-project">
+                        <span>api-rate-limiter</span>
+                        <span>Reddit · 2.1k upvotes</span>
+                    </div>
+                    <div class="example-project">
+                        <span>devtools-extension</span>
+                        <span>PH #3 · 287 votes</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <div class="footer-content">
+            <a href="/" class="footer-logo">LaunchLog</a>
+            <div class="footer-links">
+                <a href="#">About</a>
+                <a href="#">Privacy</a>
+                <a href="#">Terms</a>
+            </div>
+            <div class="footer-social">
+                <a href="#" aria-label="GitHub">
+                    <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/></svg>
+                </a>
+                <a href="#" aria-label="Twitter">
+                    <svg viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+                </a>
+            </div>
+        </div>
+    </footer>
+</body>
+</html>
