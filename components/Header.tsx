@@ -57,15 +57,15 @@ export default function Header() {
             Pricing
           </Link>
           <Link
-            href="/login"
+            href="/signin"
             className="text-[var(--color-text-secondary)] text-sm font-medium hover:text-[var(--color-text)] transition-colors"
           >
-            Login
+            Sign In
           </Link>
           <Link
-            href="/auth/github"
+            href="/signin"
             className="inline-flex items-center gap-2 bg-gradient-to-r from-indigo-500 via-purple-500 to-fuchsia-500 text-white px-5 py-2.5 rounded-lg text-sm font-semibold transition-all duration-300 hover:-translate-y-0.5 shadow-[0_4px_16px_rgba(99,102,241,0.3)] hover:shadow-[0_6px_24px_rgba(99,102,241,0.4)] focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
-            aria-label="Sign in with GitHub"
+            aria-label="Get started with LaunchLog"
           >
             <Github className="w-4 h-4" aria-hidden="true" />
             Get Started Free
@@ -120,17 +120,17 @@ export default function Header() {
             Pricing
           </Link>
           <Link
-            href="/login"
+            href="/signin"
             className="block text-[var(--color-text-secondary)] text-base font-medium hover:text-[var(--color-text)] transition-colors py-2"
             onClick={closeMobileMenu}
           >
-            Login
+            Sign In
           </Link>
           <Link
-            href="/auth/github"
+            href="/signin"
             className="flex items-center justify-center gap-2 bg-gradient-to-r from-indigo-500 via-purple-500 to-fuchsia-500 text-white px-5 py-3 rounded-lg text-base font-semibold transition-all duration-300 shadow-[0_4px_16px_rgba(99,102,241,0.3)] focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 mt-4"
             onClick={closeMobileMenu}
-            aria-label="Sign in with GitHub"
+            aria-label="Get started with LaunchLog"
           >
             <Github className="w-5 h-5" aria-hidden="true" />
             Get Started Free
