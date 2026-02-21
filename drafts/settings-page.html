@@ -1,0 +1,807 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LaunchLog Settings</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --color-bg: #0F0F14;
+            --color-surface: #1A1A24;
+            --color-surface-elevated: #24243A;
+            --color-text: #FFFFFF;
+            --color-text-secondary: #A0A0B8;
+            --color-border: #2E2E3A;
+            --gradient-primary: linear-gradient(135deg, #6366F1 0%, #8B5CF6 50%, #A855F7 100%);
+            --color-primary: #6366F1;
+            --color-success: #22C55E;
+            --color-error: #EF4444;
+            --color-warning: #F59E0B;
+            --radius-sm: 8px;
+            --radius-md: 12px;
+            --radius-lg: 16px;
+            --radius-xl: 24px;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--color-bg);
+            color: var(--color-text);
+            line-height: 1.6;
+            min-height: 100vh;
+        }
+
+        /* Layout */
+        .layout {
+            display: grid;
+            grid-template-columns: 260px 1fr;
+            min-height: 100vh;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            background: var(--color-surface);
+            border-right: 1px solid var(--color-border);
+            padding: 24px;
+        }
+
+        .logo {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 20px;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 40px;
+        }
+
+        .logo-icon {
+            width: 32px;
+            height: 32px;
+            background: var(--gradient-primary);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .logo-icon svg {
+            width: 18px;
+            height: 18px;
+            color: white;
+        }
+
+        .nav-section {
+            margin-bottom: 32px;
+        }
+
+        .nav-section-title {
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--color-text-secondary);
+            margin-bottom: 12px;
+        }
+
+        .nav-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 14px;
+            border-radius: var(--radius-md);
+            color: var(--color-text-secondary);
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 500;
+            transition: all 0.2s;
+            margin-bottom: 4px;
+        }
+
+        .nav-item:hover {
+            background: var(--color-surface-elevated);
+            color: var(--color-text);
+        }
+
+        .nav-item.active {
+            background: rgba(99, 102, 241, 0.15);
+            color: var(--color-primary);
+        }
+
+        .nav-item svg {
+            width: 20px;
+            height: 20px;
+        }
+
+        /* Main Content */
+        .main {
+            padding: 40px 48px;
+            max-width: 900px;
+        }
+
+        .page-header {
+            margin-bottom: 40px;
+        }
+
+        .page-header h1 {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 28px;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+
+        .page-header p {
+            color: var(--color-text-secondary);
+        }
+
+        /* Settings Sections */
+        .settings-section {
+            background: var(--color-surface);
+            border: 1px solid var(--color-border);
+            border-radius: var(--radius-lg);
+            margin-bottom: 24px;
+            overflow: hidden;
+        }
+
+        .section-header {
+            padding: 20px 24px;
+            border-bottom: 1px solid var(--color-border);
+        }
+
+        .section-title {
+            font-weight: 600;
+            font-size: 16px;
+            margin-bottom: 4px;
+        }
+
+        .section-description {
+            font-size: 14px;
+            color: var(--color-text-secondary);
+        }
+
+        .section-content {
+            padding: 24px;
+        }
+
+        /* Form Elements */
+        .form-group {
+            margin-bottom: 24px;
+        }
+
+        .form-group:last-child {
+            margin-bottom: 0;
+        }
+
+        .form-label {
+            display: block;
+            font-size: 14px;
+            font-weight: 500;
+            margin-bottom: 8px;
+        }
+
+        .form-hint {
+            font-size: 13px;
+            color: var(--color-text-secondary);
+            margin-top: 6px;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 12px 16px;
+            background: var(--color-bg);
+            border: 1px solid var(--color-border);
+            border-radius: var(--radius-md);
+            color: var(--color-text);
+            font-family: inherit;
+            font-size: 14px;
+            transition: all 0.2s;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: var(--color-primary);
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+        }
+
+        .form-input.mono {
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        /* Toggle Switch */
+        .toggle-group {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 16px 0;
+            border-bottom: 1px solid var(--color-border);
+        }
+
+        .toggle-group:last-child {
+            border-bottom: none;
+        }
+
+        .toggle-info h4 {
+            font-size: 14px;
+            font-weight: 500;
+            margin-bottom: 4px;
+        }
+
+        .toggle-info p {
+            font-size: 13px;
+            color: var(--color-text-secondary);
+        }
+
+        .toggle {
+            width: 48px;
+            height: 28px;
+            background: var(--color-surface-elevated);
+            border-radius: 14px;
+            cursor: pointer;
+            position: relative;
+            transition: all 0.2s;
+        }
+
+        .toggle.active {
+            background: var(--color-primary);
+        }
+
+        .toggle::after {
+            content: '';
+            position: absolute;
+            top: 4px;
+            left: 4px;
+            width: 20px;
+            height: 20px;
+            background: white;
+            border-radius: 50%;
+            transition: all 0.2s;
+        }
+
+        .toggle.active::after {
+            left: 24px;
+        }
+
+        /* Buttons */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 20px;
+            border-radius: var(--radius-md);
+            font-family: inherit;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+            border: none;
+        }
+
+        .btn svg {
+            width: 16px;
+            height: 16px;
+        }
+
+        .btn-primary {
+            background: var(--gradient-primary);
+            color: white;
+            box-shadow: 0 4px 12px rgba(99, 102, 241, 0.25);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 6px 16px rgba(99, 102, 241, 0.35);
+        }
+
+        .btn-secondary {
+            background: var(--color-surface-elevated);
+            color: var(--color-text);
+            border: 1px solid var(--color-border);
+        }
+
+        .btn-secondary:hover {
+            background: var(--color-surface);
+            border-color: var(--color-text-secondary);
+        }
+
+        .btn-danger {
+            background: rgba(239, 68, 68, 0.1);
+            color: var(--color-error);
+            border: 1px solid rgba(239, 68, 68, 0.2);
+        }
+
+        .btn-danger:hover {
+            background: rgba(239, 68, 68, 0.2);
+        }
+
+        /* Repo Management */
+        .repo-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .repo-item {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            padding: 16px;
+            background: var(--color-bg);
+            border: 1px solid var(--color-border);
+            border-radius: var(--radius-md);
+            transition: all 0.2s;
+        }
+
+        .repo-item:hover {
+            border-color: var(--color-text-secondary);
+        }
+
+        .repo-icon {
+            width: 40px;
+            height: 40px;
+            background: var(--color-surface-elevated);
+            border-radius: var(--radius-sm);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+        }
+
+        .repo-details {
+            flex: 1;
+        }
+
+        .repo-name {
+            font-weight: 600;
+            font-size: 14px;
+            margin-bottom: 2px;
+        }
+
+        .repo-meta {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 12px;
+            color: var(--color-text-secondary);
+        }
+
+        .repo-meta-item {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .repo-actions {
+            display: flex;
+            gap: 8px;
+        }
+
+        .icon-btn {
+            width: 36px;
+            height: 36px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: transparent;
+            border: 1px solid var(--color-border);
+            border-radius: var(--radius-sm);
+            color: var(--color-text-secondary);
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .icon-btn:hover {
+            background: var(--color-surface-elevated);
+            color: var(--color-text);
+        }
+
+        .icon-btn.danger:hover {
+            background: rgba(239, 68, 68, 0.1);
+            color: var(--color-error);
+            border-color: rgba(239, 68, 68, 0.3);
+        }
+
+        .icon-btn svg {
+            width: 16px;
+            height: 16px;
+        }
+
+        /* Code/Embed Section */
+        .code-section {
+            background: var(--color-bg);
+            border: 1px solid var(--color-border);
+            border-radius: var(--radius-md);
+            overflow: hidden;
+        }
+
+        .code-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 12px 16px;
+            background: var(--color-surface-elevated);
+            border-bottom: 1px solid var(--color-border);
+        }
+
+        .code-title {
+            font-size: 12px;
+            font-weight: 500;
+            color: var(--color-text-secondary);
+        }
+
+        .code-body {
+            padding: 16px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 13px;
+            line-height: 1.6;
+            overflow-x: auto;
+        }
+
+        .code-tag { color: #F472B6; }
+        .code-attr { color: #A78BFA; }
+        .code-value { color: #34D399; }
+
+        /* Alert/Notice */
+        .notice {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            padding: 16px;
+            border-radius: var(--radius-md);
+            margin-bottom: 24px;
+        }
+
+        .notice svg {
+            width: 20px;
+            height: 20px;
+            flex-shrink: 0;
+            margin-top: 2px;
+        }
+
+        .notice-warning {
+            background: rgba(245, 158, 11, 0.1);
+            border: 1px solid rgba(245, 158, 11, 0.2);
+        }
+
+        .notice-warning svg {
+            color: var(--color-warning);
+        }
+
+        .notice-content h4 {
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+
+        .notice-content p {
+            font-size: 13px;
+            color: var(--color-text-secondary);
+        }
+
+        /* Section Footer */
+        .section-footer {
+            display: flex;
+            justify-content: flex-end;
+            gap: 12px;
+            padding: 16px 24px;
+            background: var(--color-bg);
+            border-top: 1px solid var(--color-border);
+        }
+
+        /* Danger Zone */
+        .danger-zone {
+            border-color: rgba(239, 68, 68, 0.3);
+        }
+
+        .danger-zone .section-header {
+            border-bottom-color: rgba(239, 68, 68, 0.2);
+        }
+
+        .danger-zone .section-title {
+            color: var(--color-error);
+        }
+
+        /* Responsive */
+        @media (max-width: 1024px) {
+            .layout { grid-template-columns: 1fr; }
+            .sidebar { display: none; }
+            .main { padding: 24px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="layout">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="logo">
+                <div class="logo-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/>
+                    </svg>
+                </div>
+                LaunchLog
+            </div>
+
+            <nav class="nav-section">
+                <div class="nav-section-title">Overview</div>
+                <a href="#" class="nav-item">
+                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/>
+                    </svg>
+                    Dashboard
+                </a>
+                <a href="#" class="nav-item">
+                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/>
+                    </svg>
+                    Projects
+                </a>
+            </nav>
+
+            <nav class="nav-section">
+                <div class="nav-section-title">Settings</div>
+                <a href="#" class="nav-item active">
+                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/>
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                    </svg>
+                    Settings
+                </a>
+            </nav>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main">
+            <div class="page-header">
+                <h1>Settings</h1>
+                <p>Manage your profile, projects, and embed settings.</p>
+            </div>
+
+            <!-- Profile Settings -->
+            <div class="settings-section">
+                <div class="section-header">
+                    <h2 class="section-title">Profile</h2>
+                    <p class="section-description">Your public LaunchLog profile information.</p>
+                </div>
+                <div class="section-content">
+                    <div class="form-group">
+                        <label class="form-label">Username</label>
+                        <input type="text" class="form-input mono" value="alexkim" disabled style="opacity: 0.7;">
+                        <p class="form-hint">Your username is synced from GitHub and cannot be changed.</p>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Display Name</label>
+                        <input type="text" class="form-input" value="Alex Kim" placeholder="Enter your display name">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Bio</label>
+                        <input type="text" class="form-input" placeholder="Full-stack developer building tools for developers" value="Full-stack developer building tools for developers">
+                        <p class="form-hint">A short bio that appears on your profile. Max 160 characters.</p>
+                    </div>
+                </div>
+                <div class="section-footer">
+                    <button class="btn btn-secondary">Cancel</button>
+                    <button class="btn btn-primary">Save Changes</button>
+                </div>
+            </div>
+
+            <!-- Manage Projects -->
+            <div class="settings-section">
+                <div class="section-header">
+                    <h2 class="section-title">Manage Projects</h2>
+                    <p class="section-description">Add or remove repositories from your LaunchLog profile.</p>
+                </div>
+                <div class="section-content">
+                    <div class="repo-list">
+                        <div class="repo-item">
+                            <div class="repo-icon">⚡</div>
+                            <div class="repo-details">
+                                <div class="repo-name">launchlog</div>
+                                <div class="repo-meta">
+                                    <span class="repo-meta-item">
+                                        <span style="width: 8px; height: 8px; background: #3178c6; border-radius: 50%;"></span>
+                                        TypeScript
+                                    </span>
+                                    <span class="repo-meta-item">★ 45</span>
+                                    <span class="repo-meta-item">8 mentions</span>
+                                </div>
+                            </div>
+                            <div class="repo-actions">
+                                <button class="icon-btn" title="Reorder">
+                                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 8h16M4 16h16"/>
+                                    </svg>
+                                </button>
+                                <button class="icon-btn danger" title="Remove">
+                                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+                                    </svg>
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="repo-item">
+                            <div class="repo-icon">🦀</div>
+                            <div class="repo-details">
+                                <div class="repo-name">cli-utils</div>
+                                <div class="repo-meta">
+                                    <span class="repo-meta-item">
+                                        <span style="width: 8px; height: 8px; background: #dea584; border-radius: 50%;"></span>
+                                        Rust
+                                    </span>
+                                    <span class="repo-meta-item">★ 32</span>
+                                    <span class="repo-meta-item">3 mentions</span>
+                                </div>
+                            </div>
+                            <div class="repo-actions">
+                                <button class="icon-btn" title="Reorder">
+                                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 8h16M4 16h16"/>
+                                    </svg>
+                                </button>
+                                <button class="icon-btn danger" title="Remove">
+                                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+                                    </svg>
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="repo-item">
+                            <div class="repo-icon">⚛️</div>
+                            <div class="repo-details">
+                                <div class="repo-name">react-hooks-lib</div>
+                                <div class="repo-meta">
+                                    <span class="repo-meta-item">
+                                        <span style="width: 8px; height: 8px; background: #f1e05a; border-radius: 50%;"></span>
+                                        JavaScript
+                                    </span>
+                                    <span class="repo-meta-item">★ 12</span>
+                                    <span class="repo-meta-item">1 mention</span>
+                                </div>
+                            </div>
+                            <div class="repo-actions">
+                                <button class="icon-btn" title="Reorder">
+                                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 8h16M4 16h16"/>
+                                    </svg>
+                                </button>
+                                <button class="icon-btn danger" title="Remove">
+                                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+                                    </svg>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="section-footer">
+                    <button class="btn btn-primary">
+                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"/>
+                        </svg>
+                        Add Repository
+                    </button>
+                </div>
+            </div>
+
+            <!-- Embed Settings -->
+            <div class="settings-section">
+                <div class="section-header">
+                    <h2 class="section-title">Embed Code</h2>
+                    <p class="section-description">Add your LaunchLog widget to any website.</p>
+                </div>
+                <div class="section-content">
+                    <div class="code-section">
+                        <div class="code-header">
+                            <span class="code-title">HTML Embed</span>
+                            <button class="btn btn-secondary" style="padding: 6px 12px; font-size: 12px;">
+                                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" style="width: 14px; height: 14px;">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/>
+                                </svg>
+                                Copy
+                            </button>
+                        </div>
+                        <div class="code-body">
+<span class="code-tag">&lt;script</span> <span class="code-attr">src</span>=<span class="code-value">"https://launchlog.com/embed/alexkim.js"</span><span class="code-tag">&gt;&lt;/script&gt;</span>
+<span class="code-tag">&lt;div</span> <span class="code-attr">id</span>=<span class="code-value">"launchlog-widget"</span><span class="code-tag">&gt;&lt;/div&gt;</span>
+                        </div>
+                    </div>
+
+                    <div style="margin-top: 24px;">
+                        <div class="toggle-group">
+                            <div class="toggle-info">
+                                <h4>Auto Theme</h4>
+                                <p>Widget automatically matches your site's color scheme.</p>
+                            </div>
+                            <div class="toggle active"></div>
+                        </div>
+                        <div class="toggle-group">
+                            <div class="toggle-info">
+                                <h4>Show Stars</h4>
+                                <p>Display GitHub star counts on project cards.</p>
+                            </div>
+                            <div class="toggle active"></div>
+                        </div>
+                        <div class="toggle-group">
+                            <div class="toggle-info">
+                                <h4>Show Mentions</h4>
+                                <p>Display mention counts from HackerNews, Reddit, etc.</p>
+                            </div>
+                            <div class="toggle active"></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="section-footer">
+                    <button class="btn btn-secondary">
+                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
+                        </svg>
+                        Regenerate Embed Code
+                    </button>
+                </div>
+            </div>
+
+            <!-- Privacy -->
+            <div class="settings-section">
+                <div class="section-header">
+                    <h2 class="section-title">Privacy</h2>
+                    <p class="section-description">Control your profile visibility and data.</p>
+                </div>
+                <div class="section-content">
+                    <div class="toggle-group">
+                        <div class="toggle-info">
+                            <h4>Public Profile</h4>
+                            <p>Allow anyone to view your LaunchLog profile.</p>
+                        </div>
+                        <div class="toggle active"></div>
+                    </div>
+                    <div class="toggle-group">
+                        <div class="toggle-info">
+                            <h4>Show in Directory</h4>
+                            <p>Include your profile in the LaunchLog public directory.</p>
+                        </div>
+                        <div class="toggle"></div>
+                    </div>
+                    <div class="toggle-group">
+                        <div class="toggle-info">
+                            <h4>Analytics Tracking</h4>
+                            <p>Track profile views and widget impressions.</p>
+                        </div>
+                        <div class="toggle active"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Danger Zone -->
+            <div class="settings-section danger-zone">
+                <div class="section-header">
+                    <h2 class="section-title">Danger Zone</h2>
+                    <p class="section-description">Irreversible actions. Please be careful.</p>
+                </div>
+                <div class="section-content">
+                    <div class="notice notice-warning">
+                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
+                        </svg>
+                        <div class="notice-content">
+                            <h4>Deleting your account is permanent</h4>
+                            <p>All your data, including profile, projects, and analytics will be permanently removed.</p>
+                        </div>
+                    </div>
+                    <button class="btn btn-danger">
+                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+                        </svg>
+                        Delete Account
+                    </button>
+                </div>
+            </div>
+        </main>
+    </div>
+</body>
+</html>
