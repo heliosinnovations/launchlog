@@ -6,7 +6,14 @@
     "dev": "next dev --turbopack",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "test": "node tests/run-all-tests.js",
+    "test:visual": "node tests/visual-regression.test.js",
+    "test:browser": "node tests/cross-browser.test.js",
+    "test:interactive": "node tests/interactive-states.test.js",
+    "test:responsive": "node tests/responsive.test.js",
+    "test:a11y": "node tests/accessibility.test.js",
+    "test:perf": "node tests/performance.test.js"
   },
   "dependencies": {
     "lucide-react": "^0.575.0",
@@ -15,13 +22,18 @@
     "react-dom": "^19.0.0"
   },
   "devDependencies": {
-    "typescript": "^5.7.2",
+    "@axe-core/playwright": "^4.11.1",
+    "@playwright/test": "^1.58.2",
+    "@tailwindcss/postcss": "^4.0.0",
     "@types/node": "^22",
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "eslint": "^9",
     "eslint-config-next": "^15.1.0",
+    "pixelmatch": "^7.1.0",
+    "playwright": "^1.58.2",
+    "pngjs": "^7.0.0",
     "tailwindcss": "^4.0.0",
-    "@tailwindcss/postcss": "^4.0.0"
+    "typescript": "^5.7.2"
   }
 }
