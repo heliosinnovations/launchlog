@@ -72,25 +72,10 @@ export async function POST(request: Request) {
       )
     }
 
-    // Get the GitHub username from the user's identity
-    const githubIdentity = user.identities?.find(
-      (identity) => identity.provider === "github"
-    )
-
-    let username = user.user_metadata?.user_name ||
-      user.user_metadata?.preferred_username ||
-      user.email?.split("@")[0] ||
-      "user"
-
-    // Try to get actual GitHub username from the identity
-    if (githubIdentity?.identity_data?.user_name) {
-      username = githubIdentity.identity_data.user_name
-    }
-
     return NextResponse.json({
       success: true,
       count: repos.length,
-      redirectUrl: `/${username}`,
+      redirectUrl: "/dashboard",
     })
   } catch (error) {
     console.error("Error saving user repos:", error)
