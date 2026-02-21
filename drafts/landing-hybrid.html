@@ -1,0 +1,1162 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LaunchLog - Show the World Your Code's Impact</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            /* Light mode - clean like minimal */
+            --color-bg: #FAFAFA;
+            --color-surface: #FFFFFF;
+            --color-surface-elevated: #F4F4F5;
+            --color-text: #18181B;
+            --color-text-secondary: #71717A;
+            --color-border: #E4E4E7;
+            --color-border-subtle: #F4F4F5;
+
+            /* Vibrant accents - energy from bold */
+            --gradient-primary: linear-gradient(135deg, #6366F1 0%, #8B5CF6 50%, #A855F7 100%);
+            --gradient-warm: linear-gradient(135deg, #F97316 0%, #EF4444 100%);
+            --gradient-cool: linear-gradient(135deg, #06B6D4 0%, #3B82F6 100%);
+            --color-primary: #6366F1;
+            --color-primary-light: #818CF8;
+
+            /* Platform colors */
+            --color-hn: #FF6600;
+            --color-ph: #DA552F;
+            --color-twitter: #1DA1F2;
+            --color-reddit: #FF4500;
+            --color-youtube: #FF0000;
+
+            --radius-sm: 8px;
+            --radius-md: 12px;
+            --radius-lg: 16px;
+            --radius-xl: 24px;
+            --shadow-sm: 0 1px 2px rgba(0,0,0,0.04);
+            --shadow-md: 0 4px 12px rgba(0,0,0,0.08);
+            --shadow-lg: 0 12px 32px rgba(0,0,0,0.12);
+            --shadow-glow: 0 0 40px rgba(99, 102, 241, 0.25);
+        }
+
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --color-bg: #0F0F14;
+                --color-surface: #1A1A24;
+                --color-surface-elevated: #24243A;
+                --color-text: #FFFFFF;
+                --color-text-secondary: #A0A0B8;
+                --color-border: #2E2E3A;
+                --color-border-subtle: #24243A;
+            }
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--color-bg);
+            color: var(--color-text);
+            line-height: 1.6;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        /* Navigation - Clean and minimal */
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 48px;
+            max-width: 1280px;
+            margin: 0 auto;
+        }
+
+        .logo {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 20px;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            text-decoration: none;
+            color: var(--color-text);
+        }
+
+        .logo-icon {
+            width: 32px;
+            height: 32px;
+            background: var(--gradient-primary);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .logo-icon svg {
+            width: 18px;
+            height: 18px;
+            color: white;
+        }
+
+        .nav-links {
+            display: flex;
+            align-items: center;
+            gap: 32px;
+        }
+
+        .nav-links a {
+            color: var(--color-text-secondary);
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 500;
+            transition: color 0.2s;
+        }
+
+        .nav-links a:hover {
+            color: var(--color-text);
+        }
+
+        .btn-primary {
+            background: var(--gradient-primary);
+            color: white;
+            padding: 10px 20px;
+            border-radius: var(--radius-sm);
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 600;
+            transition: all 0.3s;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            box-shadow: 0 4px 16px rgba(99, 102, 241, 0.3);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 24px rgba(99, 102, 241, 0.4);
+        }
+
+        .btn-primary svg {
+            width: 16px;
+            height: 16px;
+        }
+
+        /* Hero - Mentions-first messaging */
+        .hero {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 80px 24px 60px;
+            text-align: center;
+        }
+
+        .hero-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 16px;
+            background: var(--color-surface);
+            border: 1px solid var(--color-border);
+            border-radius: 100px;
+            font-size: 13px;
+            color: var(--color-text-secondary);
+            margin-bottom: 32px;
+        }
+
+        .hero-badge .live-dot {
+            width: 8px;
+            height: 8px;
+            background: #22C55E;
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        h1 {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 64px;
+            font-weight: 700;
+            letter-spacing: -0.03em;
+            line-height: 1.1;
+            margin-bottom: 24px;
+        }
+
+        h1 .gradient-text {
+            background: var(--gradient-primary);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .hero-subtitle {
+            font-size: 20px;
+            color: var(--color-text-secondary);
+            max-width: 560px;
+            margin: 0 auto 40px;
+            line-height: 1.6;
+        }
+
+        .hero-subtitle strong {
+            color: var(--color-text);
+            font-weight: 600;
+        }
+
+        .hero-cta {
+            display: flex;
+            justify-content: center;
+            gap: 16px;
+            margin-bottom: 60px;
+        }
+
+        .btn-secondary {
+            background: transparent;
+            border: 1px solid var(--color-border);
+            color: var(--color-text);
+            padding: 10px 20px;
+            border-radius: var(--radius-sm);
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 500;
+            transition: all 0.2s;
+        }
+
+        .btn-secondary:hover {
+            border-color: var(--color-text);
+        }
+
+        /* Mention Badges Showcase - THE HERO VISUAL */
+        .mention-showcase {
+            display: flex;
+            justify-content: center;
+            gap: 16px;
+            flex-wrap: wrap;
+            margin-bottom: 16px;
+        }
+
+        .showcase-badge {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 14px 20px;
+            background: var(--color-surface);
+            border: 1px solid var(--color-border);
+            border-radius: var(--radius-md);
+            font-size: 15px;
+            font-weight: 600;
+            transition: all 0.3s;
+            cursor: default;
+        }
+
+        .showcase-badge:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .showcase-badge svg {
+            width: 22px;
+            height: 22px;
+        }
+
+        .showcase-badge.hn {
+            border-color: rgba(255, 102, 0, 0.3);
+        }
+        .showcase-badge.hn svg { color: var(--color-hn); }
+        .showcase-badge.hn:hover {
+            background: rgba(255, 102, 0, 0.08);
+            border-color: var(--color-hn);
+        }
+
+        .showcase-badge.ph {
+            border-color: rgba(218, 85, 47, 0.3);
+        }
+        .showcase-badge.ph svg { color: var(--color-ph); }
+        .showcase-badge.ph:hover {
+            background: rgba(218, 85, 47, 0.08);
+            border-color: var(--color-ph);
+        }
+
+        .showcase-badge.twitter {
+            border-color: rgba(29, 161, 242, 0.3);
+        }
+        .showcase-badge.twitter svg { color: var(--color-twitter); }
+        .showcase-badge.twitter:hover {
+            background: rgba(29, 161, 242, 0.08);
+            border-color: var(--color-twitter);
+        }
+
+        .showcase-badge.reddit {
+            border-color: rgba(255, 69, 0, 0.3);
+        }
+        .showcase-badge.reddit svg { color: var(--color-reddit); }
+        .showcase-badge.reddit:hover {
+            background: rgba(255, 69, 0, 0.08);
+            border-color: var(--color-reddit);
+        }
+
+        .showcase-badge .badge-value {
+            font-family: 'Space Grotesk', sans-serif;
+            font-weight: 700;
+            font-size: 18px;
+        }
+
+        .showcase-badge .badge-label {
+            color: var(--color-text-secondary);
+            font-weight: 500;
+        }
+
+        .showcase-caption {
+            font-size: 13px;
+            color: var(--color-text-secondary);
+            text-align: center;
+        }
+
+        /* Value Prop - Like Google Scholar */
+        .value-prop {
+            max-width: 800px;
+            margin: 80px auto;
+            padding: 0 24px;
+            text-align: center;
+        }
+
+        .value-prop-card {
+            background: var(--color-surface);
+            border: 1px solid var(--color-border);
+            border-radius: var(--radius-xl);
+            padding: 48px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .value-prop-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: var(--gradient-primary);
+        }
+
+        .value-prop-icon {
+            width: 64px;
+            height: 64px;
+            margin: 0 auto 24px;
+            background: var(--gradient-primary);
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .value-prop-icon svg {
+            width: 32px;
+            height: 32px;
+            color: white;
+        }
+
+        .value-prop h2 {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 32px;
+            font-weight: 700;
+            margin-bottom: 16px;
+        }
+
+        .value-prop p {
+            font-size: 18px;
+            color: var(--color-text-secondary);
+            line-height: 1.7;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        /* Widget Preview */
+        .preview-section {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 40px 24px 100px;
+        }
+
+        .preview-label {
+            text-align: center;
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            color: var(--color-text-secondary);
+            margin-bottom: 24px;
+        }
+
+        .widget-preview {
+            background: var(--color-surface);
+            border: 1px solid var(--color-border);
+            border-radius: var(--radius-xl);
+            padding: 32px;
+            box-shadow: var(--shadow-lg);
+        }
+
+        .widget-header {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+
+        .widget-avatar {
+            width: 56px;
+            height: 56px;
+            border-radius: var(--radius-md);
+            background: var(--gradient-primary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 20px;
+            font-weight: 700;
+            color: white;
+        }
+
+        .widget-meta h3 {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 18px;
+            font-weight: 700;
+            margin-bottom: 4px;
+        }
+
+        .widget-meta span {
+            font-size: 14px;
+            color: var(--color-text-secondary);
+        }
+
+        .widget-stats {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+
+        .stat-box {
+            background: var(--color-surface-elevated);
+            border-radius: var(--radius-md);
+            padding: 20px;
+            text-align: center;
+        }
+
+        .stat-value {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 28px;
+            font-weight: 700;
+            margin-bottom: 4px;
+        }
+
+        .stat-value.accent {
+            background: var(--gradient-warm);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .stat-label {
+            font-size: 12px;
+            color: var(--color-text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .widget-projects {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 16px;
+        }
+
+        .project-card {
+            background: var(--color-surface-elevated);
+            border-radius: var(--radius-md);
+            padding: 16px;
+            transition: all 0.2s;
+        }
+
+        .project-card:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+        }
+
+        .project-card h4 {
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+
+        .project-card p {
+            font-size: 12px;
+            color: var(--color-text-secondary);
+            margin-bottom: 12px;
+        }
+
+        .project-mentions {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .mini-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 11px;
+            font-weight: 600;
+        }
+
+        .mini-badge.hn {
+            background: rgba(255, 102, 0, 0.15);
+            color: var(--color-hn);
+        }
+
+        .mini-badge.ph {
+            background: rgba(218, 85, 47, 0.15);
+            color: var(--color-ph);
+        }
+
+        .mini-badge.twitter {
+            background: rgba(29, 161, 242, 0.15);
+            color: var(--color-twitter);
+        }
+
+        /* Features Grid */
+        .features {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 80px 24px;
+        }
+
+        .features-header {
+            text-align: center;
+            margin-bottom: 64px;
+        }
+
+        .features-header h2 {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 40px;
+            font-weight: 700;
+            margin-bottom: 16px;
+        }
+
+        .features-header p {
+            font-size: 18px;
+            color: var(--color-text-secondary);
+        }
+
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 24px;
+        }
+
+        .feature-card {
+            background: var(--color-surface);
+            border: 1px solid var(--color-border);
+            border-radius: var(--radius-lg);
+            padding: 28px;
+            transition: all 0.3s;
+        }
+
+        .feature-card:hover {
+            border-color: var(--color-primary);
+            box-shadow: var(--shadow-glow);
+        }
+
+        .feature-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: var(--radius-md);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 20px;
+            font-size: 24px;
+        }
+
+        .feature-icon.purple { background: rgba(99, 102, 241, 0.1); }
+        .feature-icon.orange { background: rgba(249, 115, 22, 0.1); }
+        .feature-icon.cyan { background: rgba(6, 182, 212, 0.1); }
+
+        .feature-card h3 {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 18px;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+
+        .feature-card p {
+            font-size: 14px;
+            color: var(--color-text-secondary);
+            line-height: 1.6;
+        }
+
+        /* Mentions Deep Dive Section */
+        .mentions-section {
+            background: var(--color-surface);
+            border-top: 1px solid var(--color-border);
+            border-bottom: 1px solid var(--color-border);
+            padding: 100px 24px;
+        }
+
+        .mentions-content {
+            max-width: 1100px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 64px;
+            align-items: center;
+        }
+
+        .mentions-text h2 {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 36px;
+            font-weight: 700;
+            line-height: 1.2;
+            margin-bottom: 20px;
+        }
+
+        .mentions-text p {
+            font-size: 16px;
+            color: var(--color-text-secondary);
+            line-height: 1.7;
+            margin-bottom: 32px;
+        }
+
+        .mentions-sources {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .source-chip {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 16px;
+            background: var(--color-bg);
+            border-radius: var(--radius-sm);
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        .source-chip svg {
+            width: 18px;
+            height: 18px;
+        }
+
+        .source-chip.hn svg { color: var(--color-hn); }
+        .source-chip.ph svg { color: var(--color-ph); }
+        .source-chip.twitter svg { color: var(--color-twitter); }
+        .source-chip.reddit svg { color: var(--color-reddit); }
+        .source-chip.youtube svg { color: var(--color-youtube); }
+
+        .mentions-preview {
+            background: var(--color-bg);
+            border: 1px solid var(--color-border);
+            border-radius: var(--radius-lg);
+            padding: 24px;
+        }
+
+        .mention-card {
+            background: var(--color-surface);
+            border: 1px solid var(--color-border);
+            border-radius: var(--radius-md);
+            padding: 16px;
+            margin-bottom: 12px;
+            transition: all 0.2s;
+        }
+
+        .mention-card:last-child {
+            margin-bottom: 0;
+        }
+
+        .mention-card:hover {
+            border-color: var(--color-primary);
+        }
+
+        .mention-source {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 12px;
+            color: var(--color-text-secondary);
+            margin-bottom: 8px;
+        }
+
+        .mention-source svg {
+            width: 16px;
+            height: 16px;
+        }
+
+        .mention-quote {
+            font-size: 14px;
+            line-height: 1.5;
+            margin-bottom: 12px;
+        }
+
+        .mention-stats {
+            display: flex;
+            gap: 16px;
+            font-size: 13px;
+            font-weight: 600;
+        }
+
+        .mention-stats span {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .mention-stats .hn { color: var(--color-hn); }
+        .mention-stats .twitter { color: var(--color-twitter); }
+
+        /* Social Proof */
+        .social-proof {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 80px 24px;
+            text-align: center;
+        }
+
+        .social-proof p {
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            color: var(--color-text-secondary);
+            margin-bottom: 24px;
+        }
+
+        .proof-badges {
+            display: flex;
+            justify-content: center;
+            gap: 24px;
+            flex-wrap: wrap;
+        }
+
+        .proof-badge {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 14px 24px;
+            background: var(--color-surface);
+            border: 1px solid var(--color-border);
+            border-radius: var(--radius-md);
+            font-size: 14px;
+            font-weight: 600;
+            transition: all 0.2s;
+        }
+
+        .proof-badge:hover {
+            transform: scale(1.02);
+        }
+
+        .proof-badge svg {
+            width: 20px;
+            height: 20px;
+        }
+
+        .proof-badge.hn svg { color: var(--color-hn); }
+        .proof-badge.ph svg { color: var(--color-ph); }
+        .proof-badge.twitter svg { color: var(--color-twitter); }
+
+        /* CTA Section */
+        .cta-section {
+            max-width: 700px;
+            margin: 0 auto;
+            padding: 40px 24px 100px;
+            text-align: center;
+        }
+
+        .cta-card {
+            background: var(--color-surface);
+            border: 1px solid var(--color-border);
+            border-radius: var(--radius-xl);
+            padding: 56px 40px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .cta-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: var(--gradient-primary);
+        }
+
+        .cta-card h2 {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 36px;
+            font-weight: 700;
+            margin-bottom: 16px;
+        }
+
+        .cta-card p {
+            font-size: 16px;
+            color: var(--color-text-secondary);
+            margin-bottom: 32px;
+        }
+
+        .cta-card .btn-primary {
+            font-size: 16px;
+            padding: 14px 28px;
+        }
+
+        /* Footer */
+        footer {
+            border-top: 1px solid var(--color-border);
+            padding: 40px 24px;
+            text-align: center;
+        }
+
+        footer p {
+            font-size: 14px;
+            color: var(--color-text-secondary);
+        }
+
+        /* Responsive */
+        @media (max-width: 900px) {
+            h1 {
+                font-size: 44px;
+            }
+
+            .mention-showcase {
+                gap: 12px;
+            }
+
+            .showcase-badge {
+                padding: 12px 16px;
+                font-size: 14px;
+            }
+
+            .widget-stats {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .widget-projects {
+                grid-template-columns: 1fr;
+            }
+
+            .feature-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .mentions-content {
+                grid-template-columns: 1fr;
+                gap: 40px;
+            }
+        }
+
+        @media (max-width: 600px) {
+            nav {
+                padding: 16px 20px;
+            }
+
+            .nav-links a:not(.btn-primary) {
+                display: none;
+            }
+
+            h1 {
+                font-size: 32px;
+            }
+
+            .hero {
+                padding: 60px 20px 40px;
+            }
+
+            .hero-subtitle {
+                font-size: 16px;
+            }
+
+            .hero-cta {
+                flex-direction: column;
+            }
+
+            .showcase-badge {
+                width: 100%;
+                justify-content: center;
+            }
+
+            .value-prop-card {
+                padding: 32px 24px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav>
+        <a href="#" class="logo">
+            <div class="logo-icon">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M15.59 14.37a6 6 0 01-5.84 7.38v-4.8m5.84-2.58a14.98 14.98 0 006.16-12.12A14.98 14.98 0 009.631 8.41m5.96 5.96a14.926 14.926 0 01-5.841 2.58m-.119-8.54a6 6 0 00-7.381 5.84h4.8m2.581-5.84a14.927 14.927 0 00-2.58 5.84m2.699 2.7c-.103.021-.207.041-.311.06a15.09 15.09 0 01-2.448-2.448 14.9 14.9 0 01.06-.312m-2.24 2.39a4.493 4.493 0 00-1.757 4.306 4.493 4.493 0 004.306-1.758M16.5 9a1.5 1.5 0 11-3 0 1.5 1.5 0 013 0z" />
+                </svg>
+            </div>
+            LaunchLog
+        </a>
+        <div class="nav-links">
+            <a href="#">Features</a>
+            <a href="#">Docs</a>
+            <a href="#">Pricing</a>
+            <a href="#" class="btn-primary">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
+                </svg>
+                Get Started Free
+            </a>
+        </div>
+    </nav>
+
+    <!-- Hero Section - MENTIONS FIRST -->
+    <section class="hero">
+        <span class="hero-badge">
+            <span class="live-dot"></span>
+            Tracking 50K+ projects worldwide
+        </span>
+        <h1>Show the world your<br><span class="gradient-text">code's real impact</span></h1>
+        <p class="hero-subtitle">
+            Like <strong>Google Scholar citations, but for developers</strong>. Automatically track when your projects get mentioned on HackerNews, Product Hunt, Twitter, and across the web.
+        </p>
+        <div class="hero-cta">
+            <a href="#" class="btn-primary">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
+                </svg>
+                Connect GitHub
+            </a>
+            <a href="#" class="btn-secondary">See Example Portfolio</a>
+        </div>
+
+        <!-- THE HERO VISUAL: Mention Badges -->
+        <div class="mention-showcase">
+            <div class="showcase-badge hn">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M0 24V0h24v24H0zM6.951 5.896l4.112 7.708v5.064h1.583v-4.972l4.148-7.799h-1.749l-3.21 6.039-3.135-6.04H6.951z"/></svg>
+                <span class="badge-value">127</span>
+                <span class="badge-label">points</span>
+            </div>
+            <div class="showcase-badge ph">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M13.604 8.4h-3.405V12h3.405c.995 0 1.801-.806 1.801-1.801 0-.993-.806-1.799-1.801-1.799zM12 0C5.372 0 0 5.372 0 12s5.372 12 12 12 12-5.372 12-12S18.628 0 12 0zm1.604 14.4h-3.405V18H7.801V6h5.804c2.319 0 4.2 1.88 4.2 4.199 0 2.321-1.881 4.201-4.201 4.201z"/></svg>
+                <span class="badge-value">#3</span>
+                <span class="badge-label">Product</span>
+            </div>
+            <div class="showcase-badge twitter">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M23.953 4.57a10 10 0 01-2.825.775 4.958 4.958 0 002.163-2.723c-.951.555-2.005.959-3.127 1.184a4.92 4.92 0 00-8.384 4.482C7.69 8.095 4.067 6.13 1.64 3.162a4.822 4.822 0 00-.666 2.475c0 1.71.87 3.213 2.188 4.096a4.904 4.904 0 01-2.228-.616v.06a4.923 4.923 0 003.946 4.827 4.996 4.996 0 01-2.212.085 4.936 4.936 0 004.604 3.417 9.867 9.867 0 01-6.102 2.105c-.39 0-.779-.023-1.17-.067a13.995 13.995 0 007.557 2.209c9.053 0 13.998-7.496 13.998-13.985 0-.21 0-.42-.015-.63A9.935 9.935 0 0024 4.59z"/></svg>
+                <span class="badge-value">2.4K</span>
+                <span class="badge-label">mentions</span>
+            </div>
+            <div class="showcase-badge reddit">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0zm5.01 4.744c.688 0 1.25.561 1.25 1.249a1.25 1.25 0 0 1-2.498.056l-2.597-.547-.8 3.747c1.824.07 3.48.632 4.674 1.488.308-.309.73-.491 1.207-.491.968 0 1.754.786 1.754 1.754 0 .716-.435 1.333-1.01 1.614a3.111 3.111 0 0 1 .042.52c0 2.694-3.13 4.87-7.004 4.87-3.874 0-7.004-2.176-7.004-4.87 0-.183.015-.366.043-.534A1.748 1.748 0 0 1 4.028 12c0-.968.786-1.754 1.754-1.754.463 0 .898.196 1.207.49 1.207-.883 2.878-1.43 4.744-1.487l.885-4.182a.342.342 0 0 1 .14-.197.35.35 0 0 1 .238-.042l2.906.617a1.214 1.214 0 0 1 1.108-.701zM9.25 12C8.561 12 8 12.562 8 13.25c0 .687.561 1.248 1.25 1.248.687 0 1.248-.561 1.248-1.249 0-.688-.561-1.249-1.249-1.249zm5.5 0c-.687 0-1.248.561-1.248 1.25 0 .687.561 1.248 1.249 1.248.688 0 1.249-.561 1.249-1.249 0-.687-.562-1.249-1.25-1.249zm-5.466 3.99a.327.327 0 0 0-.231.094.33.33 0 0 0 0 .463c.842.842 2.484.913 2.961.913.477 0 2.105-.056 2.961-.913a.361.361 0 0 0 .029-.463.33.33 0 0 0-.464 0c-.547.533-1.684.73-2.512.73-.828 0-1.979-.196-2.512-.73a.326.326 0 0 0-.232-.095z"/></svg>
+                <span class="badge-value">89</span>
+                <span class="badge-label">upvotes</span>
+            </div>
+        </div>
+        <p class="showcase-caption">Example badges that appear on your projects — updated automatically</p>
+    </section>
+
+    <!-- Value Proposition Card -->
+    <section class="value-prop">
+        <div class="value-prop-card">
+            <div class="value-prop-icon">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09zM18.259 8.715L18 9.75l-.259-1.035a3.375 3.375 0 00-2.455-2.456L14.25 6l1.036-.259a3.375 3.375 0 002.455-2.456L18 2.25l.259 1.035a3.375 3.375 0 002.456 2.456L21.75 6l-1.035.259a3.375 3.375 0 00-2.456 2.456zM16.894 20.567L16.5 21.75l-.394-1.183a2.25 2.25 0 00-1.423-1.423L13.5 18.75l1.183-.394a2.25 2.25 0 001.423-1.423l.394-1.183.394 1.183a2.25 2.25 0 001.423 1.423l1.183.394-1.183.394a2.25 2.25 0 00-1.423 1.423z" />
+                </svg>
+            </div>
+            <h2>Turn GitHub stars into real social proof</h2>
+            <p>Stars only tell part of the story. Show potential employers, collaborators, and users the real-world impact of your work — every HackerNews thread, Product Hunt launch, and Twitter discussion, aggregated automatically.</p>
+        </div>
+    </section>
+
+    <!-- Widget Preview -->
+    <section class="preview-section">
+        <p class="preview-label">Your portfolio, always up-to-date</p>
+        <div class="widget-preview">
+            <div class="widget-header">
+                <div class="widget-avatar">SG</div>
+                <div class="widget-meta">
+                    <h3>Sarah Guo</h3>
+                    <span>Full-Stack Developer • Building in public</span>
+                </div>
+            </div>
+            <div class="widget-stats">
+                <div class="stat-box">
+                    <div class="stat-value">18</div>
+                    <div class="stat-label">Projects</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-value">12.4k</div>
+                    <div class="stat-label">Stars</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-value accent">247</div>
+                    <div class="stat-label">Mentions</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-value">89</div>
+                    <div class="stat-label">Forks</div>
+                </div>
+            </div>
+            <div class="widget-projects">
+                <div class="project-card">
+                    <h4>shipfast-cli</h4>
+                    <p>Deploy apps in seconds</p>
+                    <div class="project-mentions">
+                        <span class="mini-badge hn">HN #1</span>
+                        <span class="mini-badge ph">#2 PH</span>
+                        <span class="mini-badge twitter">1.2k tweets</span>
+                    </div>
+                </div>
+                <div class="project-card">
+                    <h4>react-forms-pro</h4>
+                    <p>Type-safe form library</p>
+                    <div class="project-mentions">
+                        <span class="mini-badge hn">342 pts</span>
+                        <span class="mini-badge twitter">847 tweets</span>
+                    </div>
+                </div>
+                <div class="project-card">
+                    <h4>tailwind-tokens</h4>
+                    <p>Design token generator</p>
+                    <div class="project-mentions">
+                        <span class="mini-badge hn">89 pts</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features Grid -->
+    <section class="features">
+        <div class="features-header">
+            <h2>Everything syncs automatically</h2>
+            <p>Connect once. Never manually update your portfolio again.</p>
+        </div>
+        <div class="feature-grid">
+            <div class="feature-card">
+                <div class="feature-icon purple">📊</div>
+                <h3>GitHub Auto-Sync</h3>
+                <p>Stars, forks, commits, releases — every metric updates in real-time as you push code.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon orange">🔥</div>
+                <h3>Mention Tracking</h3>
+                <p>We scan HackerNews, Product Hunt, Twitter, Reddit, and blogs to find every mention of your work.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon cyan">🎨</div>
+                <h3>Drop-in Widgets</h3>
+                <p>One script tag. Widgets inherit your site's fonts and colors automatically via CSS variables.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Mentions Deep Dive -->
+    <section class="mentions-section">
+        <div class="mentions-content">
+            <div class="mentions-text">
+                <h2>Track your impact beyond GitHub</h2>
+                <p>Like academic citations, but for code. Every time someone mentions your project in a HackerNews thread, Product Hunt launch, Twitter thread, or tech blog — we capture it and surface it on your portfolio.</p>
+                <div class="mentions-sources">
+                    <span class="source-chip hn">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M0 24V0h24v24H0zM6.951 5.896l4.112 7.708v5.064h1.583v-4.972l4.148-7.799h-1.749l-3.21 6.039-3.135-6.04H6.951z"/></svg>
+                        HackerNews
+                    </span>
+                    <span class="source-chip ph">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M13.604 8.4h-3.405V12h3.405c.995 0 1.801-.806 1.801-1.801 0-.993-.806-1.799-1.801-1.799zM12 0C5.372 0 0 5.372 0 12s5.372 12 12 12 12-5.372 12-12S18.628 0 12 0zm1.604 14.4h-3.405V18H7.801V6h5.804c2.319 0 4.2 1.88 4.2 4.199 0 2.321-1.881 4.201-4.201 4.201z"/></svg>
+                        Product Hunt
+                    </span>
+                    <span class="source-chip twitter">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M23.953 4.57a10 10 0 01-2.825.775 4.958 4.958 0 002.163-2.723c-.951.555-2.005.959-3.127 1.184a4.92 4.92 0 00-8.384 4.482C7.69 8.095 4.067 6.13 1.64 3.162a4.822 4.822 0 00-.666 2.475c0 1.71.87 3.213 2.188 4.096a4.904 4.904 0 01-2.228-.616v.06a4.923 4.923 0 003.946 4.827 4.996 4.996 0 01-2.212.085 4.936 4.936 0 004.604 3.417 9.867 9.867 0 01-6.102 2.105c-.39 0-.779-.023-1.17-.067a13.995 13.995 0 007.557 2.209c9.053 0 13.998-7.496 13.998-13.985 0-.21 0-.42-.015-.63A9.935 9.935 0 0024 4.59z"/></svg>
+                        Twitter
+                    </span>
+                    <span class="source-chip reddit">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0z"/></svg>
+                        Reddit
+                    </span>
+                    <span class="source-chip youtube">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>
+                        YouTube
+                    </span>
+                </div>
+            </div>
+            <div class="mentions-preview">
+                <div class="mention-card">
+                    <div class="mention-source">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="#FF6600" width="16" height="16"><path d="M0 24V0h24v24H0zM6.951 5.896l4.112 7.708v5.064h1.583v-4.972l4.148-7.799h-1.749l-3.21 6.039-3.135-6.04H6.951z"/></svg>
+                        HackerNews • 2 days ago
+                    </div>
+                    <div class="mention-quote">"Just discovered shipfast-cli and it's incredible. Deployed my side project in under 2 minutes."</div>
+                    <div class="mention-stats">
+                        <span class="hn">▲ 342 points</span>
+                        <span>87 comments</span>
+                    </div>
+                </div>
+                <div class="mention-card">
+                    <div class="mention-source">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="#1DA1F2" width="16" height="16"><path d="M23.953 4.57a10 10 0 01-2.825.775 4.958 4.958 0 002.163-2.723c-.951.555-2.005.959-3.127 1.184a4.92 4.92 0 00-8.384 4.482C7.69 8.095 4.067 6.13 1.64 3.162a4.822 4.822 0 00-.666 2.475c0 1.71.87 3.213 2.188 4.096a4.904 4.904 0 01-2.228-.616v.06a4.923 4.923 0 003.946 4.827 4.996 4.996 0 01-2.212.085 4.936 4.936 0 004.604 3.417 9.867 9.867 0 01-6.102 2.105c-.39 0-.779-.023-1.17-.067a13.995 13.995 0 007.557 2.209c9.053 0 13.998-7.496 13.998-13.985 0-.21 0-.42-.015-.63A9.935 9.935 0 0024 4.59z"/></svg>
+                        @techinfluencer • 1 week ago
+                    </div>
+                    <div class="mention-quote">"The react-forms-pro library has saved us countless hours. Highly recommend for any React project."</div>
+                    <div class="mention-stats">
+                        <span class="twitter">❤️ 1.2K likes</span>
+                        <span>234 retweets</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Social Proof -->
+    <section class="social-proof">
+        <p>Trusted by makers shipping in public</p>
+        <div class="proof-badges">
+            <div class="proof-badge hn">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M0 24V0h24v24H0zM6.951 5.896l4.112 7.708v5.064h1.583v-4.972l4.148-7.799h-1.749l-3.21 6.039-3.135-6.04H6.951z"/></svg>
+                #1 on HackerNews
+            </div>
+            <div class="proof-badge ph">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M13.604 8.4h-3.405V12h3.405c.995 0 1.801-.806 1.801-1.801 0-.993-.806-1.799-1.801-1.799zM12 0C5.372 0 0 5.372 0 12s5.372 12 12 12 12-5.372 12-12S18.628 0 12 0zm1.604 14.4h-3.405V18H7.801V6h5.804c2.319 0 4.2 1.88 4.2 4.199 0 2.321-1.881 4.201-4.201 4.201z"/></svg>
+                Product of the Week
+            </div>
+            <div class="proof-badge twitter">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M23.953 4.57a10 10 0 01-2.825.775 4.958 4.958 0 002.163-2.723c-.951.555-2.005.959-3.127 1.184a4.92 4.92 0 00-8.384 4.482C7.69 8.095 4.067 6.13 1.64 3.162a4.822 4.822 0 00-.666 2.475c0 1.71.87 3.213 2.188 4.096a4.904 4.904 0 01-2.228-.616v.06a4.923 4.923 0 003.946 4.827 4.996 4.996 0 01-2.212.085 4.936 4.936 0 004.604 3.417 9.867 9.867 0 01-6.102 2.105c-.39 0-.779-.023-1.17-.067a13.995 13.995 0 007.557 2.209c9.053 0 13.998-7.496 13.998-13.985 0-.21 0-.42-.015-.63A9.935 9.935 0 0024 4.59z"/></svg>
+                10K+ mentions tracked
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="cta-section">
+        <div class="cta-card">
+            <h2>Start showcasing your impact</h2>
+            <p>Free forever. No credit card required. Set up in 2 minutes.</p>
+            <a href="#" class="btn-primary">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
+                </svg>
+                Connect GitHub — It's Free
+            </a>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <p>&copy; 2024 LaunchLog. Free forever. Built for makers who ship.</p>
+    </footer>
+</body>
+</html>
