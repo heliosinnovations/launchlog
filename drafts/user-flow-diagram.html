@@ -1,0 +1,522 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LaunchLog - User Flow Diagram</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --color-bg: #0F0F14;
+            --color-surface: #1A1A24;
+            --color-surface-elevated: #24243A;
+            --color-text: #FFFFFF;
+            --color-text-secondary: #A0A0B8;
+            --color-border: #2E2E3A;
+            --gradient-primary: linear-gradient(135deg, #6366F1 0%, #8B5CF6 50%, #A855F7 100%);
+            --color-primary: #6366F1;
+            --color-success: #22C55E;
+            --color-error: #EF4444;
+            --color-warning: #F59E0B;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--color-bg);
+            color: var(--color-text);
+            line-height: 1.6;
+            padding: 40px;
+            min-height: 100vh;
+        }
+
+        h1 {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 32px;
+            text-align: center;
+            margin-bottom: 8px;
+        }
+
+        .subtitle {
+            color: var(--color-text-secondary);
+            text-align: center;
+            margin-bottom: 60px;
+        }
+
+        /* Flow Container */
+        .flow-container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        /* Flow Row */
+        .flow-row {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 32px;
+            position: relative;
+        }
+
+        /* Flow Node */
+        .flow-node {
+            background: var(--color-surface);
+            border: 2px solid var(--color-border);
+            border-radius: 16px;
+            padding: 24px;
+            min-width: 200px;
+            text-align: center;
+            position: relative;
+        }
+
+        .flow-node.start {
+            background: var(--gradient-primary);
+            border-color: transparent;
+        }
+
+        .flow-node.end {
+            background: linear-gradient(135deg, #22C55E 0%, #16A34A 100%);
+            border-color: transparent;
+        }
+
+        .flow-node.state {
+            min-width: 160px;
+            padding: 16px;
+        }
+
+        .flow-node.state.loading {
+            border-color: var(--color-primary);
+            background: rgba(99, 102, 241, 0.1);
+        }
+
+        .flow-node.state.success {
+            border-color: var(--color-success);
+            background: rgba(34, 197, 94, 0.1);
+        }
+
+        .flow-node.state.error {
+            border-color: var(--color-error);
+            background: rgba(239, 68, 68, 0.1);
+        }
+
+        .flow-node-icon {
+            width: 48px;
+            height: 48px;
+            background: var(--color-surface-elevated);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 12px;
+            font-size: 24px;
+        }
+
+        .flow-node.start .flow-node-icon,
+        .flow-node.end .flow-node-icon {
+            background: rgba(255,255,255,0.2);
+        }
+
+        .flow-node-title {
+            font-weight: 600;
+            font-size: 14px;
+            margin-bottom: 4px;
+        }
+
+        .flow-node-desc {
+            font-size: 12px;
+            color: var(--color-text-secondary);
+        }
+
+        .flow-node.start .flow-node-desc,
+        .flow-node.end .flow-node-desc {
+            color: rgba(255,255,255,0.8);
+        }
+
+        /* Arrows */
+        .arrow {
+            width: 60px;
+            height: 2px;
+            background: var(--color-border);
+            position: relative;
+            margin: 0 8px;
+        }
+
+        .arrow::after {
+            content: '';
+            position: absolute;
+            right: 0;
+            top: -4px;
+            border: 5px solid transparent;
+            border-left-color: var(--color-border);
+        }
+
+        .arrow.down {
+            width: 2px;
+            height: 40px;
+            margin: 8px auto;
+        }
+
+        .arrow.down::after {
+            right: -4px;
+            top: auto;
+            bottom: 0;
+            border-left-color: transparent;
+            border-top-color: var(--color-border);
+        }
+
+        .arrow-label {
+            position: absolute;
+            top: -20px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 10px;
+            color: var(--color-text-secondary);
+            white-space: nowrap;
+        }
+
+        .arrow.down .arrow-label {
+            top: 50%;
+            left: 20px;
+            transform: translateY(-50%);
+        }
+
+        /* Decision Diamond */
+        .decision {
+            width: 120px;
+            height: 120px;
+            background: var(--color-surface);
+            border: 2px solid var(--color-warning);
+            transform: rotate(45deg);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 24px;
+        }
+
+        .decision-content {
+            transform: rotate(-45deg);
+            text-align: center;
+        }
+
+        .decision-title {
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        /* Branch Container */
+        .branch-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            position: relative;
+        }
+
+        .branches {
+            display: flex;
+            gap: 48px;
+            margin-top: 24px;
+        }
+
+        .branch {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .branch-label {
+            font-size: 11px;
+            color: var(--color-text-secondary);
+            margin-bottom: 12px;
+            padding: 4px 12px;
+            background: var(--color-surface);
+            border-radius: 100px;
+        }
+
+        .branch-label.success { color: var(--color-success); }
+        .branch-label.error { color: var(--color-error); }
+
+        /* Section */
+        .flow-section {
+            margin-bottom: 80px;
+        }
+
+        .section-title {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 18px;
+            color: var(--color-text-secondary);
+            margin-bottom: 32px;
+            padding-bottom: 12px;
+            border-bottom: 1px solid var(--color-border);
+        }
+
+        /* Legend */
+        .legend {
+            display: flex;
+            gap: 32px;
+            justify-content: center;
+            margin-top: 60px;
+            padding: 24px;
+            background: var(--color-surface);
+            border-radius: 16px;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 13px;
+            color: var(--color-text-secondary);
+        }
+
+        .legend-icon {
+            width: 32px;
+            height: 32px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .legend-icon.start { background: var(--gradient-primary); }
+        .legend-icon.end { background: linear-gradient(135deg, #22C55E 0%, #16A34A 100%); }
+        .legend-icon.page { background: var(--color-surface-elevated); border: 2px solid var(--color-border); }
+        .legend-icon.state { background: rgba(99, 102, 241, 0.2); border: 2px solid var(--color-primary); }
+        .legend-icon.decision {
+            width: 24px;
+            height: 24px;
+            transform: rotate(45deg);
+            background: var(--color-surface-elevated);
+            border: 2px solid var(--color-warning);
+        }
+
+        /* Notes Section */
+        .notes {
+            margin-top: 60px;
+            padding: 24px;
+            background: var(--color-surface);
+            border-radius: 16px;
+        }
+
+        .notes h3 {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 16px;
+            margin-bottom: 16px;
+        }
+
+        .notes ul {
+            list-style: none;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 12px;
+        }
+
+        .notes li {
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+            font-size: 13px;
+            color: var(--color-text-secondary);
+        }
+
+        .notes li::before {
+            content: '→';
+            color: var(--color-primary);
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <h1>LaunchLog User Flow</h1>
+    <p class="subtitle">Complete onboarding journey from sign-in to live profile</p>
+
+    <div class="flow-container">
+        <!-- Main Onboarding Flow -->
+        <div class="flow-section">
+            <h2 class="section-title">1. Onboarding Flow</h2>
+
+            <div class="flow-row">
+                <div class="flow-node start">
+                    <div class="flow-node-icon">🚀</div>
+                    <div class="flow-node-title">Landing Page</div>
+                    <div class="flow-node-desc">User arrives at launchlog.com</div>
+                </div>
+
+                <div class="arrow">
+                    <span class="arrow-label">Click "Sign in with GitHub"</span>
+                </div>
+
+                <div class="flow-node">
+                    <div class="flow-node-icon">🔐</div>
+                    <div class="flow-node-title">GitHub OAuth</div>
+                    <div class="flow-node-desc">Authorize LaunchLog</div>
+                </div>
+
+                <div class="arrow">
+                    <span class="arrow-label">Authorization granted</span>
+                </div>
+
+                <div class="flow-node">
+                    <div class="flow-node-icon">📂</div>
+                    <div class="flow-node-title">Select Repos</div>
+                    <div class="flow-node-desc">/onboarding page</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Repo Selection Detail -->
+        <div class="flow-section">
+            <h2 class="section-title">2. Repo Selection Save Flow</h2>
+
+            <div class="flow-row">
+                <div class="flow-node">
+                    <div class="flow-node-icon">✅</div>
+                    <div class="flow-node-title">Repos Selected</div>
+                    <div class="flow-node-desc">User picks repos to showcase</div>
+                </div>
+
+                <div class="arrow">
+                    <span class="arrow-label">Click "Continue"</span>
+                </div>
+
+                <div class="flow-node state loading">
+                    <div class="flow-node-icon">⏳</div>
+                    <div class="flow-node-title">Saving...</div>
+                    <div class="flow-node-desc">POST /api/user/repos</div>
+                </div>
+
+                <div class="arrow">
+                    <span class="arrow-label">API Response</span>
+                </div>
+
+                <div class="branch-container">
+                    <div class="decision">
+                        <div class="decision-content">
+                            <div class="decision-title">Success?</div>
+                        </div>
+                    </div>
+
+                    <div class="branches">
+                        <div class="branch">
+                            <span class="branch-label success">Yes</span>
+                            <div class="flow-node state success">
+                                <div class="flow-node-icon">✓</div>
+                                <div class="flow-node-title">Saved!</div>
+                                <div class="flow-node-desc">Show success toast</div>
+                            </div>
+                            <div class="arrow down">
+                                <span class="arrow-label">Redirect</span>
+                            </div>
+                            <div class="flow-node end">
+                                <div class="flow-node-icon">🎉</div>
+                                <div class="flow-node-title">Dashboard</div>
+                                <div class="flow-node-desc">Profile is live!</div>
+                            </div>
+                        </div>
+
+                        <div class="branch">
+                            <span class="branch-label error">No</span>
+                            <div class="flow-node state error">
+                                <div class="flow-node-icon">⚠️</div>
+                                <div class="flow-node-title">Error</div>
+                                <div class="flow-node-desc">Show error message</div>
+                            </div>
+                            <div class="arrow down">
+                                <span class="arrow-label">User action</span>
+                            </div>
+                            <div class="flow-node">
+                                <div class="flow-node-icon">🔄</div>
+                                <div class="flow-node-title">Retry</div>
+                                <div class="flow-node-desc">Try again or contact support</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Dashboard Flow -->
+        <div class="flow-section">
+            <h2 class="section-title">3. Dashboard User Journey</h2>
+
+            <div class="flow-row">
+                <div class="flow-node">
+                    <div class="flow-node-icon">📊</div>
+                    <div class="flow-node-title">Dashboard</div>
+                    <div class="flow-node-desc">View profile & stats</div>
+                </div>
+
+                <div class="arrow">
+                    <span class="arrow-label">User actions</span>
+                </div>
+
+                <div style="display: flex; flex-direction: column; gap: 16px;">
+                    <div class="flow-node" style="min-width: 180px;">
+                        <div class="flow-node-title">View Profile</div>
+                        <div class="flow-node-desc">launchlog.com/username</div>
+                    </div>
+                    <div class="flow-node" style="min-width: 180px;">
+                        <div class="flow-node-title">Copy Embed Code</div>
+                        <div class="flow-node-desc">Get widget snippet</div>
+                    </div>
+                    <div class="flow-node" style="min-width: 180px;">
+                        <div class="flow-node-title">Manage Projects</div>
+                        <div class="flow-node-desc">Add/remove repos</div>
+                    </div>
+                </div>
+
+                <div class="arrow">
+                    <span class="arrow-label">Navigate</span>
+                </div>
+
+                <div class="flow-node">
+                    <div class="flow-node-icon">⚙️</div>
+                    <div class="flow-node-title">Settings</div>
+                    <div class="flow-node-desc">Profile & embed config</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Legend -->
+        <div class="legend">
+            <div class="legend-item">
+                <div class="legend-icon start"></div>
+                <span>Entry Point</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-icon page"></div>
+                <span>Page / Screen</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-icon state"></div>
+                <span>UI State</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-icon decision"></div>
+                <span>Decision Point</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-icon end"></div>
+                <span>Success State</span>
+            </div>
+        </div>
+
+        <!-- Implementation Notes -->
+        <div class="notes">
+            <h3>Implementation Notes</h3>
+            <ul>
+                <li>All API calls should show loading spinners immediately on button click</li>
+                <li>Success states show briefly (1.5s) before redirecting to dashboard</li>
+                <li>Error states persist until user takes action (retry or dismiss)</li>
+                <li>Use toast notifications for non-blocking feedback</li>
+                <li>Full-page overlays for critical blocking states (initial save)</li>
+                <li>Preserve selected repos in local state during error recovery</li>
+                <li>Implement optimistic UI where appropriate (toggling repos)</li>
+                <li>Add analytics events at each major flow transition</li>
+            </ul>
+        </div>
+    </div>
+</body>
+</html>
