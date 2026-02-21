@@ -1,0 +1,1061 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LaunchLog Widget Styles - Card, Compact, Minimal</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+    <style>
+        /* ===========================================
+           LAUNCHLOG WIDGET CSS VARIABLES
+           These inherit from parent site styles
+           =========================================== */
+        :root {
+            /* Default light theme - widgets inherit these */
+            --ll-font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            --ll-font-family-display: 'Space Grotesk', var(--ll-font-family);
+            --ll-color-bg: #FFFFFF;
+            --ll-color-surface: #F4F4F5;
+            --ll-color-text: #18181B;
+            --ll-color-text-secondary: #71717A;
+            --ll-color-border: #E4E4E7;
+            --ll-color-primary: #6366F1;
+            --ll-radius-sm: 6px;
+            --ll-radius-md: 12px;
+            --ll-radius-lg: 16px;
+            --ll-shadow: 0 4px 12px rgba(0,0,0,0.08);
+
+            /* Platform colors - don't override */
+            --ll-hn: #FF6600;
+            --ll-ph: #DA552F;
+            --ll-twitter: #1DA1F2;
+            --ll-reddit: #FF4500;
+        }
+
+        /* Dark theme CSS variables - applied to parent container */
+        .dark-theme {
+            --ll-color-bg: #1A1A24;
+            --ll-color-surface: #24243A;
+            --ll-color-text: #FFFFFF;
+            --ll-color-text-secondary: #A0A0B8;
+            --ll-color-border: #2E2E3A;
+            --ll-shadow: 0 4px 12px rgba(0,0,0,0.3);
+        }
+
+        /* Custom theme example */
+        .custom-theme-purple {
+            --ll-color-bg: #1E1B4B;
+            --ll-color-surface: #312E81;
+            --ll-color-text: #E0E7FF;
+            --ll-color-text-secondary: #A5B4FC;
+            --ll-color-border: #4338CA;
+            --ll-color-primary: #818CF8;
+        }
+
+        .custom-theme-warm {
+            --ll-color-bg: #FEF3C7;
+            --ll-color-surface: #FDE68A;
+            --ll-color-text: #78350F;
+            --ll-color-text-secondary: #92400E;
+            --ll-color-border: #FCD34D;
+            --ll-color-primary: #F59E0B;
+        }
+
+        /* Page styles (not part of widget) */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: #FAFAFA;
+            padding: 40px;
+            line-height: 1.6;
+        }
+
+        .page-title {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 48px;
+            font-weight: 700;
+            text-align: center;
+            margin-bottom: 16px;
+            color: #18181B;
+        }
+
+        .page-subtitle {
+            text-align: center;
+            color: #71717A;
+            font-size: 18px;
+            margin-bottom: 60px;
+        }
+
+        .section {
+            max-width: 1200px;
+            margin: 0 auto 80px;
+        }
+
+        .section-header {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            margin-bottom: 32px;
+        }
+
+        .section-number {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, #6366F1, #8B5CF6);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Space Grotesk', sans-serif;
+            font-weight: 700;
+            color: white;
+            font-size: 18px;
+        }
+
+        .section-title {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 32px;
+            font-weight: 700;
+            color: #18181B;
+        }
+
+        .section-description {
+            color: #71717A;
+            font-size: 16px;
+            margin-bottom: 24px;
+            max-width: 600px;
+        }
+
+        .widget-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 32px;
+        }
+
+        .demo-container {
+            padding: 32px;
+            border-radius: 16px;
+            position: relative;
+        }
+
+        .demo-label {
+            position: absolute;
+            top: 12px;
+            right: 12px;
+            padding: 4px 10px;
+            background: rgba(0,0,0,0.1);
+            border-radius: 100px;
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .demo-container.light {
+            background: #FFFFFF;
+            border: 1px solid #E4E4E7;
+        }
+
+        .demo-container.dark {
+            background: #0F0F14;
+            border: 1px solid #2E2E3A;
+        }
+
+        .demo-container.dark .demo-label {
+            background: rgba(255,255,255,0.1);
+            color: #A0A0B8;
+        }
+
+        .demo-container.purple {
+            background: #1E1B4B;
+            border: 1px solid #4338CA;
+        }
+
+        .demo-container.purple .demo-label {
+            background: rgba(255,255,255,0.1);
+            color: #A5B4FC;
+        }
+
+        .demo-container.warm {
+            background: #FFFBEB;
+            border: 1px solid #FCD34D;
+        }
+
+        .demo-container.warm .demo-label {
+            color: #78350F;
+        }
+
+        /* Code example */
+        .code-block {
+            background: #1E1E2E;
+            border-radius: 12px;
+            padding: 20px;
+            margin-top: 24px;
+            overflow-x: auto;
+        }
+
+        .code-block code {
+            font-family: 'SF Mono', Consolas, monospace;
+            font-size: 13px;
+            color: #CDD6F4;
+            line-height: 1.6;
+        }
+
+        .code-block .comment { color: #6C7086; }
+        .code-block .tag { color: #89B4FA; }
+        .code-block .attr { color: #F9E2AF; }
+        .code-block .value { color: #A6E3A1; }
+
+        /* ===========================================
+           WIDGET STYLE 1: CARD
+           Full project cards with screenshots + mentions
+           =========================================== */
+        .ll-widget-card {
+            font-family: var(--ll-font-family);
+            background: var(--ll-color-bg);
+            border: 1px solid var(--ll-color-border);
+            border-radius: var(--ll-radius-lg);
+            overflow: hidden;
+            box-shadow: var(--ll-shadow);
+            max-width: 400px;
+        }
+
+        .ll-widget-card__screenshot {
+            width: 100%;
+            height: 140px;
+            background: var(--ll-color-surface);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .ll-widget-card__screenshot svg {
+            width: 40px;
+            height: 40px;
+            color: var(--ll-color-text-secondary);
+            opacity: 0.4;
+        }
+
+        .ll-widget-card__content {
+            padding: 20px;
+        }
+
+        .ll-widget-card__header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 8px;
+        }
+
+        .ll-widget-card__name {
+            font-family: var(--ll-font-family-display);
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--ll-color-text);
+        }
+
+        .ll-widget-card__lang {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 12px;
+            color: var(--ll-color-text-secondary);
+            font-weight: 500;
+        }
+
+        .ll-widget-card__lang-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+        }
+
+        .ll-widget-card__desc {
+            font-size: 14px;
+            color: var(--ll-color-text-secondary);
+            line-height: 1.5;
+            margin-bottom: 16px;
+        }
+
+        .ll-widget-card__stats {
+            display: flex;
+            gap: 16px;
+            padding-bottom: 16px;
+            border-bottom: 1px solid var(--ll-color-border);
+            margin-bottom: 16px;
+        }
+
+        .ll-widget-card__stat {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            font-size: 13px;
+            color: var(--ll-color-text-secondary);
+            font-weight: 500;
+        }
+
+        .ll-widget-card__stat svg {
+            width: 14px;
+            height: 14px;
+        }
+
+        .ll-widget-card__stat--stars svg {
+            fill: #FBBF24;
+            color: #FBBF24;
+        }
+
+        .ll-widget-card__mentions-header {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 12px;
+        }
+
+        .ll-widget-card__mentions-fire {
+            font-size: 16px;
+        }
+
+        .ll-widget-card__mentions-count {
+            font-family: var(--ll-font-family-display);
+            font-size: 15px;
+            font-weight: 700;
+            background: linear-gradient(135deg, #F97316, #EF4444);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .ll-widget-card__mentions-label {
+            font-size: 13px;
+            color: var(--ll-color-text-secondary);
+        }
+
+        .ll-widget-card__badges {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .ll-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            padding: 5px 10px;
+            border-radius: var(--ll-radius-sm);
+            font-size: 11px;
+            font-weight: 600;
+        }
+
+        .ll-badge svg {
+            width: 12px;
+            height: 12px;
+        }
+
+        .ll-badge--hn {
+            background: rgba(255, 102, 0, 0.12);
+            color: var(--ll-hn);
+        }
+
+        .ll-badge--ph {
+            background: rgba(218, 85, 47, 0.12);
+            color: var(--ll-ph);
+        }
+
+        .ll-badge--twitter {
+            background: rgba(29, 161, 242, 0.12);
+            color: var(--ll-twitter);
+        }
+
+        .ll-badge--reddit {
+            background: rgba(255, 69, 0, 0.12);
+            color: var(--ll-reddit);
+        }
+
+        /* ===========================================
+           WIDGET STYLE 2: COMPACT
+           List view, text-focused, mention badges
+           =========================================== */
+        .ll-widget-compact {
+            font-family: var(--ll-font-family);
+            background: var(--ll-color-bg);
+            border: 1px solid var(--ll-color-border);
+            border-radius: var(--ll-radius-md);
+            padding: 16px;
+            max-width: 400px;
+        }
+
+        .ll-widget-compact__header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding-bottom: 12px;
+            border-bottom: 1px solid var(--ll-color-border);
+            margin-bottom: 12px;
+        }
+
+        .ll-widget-compact__avatar {
+            width: 36px;
+            height: 36px;
+            border-radius: 8px;
+            background: linear-gradient(135deg, #6366F1, #8B5CF6);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: var(--ll-font-family-display);
+            font-size: 14px;
+            font-weight: 700;
+            color: white;
+        }
+
+        .ll-widget-compact__user {
+            flex: 1;
+        }
+
+        .ll-widget-compact__name {
+            font-family: var(--ll-font-family-display);
+            font-size: 14px;
+            font-weight: 700;
+            color: var(--ll-color-text);
+        }
+
+        .ll-widget-compact__handle {
+            font-size: 12px;
+            color: var(--ll-color-text-secondary);
+        }
+
+        .ll-widget-compact__list {
+            list-style: none;
+        }
+
+        .ll-widget-compact__item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 0;
+            border-bottom: 1px solid var(--ll-color-border);
+        }
+
+        .ll-widget-compact__item:last-child {
+            border-bottom: none;
+        }
+
+        .ll-widget-compact__project {
+            flex: 1;
+        }
+
+        .ll-widget-compact__project-name {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--ll-color-text);
+            margin-bottom: 2px;
+        }
+
+        .ll-widget-compact__project-stats {
+            display: flex;
+            gap: 12px;
+            font-size: 12px;
+            color: var(--ll-color-text-secondary);
+        }
+
+        .ll-widget-compact__project-stats span {
+            display: flex;
+            align-items: center;
+            gap: 3px;
+        }
+
+        .ll-widget-compact__project-stats svg {
+            width: 12px;
+            height: 12px;
+        }
+
+        .ll-widget-compact__mentions {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            padding: 4px 8px;
+            border-radius: 100px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .ll-widget-compact__mentions--hot {
+            background: linear-gradient(135deg, rgba(249, 115, 22, 0.15), rgba(239, 68, 68, 0.15));
+            color: #F97316;
+        }
+
+        .ll-widget-compact__mentions--warm {
+            background: rgba(245, 158, 11, 0.12);
+            color: #F59E0B;
+        }
+
+        .ll-widget-compact__footer {
+            display: flex;
+            justify-content: center;
+            padding-top: 12px;
+            margin-top: 4px;
+        }
+
+        .ll-widget-compact__link {
+            font-size: 12px;
+            color: var(--ll-color-primary);
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        .ll-widget-compact__link:hover {
+            text-decoration: underline;
+        }
+
+        /* ===========================================
+           WIDGET STYLE 3: MINIMAL
+           Just project names + mention count
+           =========================================== */
+        .ll-widget-minimal {
+            font-family: var(--ll-font-family);
+            max-width: 280px;
+        }
+
+        .ll-widget-minimal__header {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 12px;
+            padding-bottom: 8px;
+            border-bottom: 1px solid var(--ll-color-border);
+        }
+
+        .ll-widget-minimal__title {
+            font-family: var(--ll-font-family-display);
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--ll-color-text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .ll-widget-minimal__list {
+            list-style: none;
+        }
+
+        .ll-widget-minimal__item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px 0;
+        }
+
+        .ll-widget-minimal__name {
+            font-size: 14px;
+            font-weight: 500;
+            color: var(--ll-color-text);
+        }
+
+        .ll-widget-minimal__count {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            font-size: 13px;
+            font-weight: 600;
+        }
+
+        .ll-widget-minimal__count--hot {
+            color: #F97316;
+        }
+
+        .ll-widget-minimal__count--warm {
+            color: #F59E0B;
+        }
+
+        .ll-widget-minimal__count--cool {
+            color: var(--ll-color-text-secondary);
+        }
+
+        .ll-widget-minimal__powered {
+            margin-top: 12px;
+            padding-top: 8px;
+            border-top: 1px solid var(--ll-color-border);
+            font-size: 10px;
+            color: var(--ll-color-text-secondary);
+            text-align: center;
+        }
+
+        .ll-widget-minimal__powered a {
+            color: var(--ll-color-primary);
+            text-decoration: none;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            body {
+                padding: 20px;
+            }
+
+            .page-title {
+                font-size: 32px;
+            }
+
+            .widget-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .section-title {
+                font-size: 24px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Page Header -->
+    <h1 class="page-title">LaunchLog Widget Styles</h1>
+    <p class="page-subtitle">Three embeddable widget styles with CSS variable inheritance</p>
+
+    <!-- SECTION 1: CARD STYLE -->
+    <section class="section">
+        <div class="section-header">
+            <span class="section-number">1</span>
+            <h2 class="section-title">Card Style</h2>
+        </div>
+        <p class="section-description">
+            Full project cards with screenshots, stats, and prominent mention badges.
+            Best for portfolio pages and feature showcases.
+        </p>
+
+        <div class="widget-grid">
+            <!-- Light Mode -->
+            <div class="demo-container light">
+                <span class="demo-label">Light Mode</span>
+                <div class="ll-widget-card">
+                    <div class="ll-widget-card__screenshot">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                            <path d="M13 10V3L4 14h7v7l9-11h-7z"/>
+                        </svg>
+                    </div>
+                    <div class="ll-widget-card__content">
+                        <div class="ll-widget-card__header">
+                            <h3 class="ll-widget-card__name">shipfast-cli</h3>
+                            <span class="ll-widget-card__lang">
+                                <span class="ll-widget-card__lang-dot" style="background: #3178C6"></span>
+                                TypeScript
+                            </span>
+                        </div>
+                        <p class="ll-widget-card__desc">Deploy full-stack apps to any cloud in under 2 minutes.</p>
+                        <div class="ll-widget-card__stats">
+                            <span class="ll-widget-card__stat ll-widget-card__stat--stars">
+                                <svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+                                8.4k
+                            </span>
+                            <span class="ll-widget-card__stat">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 7h10M7 12h10M7 17h10"/></svg>
+                                2.1k forks
+                            </span>
+                        </div>
+                        <div class="ll-widget-card__mentions-header">
+                            <span class="ll-widget-card__mentions-fire">🔥</span>
+                            <span class="ll-widget-card__mentions-count">127</span>
+                            <span class="ll-widget-card__mentions-label">mentions</span>
+                        </div>
+                        <div class="ll-widget-card__badges">
+                            <span class="ll-badge ll-badge--hn">
+                                <svg viewBox="0 0 24 24" fill="currentColor"><path d="M0 24V0h24v24H0zM6.951 5.896l4.112 7.708v5.064h1.583v-4.972l4.148-7.799h-1.749l-3.21 6.039-3.135-6.04H6.951z"/></svg>
+                                #1 HN
+                            </span>
+                            <span class="ll-badge ll-badge--ph">
+                                <svg viewBox="0 0 24 24" fill="currentColor"><path d="M13.604 8.4h-3.405V12h3.405c.995 0 1.801-.806 1.801-1.801 0-.993-.806-1.799-1.801-1.799zM12 0C5.372 0 0 5.372 0 12s5.372 12 12 12 12-5.372 12-12S18.628 0 12 0z"/></svg>
+                                #2 Product
+                            </span>
+                            <span class="ll-badge ll-badge--twitter">
+                                <svg viewBox="0 0 24 24" fill="currentColor"><path d="M23.953 4.57a10 10 0 01-2.825.775 4.958 4.958 0 002.163-2.723c-.951.555-2.005.959-3.127 1.184a4.92 4.92 0 00-8.384 4.482C7.69 8.095 4.067 6.13 1.64 3.162a4.822 4.822 0 00-.666 2.475c0 1.71.87 3.213 2.188 4.096a4.904 4.904 0 01-2.228-.616v.06a4.923 4.923 0 003.946 4.827 4.996 4.996 0 01-2.212.085 4.936 4.936 0 004.604 3.417 9.867 9.867 0 01-6.102 2.105c-.39 0-.779-.023-1.17-.067a13.995 13.995 0 007.557 2.209c9.053 0 13.998-7.496 13.998-13.985 0-.21 0-.42-.015-.63A9.935 9.935 0 0024 4.59z"/></svg>
+                                2.4k
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Dark Mode -->
+            <div class="demo-container dark dark-theme">
+                <span class="demo-label">Dark Mode</span>
+                <div class="ll-widget-card">
+                    <div class="ll-widget-card__screenshot">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                            <path d="M13 10V3L4 14h7v7l9-11h-7z"/>
+                        </svg>
+                    </div>
+                    <div class="ll-widget-card__content">
+                        <div class="ll-widget-card__header">
+                            <h3 class="ll-widget-card__name">shipfast-cli</h3>
+                            <span class="ll-widget-card__lang">
+                                <span class="ll-widget-card__lang-dot" style="background: #3178C6"></span>
+                                TypeScript
+                            </span>
+                        </div>
+                        <p class="ll-widget-card__desc">Deploy full-stack apps to any cloud in under 2 minutes.</p>
+                        <div class="ll-widget-card__stats">
+                            <span class="ll-widget-card__stat ll-widget-card__stat--stars">
+                                <svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+                                8.4k
+                            </span>
+                            <span class="ll-widget-card__stat">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 7h10M7 12h10M7 17h10"/></svg>
+                                2.1k forks
+                            </span>
+                        </div>
+                        <div class="ll-widget-card__mentions-header">
+                            <span class="ll-widget-card__mentions-fire">🔥</span>
+                            <span class="ll-widget-card__mentions-count">127</span>
+                            <span class="ll-widget-card__mentions-label">mentions</span>
+                        </div>
+                        <div class="ll-widget-card__badges">
+                            <span class="ll-badge ll-badge--hn">
+                                <svg viewBox="0 0 24 24" fill="currentColor"><path d="M0 24V0h24v24H0zM6.951 5.896l4.112 7.708v5.064h1.583v-4.972l4.148-7.799h-1.749l-3.21 6.039-3.135-6.04H6.951z"/></svg>
+                                #1 HN
+                            </span>
+                            <span class="ll-badge ll-badge--ph">
+                                <svg viewBox="0 0 24 24" fill="currentColor"><path d="M13.604 8.4h-3.405V12h3.405c.995 0 1.801-.806 1.801-1.801 0-.993-.806-1.799-1.801-1.799zM12 0C5.372 0 0 5.372 0 12s5.372 12 12 12 12-5.372 12-12S18.628 0 12 0z"/></svg>
+                                #2 Product
+                            </span>
+                            <span class="ll-badge ll-badge--twitter">
+                                <svg viewBox="0 0 24 24" fill="currentColor"><path d="M23.953 4.57a10 10 0 01-2.825.775 4.958 4.958 0 002.163-2.723c-.951.555-2.005.959-3.127 1.184a4.92 4.92 0 00-8.384 4.482C7.69 8.095 4.067 6.13 1.64 3.162a4.822 4.822 0 00-.666 2.475c0 1.71.87 3.213 2.188 4.096a4.904 4.904 0 01-2.228-.616v.06a4.923 4.923 0 003.946 4.827 4.996 4.996 0 01-2.212.085 4.936 4.936 0 004.604 3.417 9.867 9.867 0 01-6.102 2.105c-.39 0-.779-.023-1.17-.067a13.995 13.995 0 007.557 2.209c9.053 0 13.998-7.496 13.998-13.985 0-.21 0-.42-.015-.63A9.935 9.935 0 0024 4.59z"/></svg>
+                                2.4k
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- SECTION 2: COMPACT STYLE -->
+    <section class="section">
+        <div class="section-header">
+            <span class="section-number">2</span>
+            <h2 class="section-title">Compact Style</h2>
+        </div>
+        <p class="section-description">
+            List view with multiple projects, text-focused with mention badges.
+            Best for sidebars and smaller spaces.
+        </p>
+
+        <div class="widget-grid">
+            <!-- Light Mode -->
+            <div class="demo-container light">
+                <span class="demo-label">Light Mode</span>
+                <div class="ll-widget-compact">
+                    <div class="ll-widget-compact__header">
+                        <div class="ll-widget-compact__avatar">SG</div>
+                        <div class="ll-widget-compact__user">
+                            <div class="ll-widget-compact__name">Sarah Guo</div>
+                            <div class="ll-widget-compact__handle">@sarahguo</div>
+                        </div>
+                    </div>
+                    <ul class="ll-widget-compact__list">
+                        <li class="ll-widget-compact__item">
+                            <div class="ll-widget-compact__project">
+                                <div class="ll-widget-compact__project-name">shipfast-cli</div>
+                                <div class="ll-widget-compact__project-stats">
+                                    <span>
+                                        <svg viewBox="0 0 24 24" fill="#FBBF24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+                                        8.4k
+                                    </span>
+                                    <span>TypeScript</span>
+                                </div>
+                            </div>
+                            <span class="ll-widget-compact__mentions ll-widget-compact__mentions--hot">
+                                🔥 127
+                            </span>
+                        </li>
+                        <li class="ll-widget-compact__item">
+                            <div class="ll-widget-compact__project">
+                                <div class="ll-widget-compact__project-name">react-forms-pro</div>
+                                <div class="ll-widget-compact__project-stats">
+                                    <span>
+                                        <svg viewBox="0 0 24 24" fill="#FBBF24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+                                        6.2k
+                                    </span>
+                                    <span>TypeScript</span>
+                                </div>
+                            </div>
+                            <span class="ll-widget-compact__mentions ll-widget-compact__mentions--warm">
+                                🔥 84
+                            </span>
+                        </li>
+                        <li class="ll-widget-compact__item">
+                            <div class="ll-widget-compact__project">
+                                <div class="ll-widget-compact__project-name">tailwind-tokens</div>
+                                <div class="ll-widget-compact__project-stats">
+                                    <span>
+                                        <svg viewBox="0 0 24 24" fill="#FBBF24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+                                        4.8k
+                                    </span>
+                                    <span>JavaScript</span>
+                                </div>
+                            </div>
+                            <span class="ll-widget-compact__mentions ll-widget-compact__mentions--warm">
+                                🔥 56
+                            </span>
+                        </li>
+                    </ul>
+                    <div class="ll-widget-compact__footer">
+                        <a href="#" class="ll-widget-compact__link">View full portfolio →</a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Dark Mode -->
+            <div class="demo-container dark dark-theme">
+                <span class="demo-label">Dark Mode</span>
+                <div class="ll-widget-compact">
+                    <div class="ll-widget-compact__header">
+                        <div class="ll-widget-compact__avatar">SG</div>
+                        <div class="ll-widget-compact__user">
+                            <div class="ll-widget-compact__name">Sarah Guo</div>
+                            <div class="ll-widget-compact__handle">@sarahguo</div>
+                        </div>
+                    </div>
+                    <ul class="ll-widget-compact__list">
+                        <li class="ll-widget-compact__item">
+                            <div class="ll-widget-compact__project">
+                                <div class="ll-widget-compact__project-name">shipfast-cli</div>
+                                <div class="ll-widget-compact__project-stats">
+                                    <span>
+                                        <svg viewBox="0 0 24 24" fill="#FBBF24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+                                        8.4k
+                                    </span>
+                                    <span>TypeScript</span>
+                                </div>
+                            </div>
+                            <span class="ll-widget-compact__mentions ll-widget-compact__mentions--hot">
+                                🔥 127
+                            </span>
+                        </li>
+                        <li class="ll-widget-compact__item">
+                            <div class="ll-widget-compact__project">
+                                <div class="ll-widget-compact__project-name">react-forms-pro</div>
+                                <div class="ll-widget-compact__project-stats">
+                                    <span>
+                                        <svg viewBox="0 0 24 24" fill="#FBBF24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+                                        6.2k
+                                    </span>
+                                    <span>TypeScript</span>
+                                </div>
+                            </div>
+                            <span class="ll-widget-compact__mentions ll-widget-compact__mentions--warm">
+                                🔥 84
+                            </span>
+                        </li>
+                        <li class="ll-widget-compact__item">
+                            <div class="ll-widget-compact__project">
+                                <div class="ll-widget-compact__project-name">tailwind-tokens</div>
+                                <div class="ll-widget-compact__project-stats">
+                                    <span>
+                                        <svg viewBox="0 0 24 24" fill="#FBBF24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+                                        4.8k
+                                    </span>
+                                    <span>JavaScript</span>
+                                </div>
+                            </div>
+                            <span class="ll-widget-compact__mentions ll-widget-compact__mentions--warm">
+                                🔥 56
+                            </span>
+                        </li>
+                    </ul>
+                    <div class="ll-widget-compact__footer">
+                        <a href="#" class="ll-widget-compact__link">View full portfolio →</a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Custom Purple Theme -->
+            <div class="demo-container purple custom-theme-purple">
+                <span class="demo-label">Custom Theme</span>
+                <div class="ll-widget-compact">
+                    <div class="ll-widget-compact__header">
+                        <div class="ll-widget-compact__avatar">SG</div>
+                        <div class="ll-widget-compact__user">
+                            <div class="ll-widget-compact__name">Sarah Guo</div>
+                            <div class="ll-widget-compact__handle">@sarahguo</div>
+                        </div>
+                    </div>
+                    <ul class="ll-widget-compact__list">
+                        <li class="ll-widget-compact__item">
+                            <div class="ll-widget-compact__project">
+                                <div class="ll-widget-compact__project-name">shipfast-cli</div>
+                                <div class="ll-widget-compact__project-stats">
+                                    <span>
+                                        <svg viewBox="0 0 24 24" fill="#FBBF24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+                                        8.4k
+                                    </span>
+                                    <span>TypeScript</span>
+                                </div>
+                            </div>
+                            <span class="ll-widget-compact__mentions ll-widget-compact__mentions--hot">
+                                🔥 127
+                            </span>
+                        </li>
+                        <li class="ll-widget-compact__item">
+                            <div class="ll-widget-compact__project">
+                                <div class="ll-widget-compact__project-name">react-forms-pro</div>
+                                <div class="ll-widget-compact__project-stats">
+                                    <span>
+                                        <svg viewBox="0 0 24 24" fill="#FBBF24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+                                        6.2k
+                                    </span>
+                                    <span>TypeScript</span>
+                                </div>
+                            </div>
+                            <span class="ll-widget-compact__mentions ll-widget-compact__mentions--warm">
+                                🔥 84
+                            </span>
+                        </li>
+                    </ul>
+                    <div class="ll-widget-compact__footer">
+                        <a href="#" class="ll-widget-compact__link">View full portfolio →</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- SECTION 3: MINIMAL STYLE -->
+    <section class="section">
+        <div class="section-header">
+            <span class="section-number">3</span>
+            <h2 class="section-title">Minimal Style</h2>
+        </div>
+        <p class="section-description">
+            Ultra-lightweight with just project names and mention counts.
+            Best for footers, nav bars, and minimal integrations.
+        </p>
+
+        <div class="widget-grid">
+            <!-- Light Mode -->
+            <div class="demo-container light">
+                <span class="demo-label">Light Mode</span>
+                <div class="ll-widget-minimal">
+                    <div class="ll-widget-minimal__header">
+                        <span class="ll-widget-minimal__title">My Projects</span>
+                    </div>
+                    <ul class="ll-widget-minimal__list">
+                        <li class="ll-widget-minimal__item">
+                            <span class="ll-widget-minimal__name">shipfast-cli</span>
+                            <span class="ll-widget-minimal__count ll-widget-minimal__count--hot">🔥 127</span>
+                        </li>
+                        <li class="ll-widget-minimal__item">
+                            <span class="ll-widget-minimal__name">react-forms-pro</span>
+                            <span class="ll-widget-minimal__count ll-widget-minimal__count--warm">🔥 84</span>
+                        </li>
+                        <li class="ll-widget-minimal__item">
+                            <span class="ll-widget-minimal__name">tailwind-tokens</span>
+                            <span class="ll-widget-minimal__count ll-widget-minimal__count--warm">🔥 56</span>
+                        </li>
+                        <li class="ll-widget-minimal__item">
+                            <span class="ll-widget-minimal__name">cron-scheduler</span>
+                            <span class="ll-widget-minimal__count ll-widget-minimal__count--cool">42</span>
+                        </li>
+                    </ul>
+                    <div class="ll-widget-minimal__powered">
+                        Powered by <a href="#">LaunchLog</a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Dark Mode -->
+            <div class="demo-container dark dark-theme">
+                <span class="demo-label">Dark Mode</span>
+                <div class="ll-widget-minimal">
+                    <div class="ll-widget-minimal__header">
+                        <span class="ll-widget-minimal__title">My Projects</span>
+                    </div>
+                    <ul class="ll-widget-minimal__list">
+                        <li class="ll-widget-minimal__item">
+                            <span class="ll-widget-minimal__name">shipfast-cli</span>
+                            <span class="ll-widget-minimal__count ll-widget-minimal__count--hot">🔥 127</span>
+                        </li>
+                        <li class="ll-widget-minimal__item">
+                            <span class="ll-widget-minimal__name">react-forms-pro</span>
+                            <span class="ll-widget-minimal__count ll-widget-minimal__count--warm">🔥 84</span>
+                        </li>
+                        <li class="ll-widget-minimal__item">
+                            <span class="ll-widget-minimal__name">tailwind-tokens</span>
+                            <span class="ll-widget-minimal__count ll-widget-minimal__count--warm">🔥 56</span>
+                        </li>
+                        <li class="ll-widget-minimal__item">
+                            <span class="ll-widget-minimal__name">cron-scheduler</span>
+                            <span class="ll-widget-minimal__count ll-widget-minimal__count--cool">42</span>
+                        </li>
+                    </ul>
+                    <div class="ll-widget-minimal__powered">
+                        Powered by <a href="#">LaunchLog</a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Warm Theme -->
+            <div class="demo-container warm custom-theme-warm">
+                <span class="demo-label">Custom Theme</span>
+                <div class="ll-widget-minimal">
+                    <div class="ll-widget-minimal__header">
+                        <span class="ll-widget-minimal__title">My Projects</span>
+                    </div>
+                    <ul class="ll-widget-minimal__list">
+                        <li class="ll-widget-minimal__item">
+                            <span class="ll-widget-minimal__name">shipfast-cli</span>
+                            <span class="ll-widget-minimal__count ll-widget-minimal__count--hot">🔥 127</span>
+                        </li>
+                        <li class="ll-widget-minimal__item">
+                            <span class="ll-widget-minimal__name">react-forms-pro</span>
+                            <span class="ll-widget-minimal__count ll-widget-minimal__count--warm">🔥 84</span>
+                        </li>
+                        <li class="ll-widget-minimal__item">
+                            <span class="ll-widget-minimal__name">tailwind-tokens</span>
+                            <span class="ll-widget-minimal__count ll-widget-minimal__count--warm">🔥 56</span>
+                        </li>
+                    </ul>
+                    <div class="ll-widget-minimal__powered">
+                        Powered by <a href="#">LaunchLog</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CSS VARIABLE INHERITANCE EXAMPLE -->
+    <section class="section">
+        <div class="section-header">
+            <span class="section-number">⚙️</span>
+            <h2 class="section-title">CSS Variable Inheritance</h2>
+        </div>
+        <p class="section-description">
+            Widgets automatically inherit your site's design system via CSS variables.
+            Override any variable to match your brand.
+        </p>
+
+        <div class="code-block">
+            <code>
+<span class="comment">/* Your site's CSS - widgets will inherit these */</span>
+<span class="tag">:root</span> {
+    <span class="attr">--ll-font-family</span>: <span class="value">'Your Font', sans-serif</span>;
+    <span class="attr">--ll-color-bg</span>: <span class="value">#1E1B4B</span>;
+    <span class="attr">--ll-color-surface</span>: <span class="value">#312E81</span>;
+    <span class="attr">--ll-color-text</span>: <span class="value">#E0E7FF</span>;
+    <span class="attr">--ll-color-text-secondary</span>: <span class="value">#A5B4FC</span>;
+    <span class="attr">--ll-color-border</span>: <span class="value">#4338CA</span>;
+    <span class="attr">--ll-color-primary</span>: <span class="value">#818CF8</span>;
+    <span class="attr">--ll-radius-sm</span>: <span class="value">8px</span>;
+    <span class="attr">--ll-radius-md</span>: <span class="value">12px</span>;
+}
+
+<span class="comment">/* Embed the widget */</span>
+<span class="tag">&lt;script</span> <span class="attr">src</span>=<span class="value">"https://launchlog.com/widget.js"</span>
+        <span class="attr">data-user</span>=<span class="value">"sarahguo"</span>
+        <span class="attr">data-style</span>=<span class="value">"compact"</span><span class="tag">&gt;&lt;/script&gt;</span>
+            </code>
+        </div>
+    </section>
+</body>
+</html>
