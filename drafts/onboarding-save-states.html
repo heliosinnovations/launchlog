@@ -1,0 +1,512 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LaunchLog - Onboarding Save States</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --color-bg: #0F0F14;
+            --color-surface: #1A1A24;
+            --color-surface-elevated: #24243A;
+            --color-text: #FFFFFF;
+            --color-text-secondary: #A0A0B8;
+            --color-border: #2E2E3A;
+            --gradient-primary: linear-gradient(135deg, #6366F1 0%, #8B5CF6 50%, #A855F7 100%);
+            --color-primary: #6366F1;
+            --color-success: #22C55E;
+            --color-error: #EF4444;
+            --radius-md: 12px;
+            --radius-lg: 16px;
+            --radius-xl: 24px;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--color-bg);
+            color: var(--color-text);
+            line-height: 1.6;
+            padding: 40px;
+        }
+
+        h1 {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 32px;
+            margin-bottom: 8px;
+            text-align: center;
+        }
+
+        .subtitle {
+            color: var(--color-text-secondary);
+            text-align: center;
+            margin-bottom: 60px;
+        }
+
+        .section {
+            margin-bottom: 80px;
+        }
+
+        .section-title {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 20px;
+            color: var(--color-text-secondary);
+            margin-bottom: 24px;
+            padding-bottom: 12px;
+            border-bottom: 1px solid var(--color-border);
+        }
+
+        .states-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 32px;
+        }
+
+        .state-card {
+            background: var(--color-surface);
+            border: 1px solid var(--color-border);
+            border-radius: var(--radius-lg);
+            padding: 24px;
+        }
+
+        .state-label {
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--color-text-secondary);
+            margin-bottom: 16px;
+        }
+
+        /* Button Styles */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            padding: 16px 32px;
+            border-radius: var(--radius-md);
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            border: none;
+            transition: all 0.3s;
+            width: 100%;
+        }
+
+        .btn-primary {
+            background: var(--gradient-primary);
+            color: white;
+            box-shadow: 0 8px 24px rgba(99, 102, 241, 0.35);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 32px rgba(99, 102, 241, 0.45);
+        }
+
+        .btn-loading {
+            background: var(--gradient-primary);
+            color: white;
+            opacity: 0.8;
+            cursor: wait;
+        }
+
+        .btn-success {
+            background: linear-gradient(135deg, #22C55E 0%, #16A34A 100%);
+            color: white;
+            box-shadow: 0 8px 24px rgba(34, 197, 94, 0.35);
+        }
+
+        .btn-error {
+            background: var(--color-surface-elevated);
+            color: var(--color-error);
+            border: 2px solid var(--color-error);
+        }
+
+        /* Spinner */
+        .spinner {
+            width: 20px;
+            height: 20px;
+            border: 2px solid rgba(255,255,255,0.3);
+            border-top-color: white;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* Icons */
+        .icon {
+            width: 20px;
+            height: 20px;
+        }
+
+        /* Toast Notifications */
+        .toast {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 16px 20px;
+            border-radius: var(--radius-md);
+            margin-top: 16px;
+        }
+
+        .toast-success {
+            background: rgba(34, 197, 94, 0.1);
+            border: 1px solid rgba(34, 197, 94, 0.3);
+            color: var(--color-success);
+        }
+
+        .toast-error {
+            background: rgba(239, 68, 68, 0.1);
+            border: 1px solid rgba(239, 68, 68, 0.3);
+            color: var(--color-error);
+        }
+
+        /* Full-page overlay states */
+        .overlay {
+            background: var(--color-surface);
+            border: 1px solid var(--color-border);
+            border-radius: var(--radius-xl);
+            padding: 60px 40px;
+            text-align: center;
+            max-width: 480px;
+            margin: 0 auto;
+        }
+
+        .overlay-icon {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 24px;
+        }
+
+        .overlay-icon.success {
+            background: rgba(34, 197, 94, 0.15);
+        }
+
+        .overlay-icon.error {
+            background: rgba(239, 68, 68, 0.15);
+        }
+
+        .overlay-icon svg {
+            width: 40px;
+            height: 40px;
+        }
+
+        .overlay h2 {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 24px;
+            margin-bottom: 12px;
+        }
+
+        .overlay p {
+            color: var(--color-text-secondary);
+            margin-bottom: 24px;
+        }
+
+        /* Progress bar for loading */
+        .progress-container {
+            width: 100%;
+            height: 4px;
+            background: var(--color-surface-elevated);
+            border-radius: 2px;
+            overflow: hidden;
+            margin: 24px 0;
+        }
+
+        .progress-bar {
+            height: 100%;
+            background: var(--gradient-primary);
+            animation: progress 2s ease-in-out infinite;
+        }
+
+        @keyframes progress {
+            0% { width: 0%; transform: translateX(0); }
+            50% { width: 70%; }
+            100% { width: 100%; transform: translateX(0); }
+        }
+
+        /* Checkmark animation */
+        .checkmark-circle {
+            stroke-dasharray: 166;
+            stroke-dashoffset: 166;
+            animation: stroke 0.6s cubic-bezier(0.65, 0, 0.45, 1) forwards;
+        }
+
+        .checkmark-check {
+            stroke-dasharray: 48;
+            stroke-dashoffset: 48;
+            animation: stroke 0.3s cubic-bezier(0.65, 0, 0.45, 1) 0.4s forwards;
+        }
+
+        @keyframes stroke {
+            100% { stroke-dashoffset: 0; }
+        }
+
+        /* Mobile responsive */
+        @media (max-width: 768px) {
+            body { padding: 20px; }
+            h1 { font-size: 24px; }
+            .states-grid { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+    <h1>Onboarding Save Flow States</h1>
+    <p class="subtitle">All interactive states for the repo selection save functionality</p>
+
+    <!-- Section 1: Button States -->
+    <div class="section">
+        <h2 class="section-title">1. Button States</h2>
+        <div class="states-grid">
+            <!-- Default State -->
+            <div class="state-card">
+                <div class="state-label">Default</div>
+                <button class="btn btn-primary">
+                    Continue to Profile
+                    <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+                    </svg>
+                </button>
+            </div>
+
+            <!-- Disabled State -->
+            <div class="state-card">
+                <div class="state-label">Disabled (No selection)</div>
+                <button class="btn btn-primary" style="opacity: 0.5; cursor: not-allowed;">
+                    Continue to Profile
+                    <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+                    </svg>
+                </button>
+                <p style="font-size: 12px; color: var(--color-text-secondary); margin-top: 12px; text-align: center;">Select at least one repository</p>
+            </div>
+
+            <!-- Loading State -->
+            <div class="state-card">
+                <div class="state-label">Loading / Saving</div>
+                <button class="btn btn-loading">
+                    <div class="spinner"></div>
+                    Saving your selection...
+                </button>
+            </div>
+
+            <!-- Success State (momentary) -->
+            <div class="state-card">
+                <div class="state-label">Success (before redirect)</div>
+                <button class="btn btn-success">
+                    <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                    </svg>
+                    Saved! Redirecting...
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Section 2: Toast Notifications -->
+    <div class="section">
+        <h2 class="section-title">2. Toast Notifications</h2>
+        <div class="states-grid">
+            <!-- Success Toast -->
+            <div class="state-card">
+                <div class="state-label">Success Toast</div>
+                <div class="toast toast-success">
+                    <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                    </svg>
+                    <div>
+                        <div style="font-weight: 600;">Repositories saved!</div>
+                        <div style="font-size: 13px; opacity: 0.8;">3 projects added to your LaunchLog</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Error Toast -->
+            <div class="state-card">
+                <div class="state-label">Error Toast</div>
+                <div class="toast toast-error">
+                    <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                    </svg>
+                    <div>
+                        <div style="font-weight: 600;">Failed to save</div>
+                        <div style="font-size: 13px; opacity: 0.8;">Please try again or contact support</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Network Error Toast -->
+            <div class="state-card">
+                <div class="state-label">Network Error Toast</div>
+                <div class="toast toast-error">
+                    <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.364 5.636a9 9 0 010 12.728m0 0l-2.829-2.829m2.829 2.829L21 21M15.536 8.464a5 5 0 010 7.072m0 0l-2.829-2.829m-4.243 2.829a4.978 4.978 0 01-1.414-2.83m-1.414 5.658a9 9 0 01-2.167-9.238m7.824 2.167a1 1 0 111.414 1.414m-1.414-1.414L3 3"/>
+                    </svg>
+                    <div>
+                        <div style="font-weight: 600;">Connection lost</div>
+                        <div style="font-size: 13px; opacity: 0.8;">Check your internet connection</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Section 3: Full Page Overlays -->
+    <div class="section">
+        <h2 class="section-title">3. Full Page States</h2>
+        <div class="states-grid">
+            <!-- Loading Overlay -->
+            <div class="state-card" style="background: var(--color-bg);">
+                <div class="state-label">Loading Overlay</div>
+                <div class="overlay">
+                    <div class="spinner" style="width: 48px; height: 48px; border-width: 3px; margin: 0 auto 24px;"></div>
+                    <h2>Setting up your profile...</h2>
+                    <p>Syncing your repositories with LaunchLog</p>
+                    <div class="progress-container">
+                        <div class="progress-bar"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Success Overlay -->
+            <div class="state-card" style="background: var(--color-bg);">
+                <div class="state-label">Success Overlay</div>
+                <div class="overlay">
+                    <div class="overlay-icon success">
+                        <svg viewBox="0 0 52 52" style="color: var(--color-success);">
+                            <circle class="checkmark-circle" cx="26" cy="26" r="25" fill="none" stroke="currentColor" stroke-width="2"/>
+                            <path class="checkmark-check" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" d="M14.1 27.2l7.1 7.2 16.7-16.8"/>
+                        </svg>
+                    </div>
+                    <h2>You're all set! 🎉</h2>
+                    <p>Your LaunchLog profile is ready. Taking you to your dashboard...</p>
+                    <button class="btn btn-primary" style="margin-top: 8px;">
+                        Go to Dashboard
+                        <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Error Overlay -->
+            <div class="state-card" style="background: var(--color-bg);">
+                <div class="state-label">Error Overlay</div>
+                <div class="overlay">
+                    <div class="overlay-icon error">
+                        <svg viewBox="0 0 24 24" style="color: var(--color-error);" fill="none" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
+                        </svg>
+                    </div>
+                    <h2>Something went wrong</h2>
+                    <p>We couldn't save your repositories. This might be a temporary issue.</p>
+                    <button class="btn btn-primary" style="margin-top: 8px; margin-bottom: 12px;">
+                        <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
+                        </svg>
+                        Try Again
+                    </button>
+                    <a href="#" style="color: var(--color-text-secondary); font-size: 14px;">Contact Support</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Section 4: Inline Error States -->
+    <div class="section">
+        <h2 class="section-title">4. Inline Error Display</h2>
+        <div class="states-grid">
+            <!-- Error banner above button -->
+            <div class="state-card">
+                <div class="state-label">Error Banner</div>
+                <div style="padding: 16px; background: rgba(239, 68, 68, 0.1); border: 1px solid rgba(239, 68, 68, 0.2); border-radius: var(--radius-md); margin-bottom: 16px; display: flex; align-items: center; gap: 12px;">
+                    <svg class="icon" style="color: var(--color-error); flex-shrink: 0;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                    </svg>
+                    <span style="color: var(--color-error); font-size: 14px;">Failed to save selections. Please try again.</span>
+                </div>
+                <button class="btn btn-primary">
+                    <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
+                    </svg>
+                    Retry
+                </button>
+            </div>
+
+            <!-- Validation error -->
+            <div class="state-card">
+                <div class="state-label">Validation Error</div>
+                <div style="padding: 16px; background: rgba(251, 191, 36, 0.1); border: 1px solid rgba(251, 191, 36, 0.2); border-radius: var(--radius-md); margin-bottom: 16px; display: flex; align-items: center; gap: 12px;">
+                    <svg class="icon" style="color: #FBBF24; flex-shrink: 0;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
+                    </svg>
+                    <span style="color: #FBBF24; font-size: 14px;">Please select at least one repository to continue</span>
+                </div>
+                <button class="btn btn-primary" style="opacity: 0.5; cursor: not-allowed;">
+                    Continue to Profile
+                    <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+                    </svg>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Section 5: Confirmation Dialog -->
+    <div class="section">
+        <h2 class="section-title">5. Confirmation Summary (Optional)</h2>
+        <div class="states-grid">
+            <div class="state-card" style="background: var(--color-bg); max-width: 500px;">
+                <div class="state-label">Save Confirmation</div>
+                <div style="background: var(--color-surface); border: 1px solid var(--color-border); border-radius: var(--radius-lg); padding: 24px;">
+                    <h3 style="font-family: 'Space Grotesk', sans-serif; margin-bottom: 16px;">Ready to create your profile?</h3>
+                    <p style="color: var(--color-text-secondary); font-size: 14px; margin-bottom: 20px;">You're about to showcase these 3 repositories:</p>
+
+                    <!-- Selected repos preview -->
+                    <div style="display: flex; flex-direction: column; gap: 8px; margin-bottom: 24px;">
+                        <div style="display: flex; align-items: center; gap: 10px; padding: 12px; background: var(--color-surface-elevated); border-radius: var(--radius-md);">
+                            <div style="width: 8px; height: 8px; background: #3178c6; border-radius: 50%;"></div>
+                            <span style="font-weight: 500;">launchlog</span>
+                            <span style="color: var(--color-text-secondary); font-size: 13px; margin-left: auto;">TypeScript</span>
+                        </div>
+                        <div style="display: flex; align-items: center; gap: 10px; padding: 12px; background: var(--color-surface-elevated); border-radius: var(--radius-md);">
+                            <div style="width: 8px; height: 8px; background: #f1e05a; border-radius: 50%;"></div>
+                            <span style="font-weight: 500;">awesome-project</span>
+                            <span style="color: var(--color-text-secondary); font-size: 13px; margin-left: auto;">JavaScript</span>
+                        </div>
+                        <div style="display: flex; align-items: center; gap: 10px; padding: 12px; background: var(--color-surface-elevated); border-radius: var(--radius-md);">
+                            <div style="width: 8px; height: 8px; background: #dea584; border-radius: 50%;"></div>
+                            <span style="font-weight: 500;">rust-cli-tool</span>
+                            <span style="color: var(--color-text-secondary); font-size: 13px; margin-left: auto;">Rust</span>
+                        </div>
+                    </div>
+
+                    <div style="display: flex; gap: 12px;">
+                        <button style="flex: 1; padding: 12px; background: transparent; border: 1px solid var(--color-border); border-radius: var(--radius-md); color: var(--color-text-secondary); cursor: pointer; font-size: 14px; font-weight: 500;">
+                            Go Back
+                        </button>
+                        <button class="btn btn-primary" style="flex: 2;">
+                            Confirm & Continue
+                            <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
