@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { Github } from "lucide-react";
 
 export default function HeroSection() {
@@ -43,14 +44,14 @@ export default function HeroSection() {
         role="group"
         aria-label="Call to action buttons"
       >
-        <a
-          href="/auth/github"
+        <Link
+          href="/signin"
           className="inline-flex items-center justify-center gap-2 bg-gradient-to-r from-indigo-500 via-purple-500 to-fuchsia-500 text-white px-5 py-2.5 rounded-lg text-sm font-semibold transition-all duration-300 hover:-translate-y-0.5 shadow-[0_4px_16px_rgba(99,102,241,0.3)] hover:shadow-[0_6px_24px_rgba(99,102,241,0.4)] focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
           aria-label="Sign in with GitHub to connect your account"
         >
           <Github className="w-4 h-4" aria-hidden="true" />
           Sign in with GitHub
-        </a>
+        </Link>
         <a
           href="#example"
           className="inline-flex items-center justify-center bg-transparent border border-[var(--color-border)] text-[var(--color-text)] px-5 py-2.5 rounded-lg text-sm font-medium transition-all duration-200 hover:border-[var(--color-text)] focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
