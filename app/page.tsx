@@ -3,6 +3,7 @@ import HeroSection from "@/components/HeroSection";
 import FeaturesSection from "@/components/FeaturesSection";
 import HowItWorksSection from "@/components/HowItWorksSection";
 import ExampleProfileSection from "@/components/ExampleProfileSection";
+import PricingSection from "@/components/PricingSection";
 import Footer from "@/components/Footer";
 
 export default function Home() {
@@ -14,6 +15,7 @@ export default function Home() {
         <FeaturesSection />
         <HowItWorksSection />
         <ExampleProfileSection />
+        <PricingSection />
         <Footer />
       </main>
     </>
