@@ -44,7 +44,9 @@ export function createSupabaseBrowserClient() {
 
   return createBrowserClient(supabaseUrl, supabaseAnonKey, {
     cookieOptions: {
-      secure: process.env.NODE_ENV === "production",
+      secure: typeof window !== 'undefined'
+        ? window.location.protocol === 'https:'
+        : true,  // Default secure for SSR
       sameSite: "lax",
     },
   })
