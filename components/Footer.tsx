@@ -1,154 +1,133 @@
-"use client";
-
 import Link from "next/link";
 import { Rocket, Github, Twitter, MessageCircle } from "lucide-react";
 
-interface FooterLinkProps {
-  href: string;
-  children: React.ReactNode;
-  external?: boolean;
-}
+const footerLinks = {
+  product: {
+    title: "Product",
+    links: [
+      { label: "Features", href: "#features" },
+      { label: "Docs", href: "#" },
+      { label: "Pricing", href: "#pricing" },
+    ],
+  },
+  resources: {
+    title: "Resources",
+    links: [
+      { label: "Blog", href: "#" },
+      { label: "Support", href: "#" },
+      { label: "Community", href: "#" },
+    ],
+  },
+  legal: {
+    title: "Legal",
+    links: [
+      { label: "Privacy", href: "#" },
+      { label: "Terms", href: "#" },
+    ],
+  },
+};
 
-function FooterLink({ href, children, external = false }: FooterLinkProps) {
-  const linkProps = external
-    ? { target: "_blank", rel: "noopener noreferrer" }
-    : {};
-
-  return (
-    <Link
-      href={href}
-      className="text-[var(--color-text-secondary)] text-sm hover:text-[var(--color-text-primary)] transition-colors"
-      {...linkProps}
-    >
-      {children}
-    </Link>
-  );
-}
-
-interface SocialLinkProps {
-  href: string;
-  label: string;
-  children: React.ReactNode;
-}
-
-function SocialLink({ href, label, children }: SocialLinkProps) {
-  return (
-    <Link
-      href={href}
-      target="_blank"
-      rel="noopener noreferrer"
-      className="text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] transition-colors"
-      aria-label={label}
-    >
-      {children}
-    </Link>
-  );
-}
+const socialLinks = [
+  {
+    href: "https://twitter.com/launchlog",
+    label: "Follow us on Twitter",
+    icon: <Twitter className="w-5 h-5" aria-hidden="true" />,
+  },
+  {
+    href: "https://github.com/heliosinnovations/launchlog",
+    label: "View our GitHub repository",
+    icon: <Github className="w-5 h-5" aria-hidden="true" />,
+  },
+  {
+    href: "https://discord.gg/launchlog",
+    label: "Join our Discord community",
+    icon: <MessageCircle className="w-5 h-5" aria-hidden="true" />,
+  },
+];
 
 export default function Footer() {
-  const navigationLinks = [
-    { href: "#features", label: "Features" },
-    { href: "#pricing", label: "Pricing" },
-    { href: "/docs", label: "Docs" },
-    { href: "/blog", label: "Blog" },
-    { href: "https://github.com/heliosinnovations/launchlog", label: "GitHub", external: true },
-  ];
-
-  const socialLinks = [
-    {
-      href: "https://twitter.com/launchlog",
-      label: "Follow us on Twitter",
-      icon: <Twitter className="w-5 h-5" aria-hidden="true" />,
-    },
-    {
-      href: "https://github.com/heliosinnovations/launchlog",
-      label: "View our GitHub repository",
-      icon: <Github className="w-5 h-5" aria-hidden="true" />,
-    },
-    {
-      href: "https://discord.gg/launchlog",
-      label: "Join our Discord community",
-      icon: <MessageCircle className="w-5 h-5" aria-hidden="true" />,
-    },
-  ];
-
-  const legalLinks = [
-    { href: "/privacy", label: "Privacy Policy" },
-    { href: "/terms", label: "Terms of Service" },
-  ];
-
   return (
-    <footer className="bg-[var(--color-surface)] border-t border-[var(--color-border)]">
-      <div className="max-w-[1000px] mx-auto px-6 py-12">
-        {/* Main Footer Content */}
-        <div className="grid grid-cols-1 md:grid-cols-12 gap-8 md:gap-6">
-          {/* Logo + Tagline */}
-          <div className="md:col-span-4">
+    <footer
+      className="bg-[var(--color-surface)]"
+      style={{
+        borderTop: "2px solid",
+        borderImage: "linear-gradient(to right, #6366F1, #8B5CF6, #D946EF) 1",
+      }}
+    >
+      <div className="max-w-[1000px] mx-auto px-6 py-16">
+        {/* Main Footer Content - 4 Column Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-10 md:gap-8">
+          {/* Brand Column */}
+          <div>
             <Link
               href="/"
-              className="font-[family-name:var(--font-space-grotesk)] text-lg font-bold flex items-center gap-2 text-[var(--color-text)] hover:opacity-80 transition-opacity mb-3"
+              className="font-[family-name:var(--font-space-grotesk)] text-lg font-bold flex items-center gap-2 text-[var(--color-text)] hover:opacity-80 transition-opacity mb-4"
               aria-label="LaunchLog home"
             >
               <div
-                className="w-7 h-7 bg-gradient-to-br from-indigo-500 via-purple-500 to-fuchsia-500 rounded-lg flex items-center justify-center"
+                className="w-8 h-8 bg-gradient-to-br from-indigo-500 via-purple-500 to-fuchsia-500 rounded-lg flex items-center justify-center"
                 aria-hidden="true"
               >
                 <Rocket className="w-4 h-4 text-white" />
               </div>
               LaunchLog
             </Link>
-            <p className="text-sm text-[var(--color-text-secondary)]">
-              Track your open source impact
+            <p className="text-sm text-[var(--color-text-secondary)] leading-relaxed">
+              Your developer portfolio, always up-to-date. Automatically.
             </p>
           </div>
 
-          {/* Navigation Links */}
-          <nav
-            className="md:col-span-5 flex flex-wrap gap-x-6 gap-y-3"
-            aria-label="Footer navigation"
-          >
-            {navigationLinks.map((link) => (
-              <FooterLink
-                key={link.href}
-                href={link.href}
-                external={link.external}
-              >
-                {link.label}
-              </FooterLink>
-            ))}
-          </nav>
+          {/* Link Columns */}
+          {Object.values(footerLinks).map((section) => (
+            <div key={section.title}>
+              <h3 className="font-[family-name:var(--font-space-grotesk)] text-sm font-semibold text-[var(--color-text)] mb-4 uppercase tracking-wider">
+                {section.title}
+              </h3>
+              <nav aria-label={`${section.title} links`}>
+                <ul className="space-y-3">
+                  {section.links.map((link) => (
+                    <li key={link.label}>
+                      <Link
+                        href={link.href}
+                        className="text-sm text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] transition-colors"
+                      >
+                        {link.label}
+                      </Link>
+                    </li>
+                  ))}
+                </ul>
+              </nav>
+            </div>
+          ))}
+        </div>
+
+        {/* Bottom Row */}
+        <div className="mt-12 pt-8 border-t border-[var(--color-border)] flex flex-col md:flex-row justify-between items-center gap-6">
+          {/* Copyright */}
+          <p className="text-sm text-[var(--color-text-secondary)]">
+            &copy; {new Date().getFullYear()} LaunchLog. All rights reserved.
+          </p>
 
           {/* Social Links */}
           <div
-            className="md:col-span-3 flex gap-4 md:justify-end"
+            className="flex gap-5"
             role="list"
             aria-label="Social media links"
           >
             {socialLinks.map((social) => (
               <div key={social.href} role="listitem">
-                <SocialLink href={social.href} label={social.label}>
+                <Link
+                  href={social.href}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] hover:scale-110 transition-all duration-200"
+                  aria-label={social.label}
+                >
                   {social.icon}
-                </SocialLink>
+                </Link>
               </div>
             ))}
           </div>
-        </div>
-
-        {/* Bottom Row */}
-        <div className="mt-10 pt-6 border-t border-[var(--color-border)] flex flex-col md:flex-row justify-between items-center gap-4">
-          {/* Copyright */}
-          <p className="text-sm text-[var(--color-text-secondary)]">
-            © 2026 LaunchLog. All rights reserved.
-          </p>
-
-          {/* Legal Links */}
-          <nav className="flex gap-6" aria-label="Legal">
-            {legalLinks.map((link) => (
-              <FooterLink key={link.href} href={link.href}>
-                {link.label}
-              </FooterLink>
-            ))}
-          </nav>
         </div>
       </div>
     </footer>
