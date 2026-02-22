@@ -2,10 +2,8 @@ import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
 
 export async function middleware(request: NextRequest) {
-  let response = NextResponse.next({
-    request: {
-      headers: request.headers,
-    },
+  let supabaseResponse = NextResponse.next({
+    request,
   });
 
   const supabase = createServerClient(
@@ -13,64 +11,43 @@ export async function middleware(request: NextRequest) {
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
     {
       cookies: {
-        get(name: string) {
-          return request.cookies.get(name)?.value;
+        getAll() {
+          return request.cookies.getAll();
         },
-        set(name: string, value: string, options) {
-          const secureOptions = {
-            ...options,
-            secure: true,
-            httpOnly: true,
-            sameSite: "lax" as const,
-          };
-          request.cookies.set({
-            name,
-            value,
-            ...secureOptions,
+        setAll(cookiesToSet) {
+          cookiesToSet.forEach(({ name, value }) =>
+            request.cookies.set(name, value)
+          );
+          supabaseResponse = NextResponse.next({
+            request,
           });
-          response = NextResponse.next({
-            request: {
-              headers: request.headers,
-            },
-          });
-          response.cookies.set({
-            name,
-            value,
-            ...secureOptions,
-          });
-        },
-        remove(name: string, options) {
-          const secureOptions = {
-            ...options,
-            secure: true,
-            httpOnly: true,
-            sameSite: "lax" as const,
-          };
-          request.cookies.set({
-            name,
-            value: "",
-            ...secureOptions,
-          });
-          response = NextResponse.next({
-            request: {
-              headers: request.headers,
-            },
-          });
-          response.cookies.set({
-            name,
-            value: "",
-            ...secureOptions,
+          cookiesToSet.forEach(({ name, value, options }) => {
+            supabaseResponse.cookies.set(name, value, {
+              ...options,
+              secure: true,        // Force HTTPS cookies
+              sameSite: "lax",     // CSRF protection
+              httpOnly: false,     // Supabase needs client access
+            });
           });
         },
       },
-    },
+    }
   );
+
+  // IMPORTANT: Do NOT run code between createServerClient and
+  // supabase.auth.getUser(). A simple mistake could make it very hard to debug
+  // issues with users being randomly logged out.
 
   // Refresh the session by calling getUser()
   // This will refresh the session if it's expired and set the new cookies
-  await supabase.auth.getUser();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
 
-  return response;
+  // You can add protected routes logic here if needed
+  // For example, redirect to signin if not authenticated on protected routes
+
+  return supabaseResponse;
 }
 
 export const config = {

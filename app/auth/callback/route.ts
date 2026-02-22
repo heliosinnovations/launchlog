@@ -20,7 +20,12 @@ export async function GET(request: Request) {
           },
           setAll(cookiesToSet) {
             cookiesToSet.forEach(({ name, value, options }) =>
-              cookieStore.set(name, value, options)
+              cookieStore.set(name, value, {
+                ...options,
+                secure: true,        // Force HTTPS cookies
+                sameSite: "lax",     // CSRF protection
+                httpOnly: false,     // Supabase needs client access
+              })
             )
           },
         },
