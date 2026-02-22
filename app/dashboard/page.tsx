@@ -22,6 +22,7 @@ import {
   X,
   User,
 } from "lucide-react"
+import DashboardFooter from "@/components/DashboardFooter"
 
 interface UserRepo {
   id: string
@@ -229,7 +230,7 @@ export default function DashboardPage() {
   }
 
   return (
-    <div className="min-h-screen bg-[var(--color-bg)]">
+    <div className="min-h-screen bg-[var(--color-bg)] flex flex-col">
       {/* Mobile Sidebar Overlay */}
       {sidebarOpen && (
         <div
@@ -629,6 +630,11 @@ export default function DashboardPage() {
           </div>
         </div>
       </main>
+
+      {/* Footer */}
+      <div className="lg:ml-[260px] mt-auto">
+        <DashboardFooter />
+      </div>
     </div>
   )
 }
