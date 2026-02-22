@@ -1,9 +1,9 @@
-"use client"
+"use client";
 
-import { useEffect, useState, useCallback } from "react"
-import { useRouter } from "next/navigation"
-import Link from "next/link"
-import Image from "next/image"
+import { useEffect, useState, useCallback } from "react";
+import { useRouter } from "next/navigation";
+import Link from "next/link";
+import Image from "next/image";
 import {
   Home,
   FolderKanban,
@@ -18,41 +18,44 @@ import {
   Loader2,
   Zap,
   Code,
-} from "lucide-react"
+  Menu,
+  X,
+  User,
+} from "lucide-react";
 
 interface UserRepo {
-  id: string
-  user_id: string
-  repo_id: number
-  repo_name: string
-  repo_full_name: string
-  repo_url: string
-  repo_description: string | null
-  repo_language: string | null
-  repo_stars: number
-  display_order: number
-  created_at: string
+  id: string;
+  user_id: string;
+  repo_id: number;
+  repo_name: string;
+  repo_full_name: string;
+  repo_url: string;
+  repo_description: string | null;
+  repo_language: string | null;
+  repo_stars: number;
+  display_order: number;
+  created_at: string;
 }
 
 interface User {
-  id: string
-  email?: string
+  id: string;
+  email?: string;
   user_metadata?: {
-    avatar_url?: string
-    full_name?: string
-    name?: string
-    user_name?: string
-    preferred_username?: string
-  }
+    avatar_url?: string;
+    full_name?: string;
+    name?: string;
+    user_name?: string;
+    preferred_username?: string;
+  };
   identities?: Array<{
-    provider: string
+    provider: string;
     identity_data?: {
-      avatar_url?: string
-      full_name?: string
-      name?: string
-      user_name?: string
-    }
-  }>
+      avatar_url?: string;
+      full_name?: string;
+      name?: string;
+      user_name?: string;
+    };
+  }>;
 }
 
 const LANGUAGE_COLORS: Record<string, string> = {
@@ -74,115 +77,126 @@ const LANGUAGE_COLORS: Record<string, string> = {
   CSS: "#563d7c",
   Shell: "#89e051",
   Scala: "#c22d40",
-}
+};
 
 export default function DashboardPage() {
-  const router = useRouter()
-  const [user, setUser] = useState<User | null>(null)
-  const [repos, setRepos] = useState<UserRepo[]>([])
-  const [loading, setLoading] = useState(true)
-  const [error, setError] = useState<string | null>(null)
-  const [copied, setCopied] = useState(false)
+  const router = useRouter();
+  const [user, setUser] = useState<User | null>(null);
+  const [repos, setRepos] = useState<UserRepo[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [copied, setCopied] = useState(false);
+  const [sidebarOpen, setSidebarOpen] = useState(false);
 
   const fetchUserAndRepos = useCallback(async () => {
     try {
-      setLoading(true)
-      setError(null)
+      setLoading(true);
+      setError(null);
 
       // Fetch user data
-      const userResponse = await fetch("/api/auth/user")
+      const userResponse = await fetch("/api/auth/user");
       if (!userResponse.ok) {
         if (userResponse.status === 401) {
-          router.push("/signin")
-          return
+          router.push("/signin");
+          return;
         }
-        throw new Error("Failed to fetch user data")
+        throw new Error("Failed to fetch user data");
       }
-      const userData = await userResponse.json()
-      setUser(userData.user)
+      const userData = await userResponse.json();
+      setUser(userData.user);
 
       // Fetch user's saved repos
-      const reposResponse = await fetch("/api/user/repos")
+      const reposResponse = await fetch("/api/user/repos");
       if (!reposResponse.ok) {
-        throw new Error("Failed to fetch repositories")
+        throw new Error("Failed to fetch repositories");
       }
-      const reposData = await reposResponse.json()
-      setRepos(reposData.repos || [])
+      const reposData = await reposResponse.json();
+      setRepos(reposData.repos || []);
     } catch (err) {
-      setError(err instanceof Error ? err.message : "An error occurred")
+      setError(err instanceof Error ? err.message : "An error occurred");
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }, [router])
+  }, [router]);
 
   useEffect(() => {
-    fetchUserAndRepos()
-  }, [fetchUserAndRepos])
+    fetchUserAndRepos();
+  }, [fetchUserAndRepos]);
 
   const getUsername = () => {
-    if (!user) return "user"
-    const githubIdentity = user.identities?.find((i) => i.provider === "github")
+    if (!user) return "user";
+    const githubIdentity = user.identities?.find(
+      (i) => i.provider === "github",
+    );
     return (
       githubIdentity?.identity_data?.user_name ||
       user.user_metadata?.user_name ||
       user.user_metadata?.preferred_username ||
       user.email?.split("@")[0] ||
       "user"
-    )
-  }
+    );
+  };
 
   const getDisplayName = () => {
-    if (!user) return "User"
-    const githubIdentity = user.identities?.find((i) => i.provider === "github")
+    if (!user) return "User";
+    const githubIdentity = user.identities?.find(
+      (i) => i.provider === "github",
+    );
     return (
       githubIdentity?.identity_data?.full_name ||
       githubIdentity?.identity_data?.name ||
       user.user_metadata?.full_name ||
       user.user_metadata?.name ||
       getUsername()
-    )
-  }
+    );
+  };
 
   const getAvatarUrl = () => {
-    if (!user) return null
-    const githubIdentity = user.identities?.find((i) => i.provider === "github")
+    if (!user) return null;
+    const githubIdentity = user.identities?.find(
+      (i) => i.provider === "github",
+    );
     return (
-      githubIdentity?.identity_data?.avatar_url || user.user_metadata?.avatar_url
-    )
-  }
+      githubIdentity?.identity_data?.avatar_url ||
+      user.user_metadata?.avatar_url
+    );
+  };
 
   const getInitials = () => {
-    const name = getDisplayName()
+    const name = getDisplayName();
     return name
       .split(" ")
       .map((n) => n[0])
       .join("")
       .toUpperCase()
-      .slice(0, 2)
-  }
+      .slice(0, 2);
+  };
 
-  const profileUrl = `launchlog.com/${getUsername()}`
+  const profileUrl = `launchlog.com/${getUsername()}`;
 
   const copyToClipboard = async (text: string) => {
     try {
-      await navigator.clipboard.writeText(`https://${text}`)
-      setCopied(true)
-      setTimeout(() => setCopied(false), 2000)
+      await navigator.clipboard.writeText(`https://${text}`);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
     } catch {
-      console.error("Failed to copy")
+      console.error("Failed to copy");
     }
-  }
+  };
 
   const handleSignOut = async () => {
     try {
-      await fetch("/api/auth/signout", { method: "POST" })
-      router.push("/signin")
+      await fetch("/api/auth/signout", { method: "POST" });
+      router.push("/signin");
     } catch {
-      console.error("Failed to sign out")
+      console.error("Failed to sign out");
     }
-  }
+  };
 
-  const totalStars = repos.reduce((sum, repo) => sum + (repo.repo_stars || 0), 0)
+  const totalStars = repos.reduce(
+    (sum, repo) => sum + (repo.repo_stars || 0),
+    0,
+  );
 
   if (loading) {
     return (
@@ -194,7 +208,7 @@ export default function DashboardPage() {
           </p>
         </div>
       </div>
-    )
+    );
   }
 
   if (error) {
@@ -214,24 +228,44 @@ export default function DashboardPage() {
           </button>
         </div>
       </div>
-    )
+    );
   }
 
   return (
     <div className="min-h-screen bg-[var(--color-bg)]">
+      {/* Mobile Sidebar Overlay */}
+      {sidebarOpen && (
+        <div
+          className="fixed inset-0 bg-black/50 z-40 lg:hidden"
+          onClick={() => setSidebarOpen(false)}
+        />
+      )}
+
       {/* Sidebar */}
-      <aside className="fixed left-0 top-0 bottom-0 w-[260px] bg-[var(--color-surface)] border-r border-[var(--color-border)] p-6 flex flex-col hidden lg:flex">
-        {/* Logo */}
-        <div className="flex items-center gap-2.5 mb-10">
-          <div className="w-8 h-8 bg-gradient-to-br from-indigo-500 via-purple-500 to-fuchsia-500 rounded-lg flex items-center justify-center">
-            <Zap className="w-[18px] h-[18px] text-white" />
+      <aside
+        className={`fixed left-0 top-0 bottom-0 w-[260px] bg-[var(--color-surface)] border-r border-[var(--color-border)] p-6 flex flex-col z-50 transform transition-transform duration-300 ease-in-out lg:translate-x-0 ${
+          sidebarOpen ? "translate-x-0" : "-translate-x-full"
+        } lg:flex`}
+      >
+        {/* Logo + Close Button */}
+        <div className="flex items-center justify-between mb-10">
+          <div className="flex items-center gap-2.5">
+            <div className="w-8 h-8 bg-gradient-to-br from-indigo-500 via-purple-500 to-fuchsia-500 rounded-lg flex items-center justify-center">
+              <Zap className="w-[18px] h-[18px] text-white" />
+            </div>
+            <span
+              className="text-xl font-bold"
+              style={{ fontFamily: "var(--font-space-grotesk)" }}
+            >
+              LaunchLog
+            </span>
           </div>
-          <span
-            className="text-xl font-bold"
-            style={{ fontFamily: "var(--font-space-grotesk)" }}
+          <button
+            onClick={() => setSidebarOpen(false)}
+            className="p-2 text-[var(--color-text-secondary)] hover:text-[var(--color-text)] hover:bg-[var(--color-surface-elevated)] rounded-lg transition-all lg:hidden"
           >
-            LaunchLog
-          </span>
+            <X className="w-5 h-5" />
+          </button>
         </div>
 
         {/* Navigation */}
@@ -310,29 +344,99 @@ export default function DashboardPage() {
         </div>
       </aside>
 
+      {/* Sticky Header */}
+      <header className="sticky top-0 z-30 bg-[var(--color-surface)] border-b border-[var(--color-border)] lg:ml-[260px]">
+        <div className="flex items-center justify-between px-4 py-3 sm:px-6 sm:py-4">
+          {/* Left side: Menu button (mobile) + Logo (mobile) */}
+          <div className="flex items-center gap-3">
+            <button
+              onClick={() => setSidebarOpen(true)}
+              className="p-2 text-[var(--color-text-secondary)] hover:text-[var(--color-text)] hover:bg-[var(--color-surface-elevated)] rounded-lg transition-all lg:hidden"
+              aria-label="Open menu"
+            >
+              <Menu className="w-5 h-5" />
+            </button>
+            <div className="flex items-center gap-2.5 lg:hidden">
+              <div className="w-7 h-7 bg-gradient-to-br from-indigo-500 via-purple-500 to-fuchsia-500 rounded-lg flex items-center justify-center">
+                <Zap className="w-4 h-4 text-white" />
+              </div>
+              <span
+                className="text-lg font-bold"
+                style={{ fontFamily: "var(--font-space-grotesk)" }}
+              >
+                LaunchLog
+              </span>
+            </div>
+          </div>
+
+          {/* Right side: User info + Sign out */}
+          <div className="flex items-center gap-2 sm:gap-4">
+            {/* User info - hidden on very small screens, shown on sm+ */}
+            <div className="hidden sm:flex items-center gap-3">
+              {getAvatarUrl() ? (
+                <Image
+                  src={getAvatarUrl()!}
+                  alt={getDisplayName()}
+                  width={32}
+                  height={32}
+                  className="w-8 h-8 rounded-full"
+                />
+              ) : (
+                <div className="w-8 h-8 rounded-full bg-gradient-to-br from-indigo-500 via-purple-500 to-fuchsia-500 flex items-center justify-center text-white font-semibold text-xs">
+                  {getInitials()}
+                </div>
+              )}
+              <div className="hidden md:block">
+                <p className="text-sm font-medium leading-tight">
+                  {getDisplayName()}
+                </p>
+                <p className="text-xs text-[var(--color-text-secondary)] leading-tight">
+                  @{getUsername()}
+                </p>
+              </div>
+            </div>
+
+            {/* View Profile link - hidden on mobile */}
+            <Link
+              href={`/${getUsername()}`}
+              target="_blank"
+              className="hidden sm:inline-flex items-center gap-2 px-3 py-2 text-sm text-[var(--color-text-secondary)] hover:text-[var(--color-text)] hover:bg-[var(--color-surface-elevated)] rounded-lg transition-all"
+            >
+              <User className="w-4 h-4" />
+              <span className="hidden md:inline">View Profile</span>
+            </Link>
+
+            {/* Mobile avatar (visible only on xs screens) */}
+            <div className="sm:hidden">
+              {getAvatarUrl() ? (
+                <Image
+                  src={getAvatarUrl()!}
+                  alt={getDisplayName()}
+                  width={32}
+                  height={32}
+                  className="w-8 h-8 rounded-full"
+                />
+              ) : (
+                <div className="w-8 h-8 rounded-full bg-gradient-to-br from-indigo-500 via-purple-500 to-fuchsia-500 flex items-center justify-center text-white font-semibold text-xs">
+                  {getInitials()}
+                </div>
+              )}
+            </div>
+
+            {/* Sign out button */}
+            <button
+              onClick={handleSignOut}
+              className="p-2 text-[var(--color-text-secondary)] hover:text-red-500 hover:bg-red-500/10 rounded-lg transition-all"
+              title="Sign out"
+            >
+              <LogOut className="w-5 h-5" />
+            </button>
+          </div>
+        </div>
+      </header>
+
       {/* Main Content */}
       <main className="lg:ml-[260px] p-6 lg:p-10 max-w-[1200px]">
-        {/* Mobile Header */}
-        <div className="lg:hidden flex items-center justify-between mb-8">
-          <div className="flex items-center gap-2.5">
-            <div className="w-8 h-8 bg-gradient-to-br from-indigo-500 via-purple-500 to-fuchsia-500 rounded-lg flex items-center justify-center">
-              <Zap className="w-[18px] h-[18px] text-white" />
-            </div>
-            <span
-              className="text-xl font-bold"
-              style={{ fontFamily: "var(--font-space-grotesk)" }}
-            >
-              LaunchLog
-            </span>
-          </div>
-          <button
-            onClick={handleSignOut}
-            className="p-2 text-[var(--color-text-secondary)] hover:text-[var(--color-text)] transition-colors"
-          >
-            <LogOut className="w-5 h-5" />
-          </button>
-        </div>
-
         {/* Page Header */}
         <div className="mb-12">
           <h1
@@ -349,7 +453,9 @@ export default function DashboardPage() {
         {/* Profile URL Card */}
         <div className="bg-[var(--color-surface)] border border-[var(--color-border)] rounded-2xl p-6 mb-8">
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-4">
-            <span className="font-semibold text-sm">Your LaunchLog Profile</span>
+            <span className="font-semibold text-sm">
+              Your LaunchLog Profile
+            </span>
             <span className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-green-500/15 rounded-full text-xs font-medium text-green-500 w-fit">
               <span className="w-1.5 h-1.5 bg-green-500 rounded-full animate-pulse" />
               Live
@@ -481,7 +587,7 @@ export default function DashboardPage() {
             <button
               onClick={() =>
                 copyToClipboard(
-                  `<script src="https://launchlog.com/embed/${getUsername()}.js"></script>\n<div id="launchlog-widget"></div>`
+                  `<script src="https://launchlog.com/embed/${getUsername()}.js"></script>\n<div id="launchlog-widget"></div>`,
                 )
               }
               className="inline-flex items-center gap-2 px-4 py-2.5 bg-[var(--color-surface-elevated)] border border-[var(--color-border)] rounded-xl text-[var(--color-text)] text-sm font-medium hover:bg-[var(--color-surface)] hover:border-[var(--color-text-secondary)] transition-all w-fit"
@@ -501,7 +607,9 @@ export default function DashboardPage() {
               <br />
               <span className="text-pink-400">&lt;div</span>{" "}
               <span className="text-purple-400">id</span>=
-              <span className="text-green-400">&quot;launchlog-widget&quot;</span>
+              <span className="text-green-400">
+                &quot;launchlog-widget&quot;
+              </span>
               <span className="text-pink-400">&gt;&lt;/div&gt;</span>
             </code>
           </div>
@@ -519,13 +627,13 @@ export default function DashboardPage() {
         </div>
       </main>
     </div>
-  )
+  );
 }
 
 function RepoCard({ repo }: { repo: UserRepo }) {
   const languageColor = repo.repo_language
     ? LANGUAGE_COLORS[repo.repo_language] || "#6e7681"
-    : null
+    : null;
 
   return (
     <a
@@ -566,5 +674,5 @@ function RepoCard({ repo }: { repo: UserRepo }) {
         </span>
       </div>
     </a>
-  )
+  );
 }
