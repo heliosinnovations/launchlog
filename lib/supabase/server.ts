@@ -19,7 +19,12 @@ export async function createSupabaseServerClient() {
         setAll(cookiesToSet) {
           try {
             cookiesToSet.forEach(({ name, value, options }) =>
-              cookieStore.set(name, value, options)
+              cookieStore.set(name, value, {
+                ...options,
+                secure: true,        // Force HTTPS cookies
+                sameSite: "lax",     // CSRF protection
+                httpOnly: false,     // Supabase needs client access
+              })
             )
           } catch {
             // The `setAll` method was called from a Server Component.
