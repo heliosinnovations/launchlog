@@ -26,10 +26,26 @@ export function getSupabaseAdmin(): SupabaseClient {
 /**
  * Creates a Supabase browser client for client-side auth operations.
  * Uses the anon key which respects RLS policies.
+ *
+ * Cookie Security Configuration:
+ * - secure: true in production (HTTPS only) - prevents cookie transmission over HTTP
+ * - httpOnly: false (REQUIRED) - Supabase SSR needs client-side JavaScript access to manage auth state
+ * - sameSite: 'lax' - CSRF protection while allowing normal navigation
+ *
+ * Note: httpOnly: false is an acceptable security tradeoff for Supabase SSR because:
+ * 1. Supabase auth tokens are short-lived and refreshed automatically
+ * 2. Client-side access is required for the auth flow to work
+ * 3. The secure flag prevents transmission over insecure connections
+ * 4. sameSite: 'lax' provides CSRF protection
  */
 export function createSupabaseBrowserClient() {
   const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!
   const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
 
-  return createBrowserClient(supabaseUrl, supabaseAnonKey)
+  return createBrowserClient(supabaseUrl, supabaseAnonKey, {
+    cookieOptions: {
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "lax",
+    },
+  })
 }
