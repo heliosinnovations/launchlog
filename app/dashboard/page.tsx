@@ -18,6 +18,9 @@ import {
   Loader2,
   Zap,
   Code,
+  Menu,
+  X,
+  User,
 } from "lucide-react"
 
 interface UserRepo {
@@ -83,6 +86,7 @@ export default function DashboardPage() {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [copied, setCopied] = useState(false)
+  const [sidebarOpen, setSidebarOpen] = useState(false)
 
   const fetchUserAndRepos = useCallback(async () => {
     try {
@@ -219,19 +223,39 @@ export default function DashboardPage() {
 
   return (
     <div className="min-h-screen bg-[var(--color-bg)]">
+      {/* Mobile Sidebar Overlay */}
+      {sidebarOpen && (
+        <div
+          className="fixed inset-0 bg-black/50 z-40 lg:hidden"
+          onClick={() => setSidebarOpen(false)}
+        />
+      )}
+
       {/* Sidebar */}
-      <aside className="fixed left-0 top-0 bottom-0 w-[260px] bg-[var(--color-surface)] border-r border-[var(--color-border)] p-6 flex flex-col hidden lg:flex">
-        {/* Logo */}
-        <div className="flex items-center gap-2.5 mb-10">
-          <div className="w-8 h-8 bg-gradient-to-br from-indigo-500 via-purple-500 to-fuchsia-500 rounded-lg flex items-center justify-center">
-            <Zap className="w-[18px] h-[18px] text-white" />
+      <aside
+        className={`fixed left-0 top-0 bottom-0 w-[260px] bg-[var(--color-surface)] border-r border-[var(--color-border)] p-6 flex flex-col z-50 transform transition-transform duration-300 ease-in-out lg:translate-x-0 ${
+          sidebarOpen ? "translate-x-0" : "-translate-x-full"
+        } lg:flex`}
+      >
+        {/* Logo + Close Button */}
+        <div className="flex items-center justify-between mb-10">
+          <div className="flex items-center gap-2.5">
+            <div className="w-8 h-8 bg-gradient-to-br from-indigo-500 via-purple-500 to-fuchsia-500 rounded-lg flex items-center justify-center">
+              <Zap className="w-[18px] h-[18px] text-white" />
+            </div>
+            <span
+              className="text-xl font-bold"
+              style={{ fontFamily: "var(--font-space-grotesk)" }}
+            >
+              LaunchLog
+            </span>
           </div>
-          <span
-            className="text-xl font-bold"
-            style={{ fontFamily: "var(--font-space-grotesk)" }}
+          <button
+            onClick={() => setSidebarOpen(false)}
+            className="p-2 text-[var(--color-text-secondary)] hover:text-[var(--color-text)] hover:bg-[var(--color-surface-elevated)] rounded-lg transition-all lg:hidden"
           >
-            LaunchLog
-          </span>
+            <X className="w-5 h-5" />
+          </button>
         </div>
 
         {/* Navigation */}
@@ -310,29 +334,99 @@ export default function DashboardPage() {
         </div>
       </aside>
 
+      {/* Sticky Header */}
+      <header className="sticky top-0 z-30 bg-[var(--color-surface)] border-b border-[var(--color-border)] lg:ml-[260px]">
+        <div className="flex items-center justify-between px-4 py-3 sm:px-6 sm:py-4">
+          {/* Left side: Menu button (mobile) + Logo (mobile) */}
+          <div className="flex items-center gap-3">
+            <button
+              onClick={() => setSidebarOpen(true)}
+              className="p-2 text-[var(--color-text-secondary)] hover:text-[var(--color-text)] hover:bg-[var(--color-surface-elevated)] rounded-lg transition-all lg:hidden"
+              aria-label="Open menu"
+            >
+              <Menu className="w-5 h-5" />
+            </button>
+            <div className="flex items-center gap-2.5 lg:hidden">
+              <div className="w-7 h-7 bg-gradient-to-br from-indigo-500 via-purple-500 to-fuchsia-500 rounded-lg flex items-center justify-center">
+                <Zap className="w-4 h-4 text-white" />
+              </div>
+              <span
+                className="text-lg font-bold"
+                style={{ fontFamily: "var(--font-space-grotesk)" }}
+              >
+                LaunchLog
+              </span>
+            </div>
+          </div>
+
+          {/* Right side: User info + Sign out */}
+          <div className="flex items-center gap-2 sm:gap-4">
+            {/* User info - hidden on very small screens, shown on sm+ */}
+            <div className="hidden sm:flex items-center gap-3">
+              {getAvatarUrl() ? (
+                <Image
+                  src={getAvatarUrl()!}
+                  alt={getDisplayName()}
+                  width={32}
+                  height={32}
+                  className="w-8 h-8 rounded-full"
+                />
+              ) : (
+                <div className="w-8 h-8 rounded-full bg-gradient-to-br from-indigo-500 via-purple-500 to-fuchsia-500 flex items-center justify-center text-white font-semibold text-xs">
+                  {getInitials()}
+                </div>
+              )}
+              <div className="hidden md:block">
+                <p className="text-sm font-medium leading-tight">
+                  {getDisplayName()}
+                </p>
+                <p className="text-xs text-[var(--color-text-secondary)] leading-tight">
+                  @{getUsername()}
+                </p>
+              </div>
+            </div>
+
+            {/* View Profile link - hidden on mobile */}
+            <Link
+              href={`/${getUsername()}`}
+              target="_blank"
+              className="hidden sm:inline-flex items-center gap-2 px-3 py-2 text-sm text-[var(--color-text-secondary)] hover:text-[var(--color-text)] hover:bg-[var(--color-surface-elevated)] rounded-lg transition-all"
+            >
+              <User className="w-4 h-4" />
+              <span className="hidden md:inline">View Profile</span>
+            </Link>
+
+            {/* Mobile avatar (visible only on xs screens) */}
+            <div className="sm:hidden">
+              {getAvatarUrl() ? (
+                <Image
+                  src={getAvatarUrl()!}
+                  alt={getDisplayName()}
+                  width={32}
+                  height={32}
+                  className="w-8 h-8 rounded-full"
+                />
+              ) : (
+                <div className="w-8 h-8 rounded-full bg-gradient-to-br from-indigo-500 via-purple-500 to-fuchsia-500 flex items-center justify-center text-white font-semibold text-xs">
+                  {getInitials()}
+                </div>
+              )}
+            </div>
+
+            {/* Sign out button */}
+            <button
+              onClick={handleSignOut}
+              className="p-2 text-[var(--color-text-secondary)] hover:text-red-500 hover:bg-red-500/10 rounded-lg transition-all"
+              title="Sign out"
+            >
+              <LogOut className="w-5 h-5" />
+            </button>
+          </div>
+        </div>
+      </header>
+
       {/* Main Content */}
       <main className="lg:ml-[260px] p-6 lg:p-10 max-w-[1200px]">
-        {/* Mobile Header */}
-        <div className="lg:hidden flex items-center justify-between mb-8">
-          <div className="flex items-center gap-2.5">
-            <div className="w-8 h-8 bg-gradient-to-br from-indigo-500 via-purple-500 to-fuchsia-500 rounded-lg flex items-center justify-center">
-              <Zap className="w-[18px] h-[18px] text-white" />
-            </div>
-            <span
-              className="text-xl font-bold"
-              style={{ fontFamily: "var(--font-space-grotesk)" }}
-            >
-              LaunchLog
-            </span>
-          </div>
-          <button
-            onClick={handleSignOut}
-            className="p-2 text-[var(--color-text-secondary)] hover:text-[var(--color-text)] transition-colors"
-          >
-            <LogOut className="w-5 h-5" />
-          </button>
-        </div>
-
         {/* Page Header */}
         <div className="mb-12">
           <h1
