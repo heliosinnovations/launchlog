@@ -1,6 +1,6 @@
 "use client";
 
-import { Github, Globe, Code, Layout } from "lucide-react";
+import { GitBranch, Zap, BarChart3, TrendingUp } from "lucide-react";
 
 interface FeatureCardProps {
   icon: React.ReactNode;
@@ -16,9 +16,9 @@ function FeatureCard({
   description,
 }: FeatureCardProps) {
   return (
-    <article className="bg-[var(--color-surface)] border border-[var(--color-border)] rounded-[var(--radius-lg)] p-7 transition-all duration-300 hover:border-[var(--color-primary)] hover:shadow-[var(--shadow-glow)]">
+    <article className="group bg-[var(--color-surface)] border border-[var(--color-border)] rounded-[var(--radius-lg)] p-7 transition-all duration-300 hover:border-[var(--color-primary)] hover:shadow-[var(--shadow-glow)] hover:-translate-y-1">
       <div
-        className={`w-12 h-12 rounded-[var(--radius-md)] flex items-center justify-center mb-5 ${iconBgClass}`}
+        className={`w-12 h-12 rounded-[var(--radius-md)] flex items-center justify-center mb-5 transition-transform duration-300 group-hover:scale-110 ${iconBgClass}`}
         aria-hidden="true"
       >
         {icon}
@@ -36,32 +36,32 @@ function FeatureCard({
 export default function FeaturesSection() {
   const features = [
     {
-      icon: <Github className="w-6 h-6 text-indigo-500" />,
+      icon: <GitBranch className="w-6 h-6 text-indigo-500" />,
       iconBgClass: "bg-indigo-500/10",
-      title: "Auto-sync repos from GitHub",
+      title: "GitHub Integration",
       description:
-        "Connect your GitHub account and we automatically track all your public repositories",
+        "Track your open source contributions automatically. Connect once and your portfolio stays in sync with every push.",
     },
     {
-      icon: <Globe className="w-6 h-6 text-orange-500" />,
-      iconBgClass: "bg-orange-500/10",
-      title: "Track mentions",
+      icon: <Zap className="w-6 h-6 text-amber-500" />,
+      iconBgClass: "bg-amber-500/10",
+      title: "Real-time Updates",
       description:
-        "Automatically find when your projects get mentioned on HackerNews, Product Hunt, Twitter, Reddit, and more",
+        "See your impact as it happens. New commits, stars, and mentions appear instantly on your profile.",
     },
     {
-      icon: <Code className="w-6 h-6 text-cyan-500" />,
+      icon: <BarChart3 className="w-6 h-6 text-cyan-500" />,
       iconBgClass: "bg-cyan-500/10",
-      title: "Embeddable widget",
+      title: "Beautiful Dashboards",
       description:
-        "Drop a lightweight widget on your personal site to showcase your projects",
+        "Visualize your open source journey with stunning charts and metrics that showcase your growth.",
     },
     {
-      icon: <Layout className="w-6 h-6 text-purple-500" />,
-      iconBgClass: "bg-purple-500/10",
-      title: "Beautiful showcase pages",
+      icon: <TrendingUp className="w-6 h-6 text-emerald-500" />,
+      iconBgClass: "bg-emerald-500/10",
+      title: "Analytics",
       description:
-        "Get a professional portfolio page at launchlog.com/username",
+        "Understand your contribution patterns. See trends, peak activity times, and project performance.",
     },
   ];
 
@@ -73,10 +73,10 @@ export default function FeaturesSection() {
           id="features-heading"
           className="font-[family-name:var(--font-space-grotesk)] text-[28px] md:text-[40px] font-bold mb-4"
         >
-          Everything syncs automatically
+          Everything you need to showcase your work
         </h2>
         <p className="text-base md:text-lg text-[var(--color-text-secondary)]">
-          Connect once. Never manually update your portfolio again.
+          Powerful features that keep your portfolio always up-to-date.
         </p>
       </header>
 
