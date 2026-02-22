@@ -20,7 +20,7 @@ export async function middleware(request: NextRequest) {
           const secureOptions = {
             ...options,
             secure: true,
-            httpOnly: true,
+            httpOnly: false,  // Required for Supabase client-side access
             sameSite: "lax" as const,
           };
           request.cookies.set({
@@ -43,7 +43,7 @@ export async function middleware(request: NextRequest) {
           const secureOptions = {
             ...options,
             secure: true,
-            httpOnly: true,
+            httpOnly: false,  // Required for Supabase client-side access
             sameSite: "lax" as const,
           };
           request.cookies.set({
