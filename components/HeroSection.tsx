@@ -1,102 +1,106 @@
 "use client";
 
 import Link from "next/link";
-import { Github } from "lucide-react";
+import { Github, CheckCircle } from "lucide-react";
 
 export default function HeroSection() {
   return (
-    <section className="max-w-[1000px] mx-auto px-6 pt-20 pb-15 text-center">
-      {/* Hero Badge */}
-      <span
-        className="inline-flex items-center gap-2 px-4 py-2 bg-[var(--color-surface)] border border-[var(--color-border)] rounded-full text-[13px] text-[var(--color-text-secondary)] mb-8"
-        role="status"
-        aria-label="Platform statistics"
-      >
+    <section className="relative overflow-hidden">
+      {/* Background gradient effects */}
+      <div className="absolute inset-0 pointer-events-none" aria-hidden="true">
+        <div className="absolute top-0 left-1/4 w-96 h-96 bg-indigo-500/20 rounded-full blur-3xl" />
+        <div className="absolute top-20 right-1/4 w-80 h-80 bg-purple-500/15 rounded-full blur-3xl" />
+        <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-full h-32 bg-gradient-to-t from-[var(--color-bg)] to-transparent" />
+      </div>
+
+      <div className="relative max-w-[1100px] mx-auto px-6 pt-16 pb-20 md:pt-24 md:pb-28 text-center">
+        {/* Hero Badge */}
         <span
-          className="w-2 h-2 bg-green-500 rounded-full animate-pulse"
-          aria-hidden="true"
-        />
-        Tracking 50K+ projects worldwide
-      </span>
-
-      {/* Headline */}
-      <h1 className="font-[family-name:var(--font-space-grotesk)] text-[32px] md:text-[44px] lg:text-[64px] font-bold tracking-[-0.03em] leading-[1.1] mb-6">
-        Show the world your
-        <br />
-        <span className="bg-gradient-to-r from-indigo-500 via-purple-500 to-fuchsia-500 bg-clip-text text-transparent">
-          code&apos;s real impact
+          className="inline-flex items-center gap-2 px-4 py-2 bg-[var(--color-surface)] border border-[var(--color-border)] rounded-full text-[13px] text-[var(--color-text-secondary)] mb-8 shadow-sm"
+          role="status"
+          aria-label="Platform status"
+        >
+          <span
+            className="w-2 h-2 bg-green-500 rounded-full animate-pulse"
+            aria-hidden="true"
+          />
+          Now in public beta
         </span>
-      </h1>
 
-      {/* Subheadline */}
-      <p className="text-base md:text-xl text-[var(--color-text-secondary)] max-w-[560px] mx-auto mb-10 leading-relaxed">
-        Like{" "}
-        <strong className="text-[var(--color-text)] font-semibold">
-          Google Scholar citations, but for developers
-        </strong>
-        . Automatically track when your projects get mentioned on HackerNews,
-        Product Hunt, Twitter, and across the web.
-      </p>
+        {/* Headline */}
+        <h1 className="font-[family-name:var(--font-space-grotesk)] text-[36px] md:text-[52px] lg:text-[72px] font-bold tracking-[-0.03em] leading-[1.05] mb-6">
+          Your code.
+          <br />
+          <span className="bg-gradient-to-r from-indigo-500 via-purple-500 to-fuchsia-500 bg-clip-text text-transparent">
+            Your impact.
+          </span>
+        </h1>
 
-      {/* CTA Buttons */}
-      <div
-        className="flex flex-col sm:flex-row justify-center gap-4 mb-15"
-        role="group"
-        aria-label="Call to action buttons"
-      >
-        <Link
-          href="/signin"
-          className="inline-flex items-center justify-center gap-2 bg-gradient-to-r from-indigo-500 via-purple-500 to-fuchsia-500 text-white px-5 py-2.5 rounded-lg text-sm font-semibold transition-all duration-300 hover:-translate-y-0.5 shadow-[0_4px_16px_rgba(99,102,241,0.3)] hover:shadow-[0_6px_24px_rgba(99,102,241,0.4)] focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
-          aria-label="Sign in with GitHub to connect your account"
+        {/* Subheadline */}
+        <p className="text-lg md:text-xl text-[var(--color-text-secondary)] max-w-[600px] mx-auto mb-10 leading-relaxed">
+          Auto-sync your GitHub projects. Track mentions across HackerNews,
+          Reddit, Product Hunt & more. Show the world what you&apos;ve built.
+        </p>
+
+        {/* CTA Buttons */}
+        <div
+          className="flex flex-col sm:flex-row justify-center gap-4 mb-6"
+          role="group"
+          aria-label="Call to action buttons"
         >
-          <Github className="w-4 h-4" aria-hidden="true" />
-          Sign in with GitHub
-        </Link>
-        <a
-          href="#example"
-          className="inline-flex items-center justify-center bg-transparent border border-[var(--color-border)] text-[var(--color-text)] px-5 py-2.5 rounded-lg text-sm font-medium transition-all duration-200 hover:border-[var(--color-text)] focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
-          aria-label="View an example portfolio"
+          <Link
+            href="/signin"
+            className="inline-flex items-center justify-center gap-2.5 bg-gradient-to-r from-indigo-500 via-purple-500 to-fuchsia-500 text-white px-7 py-3.5 rounded-xl text-base font-semibold transition-all duration-300 hover:-translate-y-0.5 shadow-[0_8px_32px_rgba(99,102,241,0.35)] hover:shadow-[0_12px_40px_rgba(99,102,241,0.45)] focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
+            aria-label="Sign in with GitHub to connect your account"
+          >
+            <Github className="w-5 h-5" aria-hidden="true" />
+            Sign in with GitHub
+          </Link>
+        </div>
+
+        {/* Trust indicator */}
+        <p className="flex items-center justify-center gap-2 text-[14px] text-[var(--color-text-secondary)] mb-16">
+          <CheckCircle className="w-4 h-4 text-green-500" aria-hidden="true" />
+          Free forever. No credit card needed.
+        </p>
+
+        {/* Mention Badges Showcase */}
+        <div
+          className="flex flex-col sm:flex-row justify-center gap-3 sm:gap-4 flex-wrap mb-4"
+          role="list"
+          aria-label="Example platform mention badges"
         >
-          See Example Portfolio
-        </a>
-      </div>
+          <ShowcaseBadge
+            platform="hn"
+            icon={<HNIcon />}
+            value="312"
+            label="points"
+          />
+          <ShowcaseBadge
+            platform="ph"
+            icon={<PHIcon />}
+            value="#2"
+            label="Product"
+          />
+          <ShowcaseBadge
+            platform="twitter"
+            icon={<TwitterIcon />}
+            value="847"
+            label="likes"
+          />
+          <ShowcaseBadge
+            platform="reddit"
+            icon={<RedditIcon />}
+            value="2.4K"
+            label="upvotes"
+          />
+        </div>
 
-      {/* Mention Badges Showcase */}
-      <div
-        className="flex flex-col sm:flex-row justify-center gap-3 sm:gap-4 flex-wrap mb-4"
-        role="list"
-        aria-label="Example platform mention badges"
-      >
-        <ShowcaseBadge
-          platform="hn"
-          icon={<HNIcon />}
-          value="127"
-          label="points"
-        />
-        <ShowcaseBadge
-          platform="ph"
-          icon={<PHIcon />}
-          value="#3"
-          label="Product"
-        />
-        <ShowcaseBadge
-          platform="twitter"
-          icon={<TwitterIcon />}
-          value="2.4K"
-          label="mentions"
-        />
-        <ShowcaseBadge
-          platform="reddit"
-          icon={<RedditIcon />}
-          value="89"
-          label="upvotes"
-        />
+        {/* Caption */}
+        <p className="text-[13px] text-[var(--color-text-secondary)] text-center">
+          Example badges that appear on your projects — updated automatically
+        </p>
       </div>
-
-      {/* Caption */}
-      <p className="text-[13px] text-[var(--color-text-secondary)] text-center">
-        Example badges that appear on your projects — updated automatically
-      </p>
     </section>
   );
 }
