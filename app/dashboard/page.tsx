@@ -177,12 +177,19 @@ export default function DashboardPage() {
     }
   }
 
+  const [signingOut, setSigningOut] = useState(false)
+
   const handleSignOut = async () => {
     try {
-      await fetch("/api/auth/signout", { method: "POST" })
-      router.push("/signin")
+      setSigningOut(true)
+      const response = await fetch("/api/auth/signout", { method: "POST" })
+      if (!response.ok) {
+        throw new Error("Failed to sign out")
+      }
+      router.push("/")
     } catch {
-      console.error("Failed to sign out")
+      setSigningOut(false)
+      setError("Failed to sign out. Please try again.")
     }
   }
 
@@ -325,10 +332,15 @@ export default function DashboardPage() {
             </div>
             <button
               onClick={handleSignOut}
-              className="p-2 text-[var(--color-text-secondary)] hover:text-[var(--color-text)] hover:bg-[var(--color-surface-elevated)] rounded-lg transition-all"
+              disabled={signingOut}
+              className="p-2 text-[var(--color-text-secondary)] hover:text-[var(--color-text)] hover:bg-[var(--color-surface-elevated)] rounded-lg transition-all disabled:opacity-50"
               title="Sign out"
             >
-              <LogOut className="w-4 h-4" />
+              {signingOut ? (
+                <Loader2 className="w-4 h-4 animate-spin" />
+              ) : (
+                <LogOut className="w-4 h-4" />
+              )}
             </button>
           </div>
         </div>
@@ -416,10 +428,15 @@ export default function DashboardPage() {
             {/* Sign out button */}
             <button
               onClick={handleSignOut}
-              className="p-2 text-[var(--color-text-secondary)] hover:text-red-500 hover:bg-red-500/10 rounded-lg transition-all"
+              disabled={signingOut}
+              className="p-2 text-[var(--color-text-secondary)] hover:text-red-500 hover:bg-red-500/10 rounded-lg transition-all disabled:opacity-50"
               title="Sign out"
             >
-              <LogOut className="w-5 h-5" />
+              {signingOut ? (
+                <Loader2 className="w-5 h-5 animate-spin" />
+              ) : (
+                <LogOut className="w-5 h-5" />
+              )}
             </button>
           </div>
         </div>
