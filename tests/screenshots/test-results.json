@@ -1,0 +1,34 @@
+{
+  "passed": [
+    "Page loads successfully",
+    "Desktop screenshot captured",
+    "Beta badge visible",
+    "Main heading visible",
+    "Gradient impact text visible",
+    "Primary CTA button visible",
+    "HackerNews badge visible",
+    "Product Hunt badge visible",
+    "Twitter badge visible",
+    "Reddit badge visible",
+    "CTA hover state captured",
+    "CTA focus state captured",
+    "Badge hover state captured",
+    "Keyboard navigation functional",
+    "CTA links to correct route",
+    "No console errors",
+    "Mobile page loads",
+    "Mobile screenshot captured",
+    "Heading fits mobile viewport",
+    "CTA visible on mobile",
+    "Badges visible on mobile",
+    "Mobile tap navigation works"
+  ],
+  "failed": [],
+  "screenshots": [
+    "hero-desktop-1280x720.png",
+    "hero-cta-hover-state.png",
+    "hero-cta-focus-state.png",
+    "hero-badge-hover-state.png",
+    "hero-mobile-375x667.png"
+  ]
+}
