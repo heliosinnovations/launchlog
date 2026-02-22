@@ -34,17 +34,46 @@ export async function GET(request: Request) {
       }
     )
 
-    const { error } = await supabase.auth.exchangeCodeForSession(code)
+    const { data: sessionData, error } = await supabase.auth.exchangeCodeForSession(code)
 
-    if (!error) {
+    if (!error && sessionData.session) {
+      // Store the GitHub provider token for later API calls
+      // provider_token is only available immediately after OAuth exchange
+      const providerToken = sessionData.session.provider_token
+      const providerRefreshToken = sessionData.session.provider_refresh_token
+      const userId = sessionData.session.user.id
+
+      if (providerToken) {
+        const supabaseAdmin = getSupabaseAdmin()
+
+        // Upsert the GitHub token to user_tokens table
+        const { error: tokenError } = await supabaseAdmin
+          .from("user_tokens")
+          .upsert(
+            {
+              user_id: userId,
+              provider: "github",
+              access_token: providerToken,
+              refresh_token: providerRefreshToken || null,
+              updated_at: new Date().toISOString(),
+            },
+            {
+              onConflict: "user_id,provider",
+            }
+          )
+
+        if (tokenError) {
+          console.error("Error storing GitHub token:", tokenError)
+          // Continue anyway - don't block auth flow
+        }
+      }
+
       // Determine redirect destination
       let redirectPath = explicitNext
 
       // If no explicit next param, check if user has completed onboarding
       if (!redirectPath) {
-        const {
-          data: { user },
-        } = await supabase.auth.getUser()
+        const user = sessionData.session.user
 
         if (user) {
           // Check if user has existing repos (completed onboarding)

@@ -1,4 +1,5 @@
 import { createSupabaseServerClient } from "@/lib/supabase/server"
+import { getSupabaseAdmin } from "@/lib/supabase"
 import { NextResponse } from "next/server"
 
 interface GitHubRepo {
@@ -42,18 +43,36 @@ export async function GET() {
       )
     }
 
-    // Get the access token from the session
+    // Try to get the access token from the session first (fresh login)
     const {
       data: { session },
     } = await supabase.auth.getSession()
 
-    const accessToken = session?.provider_token
+    let accessToken = session?.provider_token
 
+    // If no provider_token in session, retrieve from stored tokens
+    // (provider_token is only available immediately after OAuth exchange)
     if (!accessToken) {
-      return NextResponse.json(
-        { error: "GitHub access token not available" },
-        { status: 400 }
-      )
+      const supabaseAdmin = getSupabaseAdmin()
+      const { data: tokenData, error: tokenError } = await supabaseAdmin
+        .from("user_tokens")
+        .select("access_token")
+        .eq("user_id", user.id)
+        .eq("provider", "github")
+        .single()
+
+      if (tokenError || !tokenData?.access_token) {
+        console.error("Error retrieving GitHub token:", tokenError)
+        return NextResponse.json(
+          {
+            error: "GitHub access token not available. Please sign out and sign in again.",
+            code: "TOKEN_NOT_FOUND",
+          },
+          { status: 401 }
+        )
+      }
+
+      accessToken = tokenData.access_token
     }
 
     // Fetch repos from GitHub API

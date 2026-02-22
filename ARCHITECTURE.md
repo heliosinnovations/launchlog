@@ -111,6 +111,24 @@ CREATE TABLE repo_metadata (
 );
 ```
 
+### `user_tokens`
+```sql
+-- Stores OAuth provider tokens captured during auth callback
+-- Required because Supabase provider_token is only available immediately after OAuth exchange
+CREATE TABLE user_tokens (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  user_id UUID NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
+  provider TEXT NOT NULL,
+  access_token TEXT NOT NULL,
+  refresh_token TEXT,
+  created_at TIMESTAMPTZ DEFAULT NOW(),
+  updated_at TIMESTAMPTZ DEFAULT NOW(),
+  UNIQUE(user_id, provider)
+);
+
+CREATE INDEX idx_user_tokens_user_provider ON user_tokens(user_id, provider);
+```
+
 ---
 
 ## User Profile Pages (Dynamic Routes)
