@@ -2,7 +2,7 @@ import { getSupabaseAdmin } from "@/lib/supabase"
 import Image from "next/image"
 import { Star, ExternalLink, GitBranch } from "lucide-react"
 
-export const revalidate = 3600 // Revalidate every hour
+export const revalidate = 60 // Revalidate every minute for fresher data
 
 interface UserRepo {
   id: string
