@@ -1,6 +1,7 @@
 import { createSupabaseServerClient } from "@/lib/supabase/server"
 import { getSupabaseAdmin } from "@/lib/supabase"
 import { NextResponse } from "next/server"
+import { revalidatePath } from "next/cache"
 
 interface UserProfile {
   id: string
@@ -158,6 +159,19 @@ export async function PUT(request: Request) {
         { error: "Failed to update profile" },
         { status: 500 }
       )
+    }
+
+    // Revalidate the user's public profile page to reflect changes immediately
+    const githubIdentity = user.identities?.find(
+      (identity) => identity.provider === "github"
+    )
+    const githubUsername =
+      githubIdentity?.identity_data?.user_name ||
+      user.user_metadata?.user_name ||
+      user.user_metadata?.preferred_username
+
+    if (githubUsername) {
+      revalidatePath(`/${githubUsername}`)
     }
 
     return NextResponse.json({ profile })
