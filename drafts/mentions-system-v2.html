@@ -1,0 +1,1124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Social Mentions System - Variation 2: Bold/Card-Focused</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --color-bg: #0F0F14;
+            --color-surface: #1A1A24;
+            --color-surface-elevated: #24243A;
+            --color-text: #FFFFFF;
+            --color-text-secondary: #A0A0B8;
+            --color-border: #2E2E3A;
+            --color-border-subtle: #24243A;
+            --gradient-primary: linear-gradient(135deg, #6366F1 0%, #8B5CF6 50%, #A855F7 100%);
+            --gradient-hn: linear-gradient(135deg, #FF6600 0%, #FF8533 100%);
+            --gradient-reddit: linear-gradient(135deg, #FF4500 0%, #FF6B3D 100%);
+            --color-primary: #6366F1;
+            --color-primary-light: #818CF8;
+            --color-hn: #FF6600;
+            --color-reddit: #FF4500;
+            --color-ph: #DA552F;
+            --color-twitter: #1DA1F2;
+            --color-success: #22C55E;
+            --radius-sm: 8px;
+            --radius-md: 12px;
+            --radius-lg: 16px;
+            --radius-xl: 24px;
+            --shadow-sm: 0 1px 2px rgba(0,0,0,0.2);
+            --shadow-md: 0 4px 12px rgba(0,0,0,0.3);
+            --shadow-lg: 0 12px 32px rgba(0,0,0,0.4);
+            --shadow-hn: 0 8px 24px rgba(255, 102, 0, 0.25);
+            --shadow-reddit: 0 8px 24px rgba(255, 69, 0, 0.25);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--color-bg);
+            color: var(--color-text);
+            line-height: 1.6;
+            padding: 40px;
+        }
+
+        .design-header {
+            text-align: center;
+            margin-bottom: 60px;
+            padding-bottom: 40px;
+            border-bottom: 1px solid var(--color-border);
+        }
+
+        .design-header h1 {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 32px;
+            margin-bottom: 8px;
+            background: linear-gradient(135deg, #FF6600 0%, #FF4500 50%, #DA552F 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .design-header p {
+            color: var(--color-text-secondary);
+            font-size: 16px;
+        }
+
+        .design-label {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 6px 12px;
+            background: var(--gradient-hn);
+            border-radius: 100px;
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: white;
+            margin-bottom: 16px;
+        }
+
+        .section {
+            max-width: 900px;
+            margin: 0 auto 80px;
+        }
+
+        .section-title {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 20px;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+
+        .section-desc {
+            color: var(--color-text-secondary);
+            font-size: 14px;
+            margin-bottom: 32px;
+        }
+
+        /* ===================== */
+        /* 1. PROJECT CARD - Bold Prominent Mentions */
+        /* ===================== */
+
+        .project-card {
+            background: var(--color-surface);
+            border: 1px solid var(--color-border);
+            border-radius: var(--radius-xl);
+            overflow: hidden;
+            transition: all 0.3s;
+            max-width: 400px;
+        }
+
+        .project-card:hover {
+            border-color: var(--color-primary);
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .project-screenshot {
+            width: 100%;
+            height: 180px;
+            background: linear-gradient(135deg, #1e1e2e 0%, #2a2a3e 100%);
+            position: relative;
+        }
+
+        .project-screenshot::after {
+            content: 'Screenshot';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: var(--color-text-secondary);
+            font-size: 12px;
+            opacity: 0.5;
+        }
+
+        .project-content {
+            padding: 24px;
+        }
+
+        .project-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 10px;
+        }
+
+        .project-name {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 18px;
+            font-weight: 700;
+        }
+
+        .project-stars {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            color: var(--color-text-secondary);
+            font-size: 13px;
+            font-weight: 600;
+        }
+
+        .project-stars svg {
+            width: 14px;
+            height: 14px;
+            color: #FFC107;
+        }
+
+        .project-desc {
+            font-size: 14px;
+            color: var(--color-text-secondary);
+            margin-bottom: 20px;
+            line-height: 1.5;
+        }
+
+        /* BOLD: Prominent mention cards */
+        .mentions-section {
+            background: var(--color-surface-elevated);
+            border-radius: var(--radius-md);
+            padding: 16px;
+        }
+
+        .mentions-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+
+        .mentions-title {
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--color-text);
+        }
+
+        .mentions-count {
+            font-size: 11px;
+            padding: 4px 8px;
+            background: var(--gradient-primary);
+            border-radius: 100px;
+            font-weight: 600;
+        }
+
+        .mention-badges {
+            display: flex;
+            gap: 10px;
+        }
+
+        .mention-badge-bold {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 12px 14px;
+            border-radius: var(--radius-md);
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .mention-badge-bold.hn {
+            background: linear-gradient(135deg, rgba(255, 102, 0, 0.15) 0%, rgba(255, 102, 0, 0.08) 100%);
+            border: 1px solid rgba(255, 102, 0, 0.3);
+        }
+
+        .mention-badge-bold.hn:hover {
+            background: linear-gradient(135deg, rgba(255, 102, 0, 0.25) 0%, rgba(255, 102, 0, 0.15) 100%);
+            box-shadow: var(--shadow-hn);
+            transform: translateY(-2px);
+        }
+
+        .mention-badge-bold.reddit {
+            background: linear-gradient(135deg, rgba(255, 69, 0, 0.15) 0%, rgba(255, 69, 0, 0.08) 100%);
+            border: 1px solid rgba(255, 69, 0, 0.3);
+        }
+
+        .mention-badge-bold.reddit:hover {
+            background: linear-gradient(135deg, rgba(255, 69, 0, 0.25) 0%, rgba(255, 69, 0, 0.15) 100%);
+            box-shadow: var(--shadow-reddit);
+            transform: translateY(-2px);
+        }
+
+        .badge-icon {
+            width: 32px;
+            height: 32px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .badge-icon.hn {
+            background: var(--gradient-hn);
+        }
+
+        .badge-icon.reddit {
+            background: var(--gradient-reddit);
+        }
+
+        .badge-icon svg {
+            width: 18px;
+            height: 18px;
+            color: white;
+        }
+
+        .badge-content {
+            flex: 1;
+        }
+
+        .badge-count {
+            font-size: 18px;
+            font-weight: 800;
+            font-family: 'Space Grotesk', sans-serif;
+        }
+
+        .hn .badge-count { color: var(--color-hn); }
+        .reddit .badge-count { color: var(--color-reddit); }
+
+        .badge-label {
+            font-size: 11px;
+            color: var(--color-text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.03em;
+        }
+
+        .badge-arrow {
+            color: var(--color-text-secondary);
+            transition: transform 0.2s;
+        }
+
+        .mention-badge-bold:hover .badge-arrow {
+            transform: translateX(4px);
+        }
+
+        .badge-arrow svg {
+            width: 16px;
+            height: 16px;
+        }
+
+        /* ===================== */
+        /* 2. MENTIONS DETAIL - Card Grid Layout */
+        /* ===================== */
+
+        .modal-backdrop {
+            background: var(--color-surface);
+            border: 1px solid var(--color-border);
+            border-radius: var(--radius-xl);
+            max-width: 800px;
+            margin: 0 auto;
+            overflow: hidden;
+        }
+
+        .modal-header {
+            padding: 28px 28px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+        }
+
+        .modal-header-content h2 {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 22px;
+            font-weight: 700;
+            margin-bottom: 4px;
+        }
+
+        .modal-header-content p {
+            font-size: 14px;
+            color: var(--color-text-secondary);
+        }
+
+        .modal-close {
+            width: 36px;
+            height: 36px;
+            border-radius: var(--radius-sm);
+            background: var(--color-surface-elevated);
+            border: none;
+            color: var(--color-text-secondary);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+        }
+
+        .modal-close:hover {
+            background: var(--color-border);
+            color: var(--color-text);
+        }
+
+        .modal-close svg {
+            width: 18px;
+            height: 18px;
+        }
+
+        /* Stats banner */
+        .stats-banner {
+            display: flex;
+            gap: 16px;
+            padding: 0 28px 24px;
+        }
+
+        .stat-card {
+            flex: 1;
+            padding: 20px;
+            border-radius: var(--radius-md);
+            text-align: center;
+        }
+
+        .stat-card.hn {
+            background: linear-gradient(135deg, rgba(255, 102, 0, 0.15) 0%, rgba(255, 102, 0, 0.05) 100%);
+            border: 1px solid rgba(255, 102, 0, 0.25);
+        }
+
+        .stat-card.reddit {
+            background: linear-gradient(135deg, rgba(255, 69, 0, 0.15) 0%, rgba(255, 69, 0, 0.05) 100%);
+            border: 1px solid rgba(255, 69, 0, 0.25);
+        }
+
+        .stat-card.total {
+            background: linear-gradient(135deg, rgba(99, 102, 241, 0.15) 0%, rgba(139, 92, 246, 0.05) 100%);
+            border: 1px solid rgba(99, 102, 241, 0.25);
+        }
+
+        .stat-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 12px;
+        }
+
+        .stat-icon.hn { background: var(--gradient-hn); }
+        .stat-icon.reddit { background: var(--gradient-reddit); }
+        .stat-icon.total { background: var(--gradient-primary); }
+
+        .stat-icon svg {
+            width: 20px;
+            height: 20px;
+            color: white;
+        }
+
+        .stat-value {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 28px;
+            font-weight: 700;
+            margin-bottom: 2px;
+        }
+
+        .stat-card.hn .stat-value { color: var(--color-hn); }
+        .stat-card.reddit .stat-value { color: var(--color-reddit); }
+        .stat-card.total .stat-value { color: var(--color-primary); }
+
+        .stat-label {
+            font-size: 12px;
+            color: var(--color-text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.03em;
+        }
+
+        /* Mention cards grid */
+        .mentions-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 16px;
+            padding: 0 28px 28px;
+            max-height: 450px;
+            overflow-y: auto;
+        }
+
+        .mention-card {
+            background: var(--color-surface-elevated);
+            border: 1px solid var(--color-border);
+            border-radius: var(--radius-md);
+            padding: 18px;
+            transition: all 0.3s;
+            cursor: pointer;
+        }
+
+        .mention-card:hover {
+            border-color: var(--color-primary);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+        }
+
+        .mention-card-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 12px;
+        }
+
+        .mention-card-icon {
+            width: 28px;
+            height: 28px;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .mention-card-icon.hn { background: var(--gradient-hn); }
+        .mention-card-icon.reddit { background: var(--gradient-reddit); }
+
+        .mention-card-icon svg {
+            width: 14px;
+            height: 14px;
+            color: white;
+        }
+
+        .mention-card-source {
+            font-size: 12px;
+            color: var(--color-text-secondary);
+        }
+
+        .mention-card-date {
+            font-size: 11px;
+            color: var(--color-text-secondary);
+            margin-left: auto;
+        }
+
+        .mention-card-title {
+            font-size: 14px;
+            font-weight: 600;
+            line-height: 1.4;
+            margin-bottom: 14px;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .mention-card-stats {
+            display: flex;
+            gap: 16px;
+            padding-top: 12px;
+            border-top: 1px solid var(--color-border);
+        }
+
+        .mention-card-stat {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .mention-card-stat svg {
+            width: 14px;
+            height: 14px;
+        }
+
+        .mention-card-stat.points svg { color: var(--color-hn); }
+        .mention-card-stat.upvotes svg { color: var(--color-reddit); }
+        .mention-card-stat.comments svg { color: var(--color-text-secondary); }
+
+        .mention-card-stat span {
+            font-size: 13px;
+            font-weight: 600;
+        }
+
+        /* Empty state */
+        .empty-state {
+            padding: 80px 28px;
+            text-align: center;
+        }
+
+        .empty-state-icon {
+            width: 80px;
+            height: 80px;
+            margin: 0 auto 20px;
+            background: var(--gradient-primary);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0.3;
+        }
+
+        .empty-state-icon svg {
+            width: 36px;
+            height: 36px;
+            color: white;
+        }
+
+        .empty-state h3 {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 20px;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+
+        .empty-state p {
+            font-size: 14px;
+            color: var(--color-text-secondary);
+            max-width: 300px;
+            margin: 0 auto;
+        }
+
+        /* ===================== */
+        /* 3. ADD MENTION FORM - Bold with Gradient Accents */
+        /* ===================== */
+
+        .form-container {
+            background: var(--color-surface);
+            border: 1px solid var(--color-border);
+            border-radius: var(--radius-xl);
+            overflow: hidden;
+            max-width: 520px;
+        }
+
+        .form-banner {
+            background: var(--gradient-primary);
+            padding: 24px 28px;
+        }
+
+        .form-banner h3 {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 22px;
+            font-weight: 700;
+            margin-bottom: 4px;
+        }
+
+        .form-banner p {
+            font-size: 14px;
+            opacity: 0.85;
+        }
+
+        .form-body {
+            padding: 28px;
+        }
+
+        .form-group {
+            margin-bottom: 24px;
+        }
+
+        .form-label {
+            display: block;
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 10px;
+            color: var(--color-text);
+        }
+
+        .form-label span {
+            font-weight: 400;
+            color: var(--color-text-secondary);
+        }
+
+        /* Bold platform selector */
+        .platform-selector-bold {
+            display: flex;
+            gap: 12px;
+        }
+
+        .platform-option-bold {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            padding: 18px 16px;
+            background: var(--color-surface-elevated);
+            border: 2px solid var(--color-border);
+            border-radius: var(--radius-md);
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .platform-option-bold:hover {
+            border-color: var(--color-text-secondary);
+        }
+
+        .platform-option-bold.selected.hn {
+            border-color: var(--color-hn);
+            background: linear-gradient(135deg, rgba(255, 102, 0, 0.12) 0%, rgba(255, 102, 0, 0.04) 100%);
+            box-shadow: var(--shadow-hn);
+        }
+
+        .platform-option-bold.selected.reddit {
+            border-color: var(--color-reddit);
+            background: linear-gradient(135deg, rgba(255, 69, 0, 0.12) 0%, rgba(255, 69, 0, 0.04) 100%);
+            box-shadow: var(--shadow-reddit);
+        }
+
+        .platform-icon-bold {
+            width: 44px;
+            height: 44px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .platform-icon-bold.hn { background: var(--gradient-hn); }
+        .platform-icon-bold.reddit { background: var(--gradient-reddit); }
+
+        .platform-icon-bold svg {
+            width: 22px;
+            height: 22px;
+            color: white;
+        }
+
+        .platform-info h4 {
+            font-size: 15px;
+            font-weight: 600;
+            margin-bottom: 2px;
+        }
+
+        .platform-info p {
+            font-size: 12px;
+            color: var(--color-text-secondary);
+        }
+
+        /* Text input */
+        .form-input {
+            width: 100%;
+            padding: 14px 16px;
+            background: var(--color-surface-elevated);
+            border: 2px solid var(--color-border);
+            border-radius: var(--radius-md);
+            color: var(--color-text);
+            font-size: 14px;
+            font-family: inherit;
+            transition: all 0.2s;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: var(--color-primary);
+            box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.15);
+        }
+
+        .form-input::placeholder {
+            color: var(--color-text-secondary);
+        }
+
+        .form-input.error {
+            border-color: #EF4444;
+            box-shadow: 0 0 0 4px rgba(239, 68, 68, 0.15);
+        }
+
+        .form-error {
+            margin-top: 8px;
+            font-size: 13px;
+            color: #EF4444;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .form-error svg {
+            width: 14px;
+            height: 14px;
+        }
+
+        .form-hint {
+            margin-top: 8px;
+            font-size: 12px;
+            color: var(--color-text-secondary);
+        }
+
+        /* Submit button */
+        .btn-submit-bold {
+            width: 100%;
+            padding: 16px;
+            background: var(--gradient-primary);
+            border: none;
+            border-radius: var(--radius-md);
+            color: white;
+            font-size: 15px;
+            font-weight: 700;
+            font-family: inherit;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .btn-submit-bold:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(99, 102, 241, 0.4);
+        }
+
+        .btn-submit-bold:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        .btn-submit-bold svg {
+            width: 18px;
+            height: 18px;
+        }
+
+        /* Cards grid */
+        .cards-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(380px, 1fr));
+            gap: 32px;
+            align-items: start;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            body {
+                padding: 20px;
+            }
+
+            .cards-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .project-card {
+                max-width: 100%;
+            }
+
+            .mention-badges {
+                flex-direction: column;
+            }
+
+            .mentions-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .stats-banner {
+                flex-direction: column;
+            }
+
+            .platform-selector-bold {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="design-header">
+        <span class="design-label">Variation 2</span>
+        <h1>Bold / Card-Focused</h1>
+        <p>Prominent mention cards with vibrant gradients and bold statistics. Eye-catching and energetic.</p>
+    </div>
+
+    <!-- Section 1: Project Card Mentions -->
+    <section class="section">
+        <h2 class="section-title">1. Project Card - Mentions Section</h2>
+        <p class="section-desc">Prominent mention badges with platform-specific styling and click-through interaction.</p>
+
+        <div class="cards-grid">
+            <!-- Project Card Example -->
+            <article class="project-card">
+                <div class="project-screenshot"></div>
+                <div class="project-content">
+                    <div class="project-header">
+                        <h3 class="project-name">react-query</h3>
+                        <span class="project-stars">
+                            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                            42.1k
+                        </span>
+                    </div>
+                    <p class="project-desc">Powerful asynchronous state management for React applications with smart caching.</p>
+
+                    <div class="mentions-section">
+                        <div class="mentions-header">
+                            <span class="mentions-title">Social Mentions</span>
+                            <span class="mentions-count">8 total</span>
+                        </div>
+                        <div class="mention-badges">
+                            <div class="mention-badge-bold hn">
+                                <div class="badge-icon hn">
+                                    <svg viewBox="0 0 24 24" fill="currentColor"><path d="M0 0v24h24V0H0zm12.4 14.8h-.8l-3.6-7.3h2l2.4 5.5 2.4-5.5h2l-3.6 7.3v4.3h-1.8l.8.1v-4.4z"/></svg>
+                                </div>
+                                <div class="badge-content">
+                                    <div class="badge-count">5</div>
+                                    <div class="badge-label">HN Discussions</div>
+                                </div>
+                                <span class="badge-arrow">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
+                                </span>
+                            </div>
+                            <div class="mention-badge-bold reddit">
+                                <div class="badge-icon reddit">
+                                    <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0z"/></svg>
+                                </div>
+                                <div class="badge-content">
+                                    <div class="badge-count">3</div>
+                                    <div class="badge-label">Reddit Threads</div>
+                                </div>
+                                <span class="badge-arrow">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </article>
+        </div>
+    </section>
+
+    <!-- Section 2: Mentions Detail Modal -->
+    <section class="section">
+        <h2 class="section-title">2. Mentions Detail Modal</h2>
+        <p class="section-desc">Card grid with statistics banner. Bold visual hierarchy with platform-specific styling.</p>
+
+        <div class="modal-backdrop">
+            <div class="modal-header">
+                <div class="modal-header-content">
+                    <h2>Mentions for react-query</h2>
+                    <p>8 discussions across HackerNews and Reddit</p>
+                </div>
+                <button class="modal-close">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg>
+                </button>
+            </div>
+
+            <div class="stats-banner">
+                <div class="stat-card hn">
+                    <div class="stat-icon hn">
+                        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M0 0v24h24V0H0zm12.4 14.8h-.8l-3.6-7.3h2l2.4 5.5 2.4-5.5h2l-3.6 7.3v4.3h-1.8l.8.1v-4.4z"/></svg>
+                    </div>
+                    <div class="stat-value">5</div>
+                    <div class="stat-label">HackerNews</div>
+                </div>
+                <div class="stat-card reddit">
+                    <div class="stat-icon reddit">
+                        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0z"/></svg>
+                    </div>
+                    <div class="stat-value">3</div>
+                    <div class="stat-label">Reddit</div>
+                </div>
+                <div class="stat-card total">
+                    <div class="stat-icon total">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+                    </div>
+                    <div class="stat-value">2.1k</div>
+                    <div class="stat-label">Total Comments</div>
+                </div>
+            </div>
+
+            <div class="mentions-grid">
+                <div class="mention-card">
+                    <div class="mention-card-header">
+                        <div class="mention-card-icon hn">
+                            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M0 0v24h24V0H0zm12.4 14.8h-.8l-3.6-7.3h2l2.4 5.5 2.4-5.5h2l-3.6 7.3v4.3h-1.8l.8.1v-4.4z"/></svg>
+                        </div>
+                        <span class="mention-card-source">HackerNews</span>
+                        <span class="mention-card-date">2 days ago</span>
+                    </div>
+                    <h4 class="mention-card-title">React Query v5 released with major improvements to TypeScript support</h4>
+                    <div class="mention-card-stats">
+                        <div class="mention-card-stat points">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 19V5M5 12l7-7 7 7"/></svg>
+                            <span>423</span>
+                        </div>
+                        <div class="mention-card-stat comments">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+                            <span>156</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mention-card">
+                    <div class="mention-card-header">
+                        <div class="mention-card-icon reddit">
+                            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0z"/></svg>
+                        </div>
+                        <span class="mention-card-source">r/reactjs</span>
+                        <span class="mention-card-date">5 days ago</span>
+                    </div>
+                    <h4 class="mention-card-title">Why I switched from SWR to React Query - a detailed comparison</h4>
+                    <div class="mention-card-stats">
+                        <div class="mention-card-stat upvotes">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 19V5M5 12l7-7 7 7"/></svg>
+                            <span>1.2k</span>
+                        </div>
+                        <div class="mention-card-stat comments">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+                            <span>89</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mention-card">
+                    <div class="mention-card-header">
+                        <div class="mention-card-icon hn">
+                            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M0 0v24h24V0H0zm12.4 14.8h-.8l-3.6-7.3h2l2.4 5.5 2.4-5.5h2l-3.6 7.3v4.3h-1.8l.8.1v-4.4z"/></svg>
+                        </div>
+                        <span class="mention-card-source">HackerNews</span>
+                        <span class="mention-card-date">1 week ago</span>
+                    </div>
+                    <h4 class="mention-card-title">Show HN: I built a data fetching library comparison tool</h4>
+                    <div class="mention-card-stats">
+                        <div class="mention-card-stat points">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 19V5M5 12l7-7 7 7"/></svg>
+                            <span>89</span>
+                        </div>
+                        <div class="mention-card-stat comments">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+                            <span>34</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mention-card">
+                    <div class="mention-card-header">
+                        <div class="mention-card-icon reddit">
+                            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0z"/></svg>
+                        </div>
+                        <span class="mention-card-source">r/webdev</span>
+                        <span class="mention-card-date">2 weeks ago</span>
+                    </div>
+                    <h4 class="mention-card-title">Best practices for managing server state in React apps?</h4>
+                    <div class="mention-card-stats">
+                        <div class="mention-card-stat upvotes">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 19V5M5 12l7-7 7 7"/></svg>
+                            <span>567</span>
+                        </div>
+                        <div class="mention-card-stat comments">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+                            <span>123</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Empty State -->
+        <div class="modal-backdrop" style="margin-top: 32px;">
+            <div class="modal-header">
+                <div class="modal-header-content">
+                    <h2>Mentions for new-project</h2>
+                    <p>No discussions found yet</p>
+                </div>
+                <button class="modal-close">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg>
+                </button>
+            </div>
+            <div class="empty-state">
+                <div class="empty-state-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
+                </div>
+                <h3>No mentions found yet</h3>
+                <p>We're constantly scanning HackerNews and Reddit for discussions about your project.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Section 3: Add Mention Form -->
+    <section class="section">
+        <h2 class="section-title">3. Manual Add Mention Form</h2>
+        <p class="section-desc">Bold form with gradient header and platform-specific selection styling.</p>
+
+        <div class="cards-grid">
+            <div class="form-container">
+                <div class="form-banner">
+                    <h3>Add a Mention</h3>
+                    <p>Manually add a link to a discussion about your project</p>
+                </div>
+
+                <div class="form-body">
+                    <div class="form-group">
+                        <label class="form-label">Select Platform</label>
+                        <div class="platform-selector-bold">
+                            <div class="platform-option-bold hn selected">
+                                <div class="platform-icon-bold hn">
+                                    <svg viewBox="0 0 24 24" fill="currentColor"><path d="M0 0v24h24V0H0zm12.4 14.8h-.8l-3.6-7.3h2l2.4 5.5 2.4-5.5h2l-3.6 7.3v4.3h-1.8l.8.1v-4.4z"/></svg>
+                                </div>
+                                <div class="platform-info">
+                                    <h4>HackerNews</h4>
+                                    <p>news.ycombinator.com</p>
+                                </div>
+                            </div>
+                            <div class="platform-option-bold reddit">
+                                <div class="platform-icon-bold reddit">
+                                    <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0z"/></svg>
+                                </div>
+                                <div class="platform-info">
+                                    <h4>Reddit</h4>
+                                    <p>reddit.com</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Discussion URL <span>(required)</span></label>
+                        <input type="url" class="form-input" placeholder="https://news.ycombinator.com/item?id=..." />
+                        <p class="form-hint">Paste the full URL to the discussion thread</p>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Title <span>(optional - auto-fetched)</span></label>
+                        <input type="text" class="form-input" placeholder="Discussion title" />
+                    </div>
+
+                    <button class="btn-submit-bold">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>
+                        Add Mention
+                    </button>
+                </div>
+            </div>
+
+            <!-- Form with error state -->
+            <div class="form-container">
+                <div class="form-banner">
+                    <h3>Add a Mention</h3>
+                    <p>Manually add a link to a discussion about your project</p>
+                </div>
+
+                <div class="form-body">
+                    <div class="form-group">
+                        <label class="form-label">Select Platform</label>
+                        <div class="platform-selector-bold">
+                            <div class="platform-option-bold hn">
+                                <div class="platform-icon-bold hn">
+                                    <svg viewBox="0 0 24 24" fill="currentColor"><path d="M0 0v24h24V0H0zm12.4 14.8h-.8l-3.6-7.3h2l2.4 5.5 2.4-5.5h2l-3.6 7.3v4.3h-1.8l.8.1v-4.4z"/></svg>
+                                </div>
+                                <div class="platform-info">
+                                    <h4>HackerNews</h4>
+                                    <p>news.ycombinator.com</p>
+                                </div>
+                            </div>
+                            <div class="platform-option-bold reddit selected">
+                                <div class="platform-icon-bold reddit">
+                                    <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0z"/></svg>
+                                </div>
+                                <div class="platform-info">
+                                    <h4>Reddit</h4>
+                                    <p>reddit.com</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Discussion URL <span>(required)</span></label>
+                        <input type="url" class="form-input error" value="not-a-valid-url" />
+                        <p class="form-error">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 8v4M12 16h.01"/></svg>
+                            Please enter a valid Reddit URL
+                        </p>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Title <span>(optional - auto-fetched)</span></label>
+                        <input type="text" class="form-input" placeholder="Discussion title" />
+                    </div>
+
+                    <button class="btn-submit-bold" disabled>
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>
+                        Add Mention
+                    </button>
+                </div>
+            </div>
+        </div>
+    </section>
+</body>
+</html>
