@@ -1,0 +1,1309 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Social Mentions System - Variation 3: Professional/Data-Dense</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --color-bg: #0F0F14;
+            --color-surface: #1A1A24;
+            --color-surface-elevated: #22222E;
+            --color-text: #FFFFFF;
+            --color-text-secondary: #8B8B9E;
+            --color-border: #2A2A36;
+            --color-border-subtle: #232330;
+            --gradient-primary: linear-gradient(135deg, #6366F1 0%, #8B5CF6 50%, #A855F7 100%);
+            --color-primary: #6366F1;
+            --color-primary-light: #818CF8;
+            --color-hn: #FF6600;
+            --color-reddit: #FF4500;
+            --color-success: #22C55E;
+            --color-warning: #F59E0B;
+            --radius-xs: 4px;
+            --radius-sm: 6px;
+            --radius-md: 10px;
+            --radius-lg: 14px;
+            --shadow-sm: 0 1px 2px rgba(0,0,0,0.2);
+            --shadow-md: 0 4px 12px rgba(0,0,0,0.3);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--color-bg);
+            color: var(--color-text);
+            line-height: 1.6;
+            padding: 40px;
+        }
+
+        .design-header {
+            text-align: center;
+            margin-bottom: 60px;
+            padding-bottom: 40px;
+            border-bottom: 1px solid var(--color-border);
+        }
+
+        .design-header h1 {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 32px;
+            margin-bottom: 8px;
+        }
+
+        .design-header p {
+            color: var(--color-text-secondary);
+            font-size: 16px;
+        }
+
+        .design-label {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 6px 12px;
+            background: var(--color-surface-elevated);
+            border: 1px solid var(--color-border);
+            border-radius: var(--radius-xs);
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            color: var(--color-text-secondary);
+            margin-bottom: 16px;
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        .section {
+            max-width: 960px;
+            margin: 0 auto 80px;
+        }
+
+        .section-title {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 20px;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+
+        .section-desc {
+            color: var(--color-text-secondary);
+            font-size: 14px;
+            margin-bottom: 32px;
+        }
+
+        /* ===================== */
+        /* 1. PROJECT CARD - Compact Data Row */
+        /* ===================== */
+
+        .project-card {
+            background: var(--color-surface);
+            border: 1px solid var(--color-border);
+            border-radius: var(--radius-lg);
+            overflow: hidden;
+            transition: all 0.2s;
+            max-width: 420px;
+        }
+
+        .project-card:hover {
+            border-color: var(--color-primary);
+        }
+
+        .project-screenshot {
+            width: 100%;
+            height: 160px;
+            background: linear-gradient(135deg, #1e1e2e 0%, #2a2a3e 100%);
+            position: relative;
+        }
+
+        .project-screenshot::after {
+            content: 'Screenshot';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: var(--color-text-secondary);
+            font-size: 12px;
+            opacity: 0.5;
+        }
+
+        .project-content {
+            padding: 20px;
+        }
+
+        .project-meta-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .project-name {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 17px;
+            font-weight: 700;
+        }
+
+        .project-stats {
+            display: flex;
+            gap: 12px;
+        }
+
+        .project-stat {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            font-size: 12px;
+            color: var(--color-text-secondary);
+            font-weight: 500;
+        }
+
+        .project-stat svg {
+            width: 13px;
+            height: 13px;
+        }
+
+        .project-stat.stars svg { color: #FFC107; }
+
+        .project-desc {
+            font-size: 13px;
+            color: var(--color-text-secondary);
+            margin-bottom: 16px;
+            line-height: 1.5;
+        }
+
+        /* PROFESSIONAL: Compact data row */
+        .mentions-row {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            padding: 14px 16px;
+            background: var(--color-surface-elevated);
+            border-radius: var(--radius-md);
+            margin-top: 4px;
+        }
+
+        .mentions-row-label {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--color-text-secondary);
+        }
+
+        .mentions-row-label svg {
+            width: 14px;
+            height: 14px;
+        }
+
+        .mentions-divider {
+            width: 1px;
+            height: 20px;
+            background: var(--color-border);
+        }
+
+        .mention-stat-compact {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .mention-stat-icon {
+            width: 22px;
+            height: 22px;
+            border-radius: var(--radius-xs);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .mention-stat-icon.hn { background: rgba(255, 102, 0, 0.15); }
+        .mention-stat-icon.reddit { background: rgba(255, 69, 0, 0.15); }
+
+        .mention-stat-icon svg {
+            width: 12px;
+            height: 12px;
+        }
+
+        .mention-stat-icon.hn svg { color: var(--color-hn); }
+        .mention-stat-icon.reddit svg { color: var(--color-reddit); }
+
+        .mention-stat-value {
+            font-size: 14px;
+            font-weight: 700;
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        .mention-stat-value.hn { color: var(--color-hn); }
+        .mention-stat-value.reddit { color: var(--color-reddit); }
+
+        .mentions-view-link {
+            margin-left: auto;
+            font-size: 12px;
+            color: var(--color-primary-light);
+            text-decoration: none;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            transition: color 0.2s;
+        }
+
+        .mentions-view-link:hover {
+            color: var(--color-primary);
+        }
+
+        .mentions-view-link svg {
+            width: 14px;
+            height: 14px;
+        }
+
+        /* ===================== */
+        /* 2. MENTIONS DETAIL - Professional Table */
+        /* ===================== */
+
+        .modal-backdrop {
+            background: var(--color-surface);
+            border: 1px solid var(--color-border);
+            border-radius: var(--radius-lg);
+            max-width: 900px;
+            margin: 0 auto;
+            overflow: hidden;
+        }
+
+        .modal-header {
+            padding: 20px 24px;
+            border-bottom: 1px solid var(--color-border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .modal-header-left {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .modal-header h2 {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 18px;
+            font-weight: 700;
+        }
+
+        .modal-stats-inline {
+            display: flex;
+            gap: 12px;
+        }
+
+        .modal-stat-badge {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            padding: 5px 10px;
+            border-radius: var(--radius-xs);
+            font-size: 12px;
+            font-weight: 600;
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        .modal-stat-badge.hn {
+            background: rgba(255, 102, 0, 0.12);
+            color: var(--color-hn);
+        }
+
+        .modal-stat-badge.reddit {
+            background: rgba(255, 69, 0, 0.12);
+            color: var(--color-reddit);
+        }
+
+        .modal-stat-badge svg {
+            width: 12px;
+            height: 12px;
+        }
+
+        .modal-close {
+            width: 32px;
+            height: 32px;
+            border-radius: var(--radius-sm);
+            background: transparent;
+            border: 1px solid var(--color-border);
+            color: var(--color-text-secondary);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+        }
+
+        .modal-close:hover {
+            background: var(--color-surface-elevated);
+            color: var(--color-text);
+        }
+
+        .modal-close svg {
+            width: 14px;
+            height: 14px;
+        }
+
+        /* Filter bar */
+        .filter-bar {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 14px 24px;
+            background: var(--color-surface-elevated);
+            border-bottom: 1px solid var(--color-border);
+        }
+
+        .filter-label {
+            font-size: 12px;
+            color: var(--color-text-secondary);
+            font-weight: 500;
+        }
+
+        .filter-button {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 6px 12px;
+            border-radius: var(--radius-xs);
+            font-size: 12px;
+            font-weight: 500;
+            background: transparent;
+            border: 1px solid var(--color-border);
+            color: var(--color-text-secondary);
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .filter-button:hover {
+            border-color: var(--color-text-secondary);
+            color: var(--color-text);
+        }
+
+        .filter-button.active {
+            background: var(--color-primary);
+            border-color: var(--color-primary);
+            color: white;
+        }
+
+        .filter-button svg {
+            width: 12px;
+            height: 12px;
+        }
+
+        .filter-sort {
+            margin-left: auto;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .filter-sort select {
+            padding: 6px 10px;
+            background: var(--color-surface);
+            border: 1px solid var(--color-border);
+            border-radius: var(--radius-xs);
+            color: var(--color-text);
+            font-size: 12px;
+            font-family: inherit;
+            cursor: pointer;
+        }
+
+        /* Table */
+        .mentions-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .mentions-table th {
+            text-align: left;
+            padding: 12px 16px;
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--color-text-secondary);
+            background: var(--color-surface-elevated);
+            border-bottom: 1px solid var(--color-border);
+        }
+
+        .mentions-table th:first-child {
+            padding-left: 24px;
+        }
+
+        .mentions-table th:last-child {
+            padding-right: 24px;
+        }
+
+        .mentions-table td {
+            padding: 16px;
+            border-bottom: 1px solid var(--color-border-subtle);
+            vertical-align: middle;
+        }
+
+        .mentions-table td:first-child {
+            padding-left: 24px;
+        }
+
+        .mentions-table td:last-child {
+            padding-right: 24px;
+        }
+
+        .mentions-table tr:hover {
+            background: var(--color-surface-elevated);
+        }
+
+        .mentions-table tr:last-child td {
+            border-bottom: none;
+        }
+
+        .table-platform {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .platform-badge {
+            width: 28px;
+            height: 28px;
+            border-radius: var(--radius-sm);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .platform-badge.hn { background: rgba(255, 102, 0, 0.15); }
+        .platform-badge.reddit { background: rgba(255, 69, 0, 0.15); }
+
+        .platform-badge svg {
+            width: 14px;
+            height: 14px;
+        }
+
+        .platform-badge.hn svg { color: var(--color-hn); }
+        .platform-badge.reddit svg { color: var(--color-reddit); }
+
+        .platform-name {
+            font-size: 13px;
+            color: var(--color-text-secondary);
+        }
+
+        .table-title {
+            font-size: 14px;
+            font-weight: 500;
+            max-width: 350px;
+        }
+
+        .table-title a {
+            color: var(--color-text);
+            text-decoration: none;
+        }
+
+        .table-title a:hover {
+            color: var(--color-primary-light);
+        }
+
+        .table-score {
+            font-size: 14px;
+            font-weight: 600;
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        .table-score.hn { color: var(--color-hn); }
+        .table-score.reddit { color: var(--color-reddit); }
+
+        .table-comments {
+            font-size: 13px;
+            color: var(--color-text-secondary);
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        .table-date {
+            font-size: 12px;
+            color: var(--color-text-secondary);
+        }
+
+        .table-link {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 28px;
+            height: 28px;
+            border-radius: var(--radius-sm);
+            background: var(--color-surface-elevated);
+            color: var(--color-text-secondary);
+            text-decoration: none;
+            transition: all 0.2s;
+        }
+
+        .table-link:hover {
+            background: var(--color-primary);
+            color: white;
+        }
+
+        .table-link svg {
+            width: 14px;
+            height: 14px;
+        }
+
+        /* Empty state */
+        .empty-state {
+            padding: 60px 24px;
+            text-align: center;
+        }
+
+        .empty-state-icon {
+            width: 56px;
+            height: 56px;
+            margin: 0 auto 16px;
+            background: var(--color-surface-elevated);
+            border: 1px solid var(--color-border);
+            border-radius: var(--radius-md);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .empty-state-icon svg {
+            width: 24px;
+            height: 24px;
+            color: var(--color-text-secondary);
+        }
+
+        .empty-state h3 {
+            font-size: 15px;
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+
+        .empty-state p {
+            font-size: 13px;
+            color: var(--color-text-secondary);
+        }
+
+        /* ===================== */
+        /* 3. ADD MENTION FORM - Professional Structured */
+        /* ===================== */
+
+        .form-container {
+            background: var(--color-surface);
+            border: 1px solid var(--color-border);
+            border-radius: var(--radius-lg);
+            max-width: 480px;
+        }
+
+        .form-header {
+            padding: 20px 24px;
+            border-bottom: 1px solid var(--color-border);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .form-header-icon {
+            width: 36px;
+            height: 36px;
+            border-radius: var(--radius-sm);
+            background: var(--gradient-primary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .form-header-icon svg {
+            width: 18px;
+            height: 18px;
+            color: white;
+        }
+
+        .form-header-text h3 {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 16px;
+            font-weight: 700;
+        }
+
+        .form-header-text p {
+            font-size: 12px;
+            color: var(--color-text-secondary);
+        }
+
+        .form-body {
+            padding: 24px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-label {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            font-size: 13px;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: var(--color-text);
+        }
+
+        .form-label-optional {
+            font-weight: 400;
+            color: var(--color-text-secondary);
+            font-size: 11px;
+        }
+
+        /* Professional dropdown */
+        .form-select-wrapper {
+            position: relative;
+        }
+
+        .form-select {
+            width: 100%;
+            padding: 12px 14px;
+            padding-right: 36px;
+            background: var(--color-surface-elevated);
+            border: 1px solid var(--color-border);
+            border-radius: var(--radius-sm);
+            color: var(--color-text);
+            font-size: 14px;
+            font-family: inherit;
+            cursor: pointer;
+            appearance: none;
+            transition: all 0.2s;
+        }
+
+        .form-select:focus {
+            outline: none;
+            border-color: var(--color-primary);
+        }
+
+        .form-select-icon {
+            position: absolute;
+            right: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            pointer-events: none;
+            color: var(--color-text-secondary);
+        }
+
+        .form-select-icon svg {
+            width: 16px;
+            height: 16px;
+        }
+
+        /* Platform radio buttons */
+        .platform-radios {
+            display: flex;
+            gap: 12px;
+        }
+
+        .platform-radio {
+            flex: 1;
+            position: relative;
+        }
+
+        .platform-radio input {
+            position: absolute;
+            opacity: 0;
+            cursor: pointer;
+        }
+
+        .platform-radio-label {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 12px 14px;
+            background: var(--color-surface-elevated);
+            border: 1px solid var(--color-border);
+            border-radius: var(--radius-sm);
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .platform-radio input:checked + .platform-radio-label {
+            border-color: var(--color-primary);
+            background: rgba(99, 102, 241, 0.08);
+        }
+
+        .platform-radio-label:hover {
+            border-color: var(--color-text-secondary);
+        }
+
+        .platform-radio-icon {
+            width: 24px;
+            height: 24px;
+            border-radius: var(--radius-xs);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .platform-radio-icon.hn { background: rgba(255, 102, 0, 0.15); }
+        .platform-radio-icon.reddit { background: rgba(255, 69, 0, 0.15); }
+
+        .platform-radio-icon svg {
+            width: 14px;
+            height: 14px;
+        }
+
+        .platform-radio-icon.hn svg { color: var(--color-hn); }
+        .platform-radio-icon.reddit svg { color: var(--color-reddit); }
+
+        .platform-radio-text {
+            font-size: 13px;
+            font-weight: 500;
+        }
+
+        /* Text input */
+        .form-input {
+            width: 100%;
+            padding: 12px 14px;
+            background: var(--color-surface-elevated);
+            border: 1px solid var(--color-border);
+            border-radius: var(--radius-sm);
+            color: var(--color-text);
+            font-size: 14px;
+            font-family: inherit;
+            transition: all 0.2s;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: var(--color-primary);
+        }
+
+        .form-input::placeholder {
+            color: var(--color-text-secondary);
+        }
+
+        .form-input.error {
+            border-color: #EF4444;
+        }
+
+        .form-feedback {
+            margin-top: 6px;
+            font-size: 12px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .form-feedback.error {
+            color: #EF4444;
+        }
+
+        .form-feedback.hint {
+            color: var(--color-text-secondary);
+        }
+
+        .form-feedback svg {
+            width: 12px;
+            height: 12px;
+        }
+
+        /* Footer actions */
+        .form-footer {
+            padding: 16px 24px;
+            border-top: 1px solid var(--color-border);
+            display: flex;
+            justify-content: flex-end;
+            gap: 12px;
+        }
+
+        .btn-cancel {
+            padding: 10px 18px;
+            background: transparent;
+            border: 1px solid var(--color-border);
+            border-radius: var(--radius-sm);
+            color: var(--color-text-secondary);
+            font-size: 13px;
+            font-weight: 500;
+            font-family: inherit;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .btn-cancel:hover {
+            border-color: var(--color-text-secondary);
+            color: var(--color-text);
+        }
+
+        .btn-submit {
+            padding: 10px 20px;
+            background: var(--gradient-primary);
+            border: none;
+            border-radius: var(--radius-sm);
+            color: white;
+            font-size: 13px;
+            font-weight: 600;
+            font-family: inherit;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .btn-submit:hover {
+            opacity: 0.9;
+        }
+
+        .btn-submit:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .btn-submit svg {
+            width: 14px;
+            height: 14px;
+        }
+
+        /* Cards grid */
+        .cards-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(380px, 1fr));
+            gap: 32px;
+            align-items: start;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            body {
+                padding: 20px;
+            }
+
+            .cards-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .project-card {
+                max-width: 100%;
+            }
+
+            .modal-header-left {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 10px;
+            }
+
+            .mentions-table {
+                display: block;
+                overflow-x: auto;
+            }
+
+            .platform-radios {
+                flex-direction: column;
+            }
+
+            .filter-bar {
+                flex-wrap: wrap;
+            }
+
+            .filter-sort {
+                margin-left: 0;
+                margin-top: 8px;
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="design-header">
+        <span class="design-label">// Variation 3</span>
+        <h1>Professional / Data-Dense</h1>
+        <p>Structured table layout with compact data presentation. Efficient and information-rich.</p>
+    </div>
+
+    <!-- Section 1: Project Card Mentions -->
+    <section class="section">
+        <h2 class="section-title">1. Project Card - Mentions Section</h2>
+        <p class="section-desc">Compact data row with quick stats and view link. Minimal footprint, maximum information.</p>
+
+        <div class="cards-grid">
+            <!-- Project Card Example -->
+            <article class="project-card">
+                <div class="project-screenshot"></div>
+                <div class="project-content">
+                    <div class="project-meta-row">
+                        <h3 class="project-name">react-query</h3>
+                        <div class="project-stats">
+                            <span class="project-stat stars">
+                                <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                                42.1k
+                            </span>
+                            <span class="project-stat">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 7h10M7 12h10M7 17h6"/></svg>
+                                TypeScript
+                            </span>
+                        </div>
+                    </div>
+                    <p class="project-desc">Powerful asynchronous state management for React applications with smart caching.</p>
+
+                    <div class="mentions-row">
+                        <span class="mentions-row-label">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+                            Mentions
+                        </span>
+                        <span class="mentions-divider"></span>
+                        <div class="mention-stat-compact">
+                            <span class="mention-stat-icon hn">
+                                <svg viewBox="0 0 24 24" fill="currentColor"><path d="M0 0v24h24V0H0zm12.4 14.8h-.8l-3.6-7.3h2l2.4 5.5 2.4-5.5h2l-3.6 7.3v4.3h-1.8l.8.1v-4.4z"/></svg>
+                            </span>
+                            <span class="mention-stat-value hn">5</span>
+                        </div>
+                        <div class="mention-stat-compact">
+                            <span class="mention-stat-icon reddit">
+                                <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0z"/></svg>
+                            </span>
+                            <span class="mention-stat-value reddit">3</span>
+                        </div>
+                        <a href="#" class="mentions-view-link">
+                            View all
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
+                        </a>
+                    </div>
+                </div>
+            </article>
+
+            <!-- Project Card - No mentions -->
+            <article class="project-card">
+                <div class="project-screenshot"></div>
+                <div class="project-content">
+                    <div class="project-meta-row">
+                        <h3 class="project-name">my-side-project</h3>
+                        <div class="project-stats">
+                            <span class="project-stat stars">
+                                <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                                12
+                            </span>
+                        </div>
+                    </div>
+                    <p class="project-desc">A personal project exploring new ideas.</p>
+
+                    <div class="mentions-row">
+                        <span class="mentions-row-label">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+                            Mentions
+                        </span>
+                        <span class="mentions-divider"></span>
+                        <span style="font-size: 12px; color: var(--color-text-secondary);">No mentions found</span>
+                    </div>
+                </div>
+            </article>
+        </div>
+    </section>
+
+    <!-- Section 2: Mentions Detail Modal -->
+    <section class="section">
+        <h2 class="section-title">2. Mentions Detail Modal</h2>
+        <p class="section-desc">Professional table layout with sortable columns and filters. Data-first design.</p>
+
+        <div class="modal-backdrop">
+            <div class="modal-header">
+                <div class="modal-header-left">
+                    <h2>react-query</h2>
+                    <div class="modal-stats-inline">
+                        <span class="modal-stat-badge hn">
+                            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M0 0v24h24V0H0zm12.4 14.8h-.8l-3.6-7.3h2l2.4 5.5 2.4-5.5h2l-3.6 7.3v4.3h-1.8l.8.1v-4.4z"/></svg>
+                            5 HN
+                        </span>
+                        <span class="modal-stat-badge reddit">
+                            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0z"/></svg>
+                            3 Reddit
+                        </span>
+                    </div>
+                </div>
+                <button class="modal-close">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg>
+                </button>
+            </div>
+
+            <div class="filter-bar">
+                <span class="filter-label">Filter:</span>
+                <button class="filter-button active">All</button>
+                <button class="filter-button">
+                    <svg viewBox="0 0 24 24" fill="currentColor"><path d="M0 0v24h24V0H0zm12.4 14.8h-.8l-3.6-7.3h2l2.4 5.5 2.4-5.5h2l-3.6 7.3v4.3h-1.8l.8.1v-4.4z"/></svg>
+                    HackerNews
+                </button>
+                <button class="filter-button">
+                    <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0z"/></svg>
+                    Reddit
+                </button>
+                <div class="filter-sort">
+                    <span class="filter-label">Sort by:</span>
+                    <select>
+                        <option>Most recent</option>
+                        <option>Highest score</option>
+                        <option>Most comments</option>
+                    </select>
+                </div>
+            </div>
+
+            <table class="mentions-table">
+                <thead>
+                    <tr>
+                        <th>Source</th>
+                        <th>Title</th>
+                        <th>Score</th>
+                        <th>Comments</th>
+                        <th>Date</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>
+                            <div class="table-platform">
+                                <span class="platform-badge hn">
+                                    <svg viewBox="0 0 24 24" fill="currentColor"><path d="M0 0v24h24V0H0zm12.4 14.8h-.8l-3.6-7.3h2l2.4 5.5 2.4-5.5h2l-3.6 7.3v4.3h-1.8l.8.1v-4.4z"/></svg>
+                                </span>
+                                <span class="platform-name">HackerNews</span>
+                            </div>
+                        </td>
+                        <td class="table-title">
+                            <a href="#">React Query v5 released with major improvements to TypeScript support</a>
+                        </td>
+                        <td><span class="table-score hn">423</span></td>
+                        <td><span class="table-comments">156</span></td>
+                        <td class="table-date">Feb 21, 2026</td>
+                        <td>
+                            <a href="#" class="table-link">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+                            </a>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <div class="table-platform">
+                                <span class="platform-badge reddit">
+                                    <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0z"/></svg>
+                                </span>
+                                <span class="platform-name">r/reactjs</span>
+                            </div>
+                        </td>
+                        <td class="table-title">
+                            <a href="#">Why I switched from SWR to React Query - a comparison</a>
+                        </td>
+                        <td><span class="table-score reddit">1.2k</span></td>
+                        <td><span class="table-comments">89</span></td>
+                        <td class="table-date">Feb 18, 2026</td>
+                        <td>
+                            <a href="#" class="table-link">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+                            </a>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <div class="table-platform">
+                                <span class="platform-badge hn">
+                                    <svg viewBox="0 0 24 24" fill="currentColor"><path d="M0 0v24h24V0H0zm12.4 14.8h-.8l-3.6-7.3h2l2.4 5.5 2.4-5.5h2l-3.6 7.3v4.3h-1.8l.8.1v-4.4z"/></svg>
+                                </span>
+                                <span class="platform-name">HackerNews</span>
+                            </div>
+                        </td>
+                        <td class="table-title">
+                            <a href="#">Show HN: I built a data fetching library comparison tool</a>
+                        </td>
+                        <td><span class="table-score hn">89</span></td>
+                        <td><span class="table-comments">34</span></td>
+                        <td class="table-date">Feb 16, 2026</td>
+                        <td>
+                            <a href="#" class="table-link">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+                            </a>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <div class="table-platform">
+                                <span class="platform-badge reddit">
+                                    <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0z"/></svg>
+                                </span>
+                                <span class="platform-name">r/webdev</span>
+                            </div>
+                        </td>
+                        <td class="table-title">
+                            <a href="#">Best practices for managing server state in React apps?</a>
+                        </td>
+                        <td><span class="table-score reddit">567</span></td>
+                        <td><span class="table-comments">123</span></td>
+                        <td class="table-date">Feb 9, 2026</td>
+                        <td>
+                            <a href="#" class="table-link">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+                            </a>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Empty State -->
+        <div class="modal-backdrop" style="margin-top: 32px;">
+            <div class="modal-header">
+                <div class="modal-header-left">
+                    <h2>new-project</h2>
+                </div>
+                <button class="modal-close">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg>
+                </button>
+            </div>
+            <div class="empty-state">
+                <div class="empty-state-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
+                </div>
+                <h3>No mentions found yet</h3>
+                <p>We'll keep scanning for discussions about your project.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Section 3: Add Mention Form -->
+    <section class="section">
+        <h2 class="section-title">3. Manual Add Mention Form</h2>
+        <p class="section-desc">Structured form with clear labels, radio selection, and footer actions.</p>
+
+        <div class="cards-grid">
+            <div class="form-container">
+                <div class="form-header">
+                    <div class="form-header-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>
+                    </div>
+                    <div class="form-header-text">
+                        <h3>Add Mention</h3>
+                        <p>Manually add a discussion link</p>
+                    </div>
+                </div>
+
+                <div class="form-body">
+                    <div class="form-group">
+                        <label class="form-label">Platform</label>
+                        <div class="platform-radios">
+                            <label class="platform-radio">
+                                <input type="radio" name="platform" checked />
+                                <span class="platform-radio-label">
+                                    <span class="platform-radio-icon hn">
+                                        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M0 0v24h24V0H0zm12.4 14.8h-.8l-3.6-7.3h2l2.4 5.5 2.4-5.5h2l-3.6 7.3v4.3h-1.8l.8.1v-4.4z"/></svg>
+                                    </span>
+                                    <span class="platform-radio-text">HackerNews</span>
+                                </span>
+                            </label>
+                            <label class="platform-radio">
+                                <input type="radio" name="platform" />
+                                <span class="platform-radio-label">
+                                    <span class="platform-radio-icon reddit">
+                                        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0z"/></svg>
+                                    </span>
+                                    <span class="platform-radio-text">Reddit</span>
+                                </span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">
+                            URL
+                            <span class="form-label-optional">Required</span>
+                        </label>
+                        <input type="url" class="form-input" placeholder="https://news.ycombinator.com/item?id=..." />
+                        <p class="form-feedback hint">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg>
+                            Paste the full URL to the discussion
+                        </p>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">
+                            Title
+                            <span class="form-label-optional">Optional</span>
+                        </label>
+                        <input type="text" class="form-input" placeholder="Auto-fetched from URL" />
+                    </div>
+                </div>
+
+                <div class="form-footer">
+                    <button class="btn-cancel">Cancel</button>
+                    <button class="btn-submit">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>
+                        Add Mention
+                    </button>
+                </div>
+            </div>
+
+            <!-- Form with error state -->
+            <div class="form-container">
+                <div class="form-header">
+                    <div class="form-header-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>
+                    </div>
+                    <div class="form-header-text">
+                        <h3>Add Mention</h3>
+                        <p>Manually add a discussion link</p>
+                    </div>
+                </div>
+
+                <div class="form-body">
+                    <div class="form-group">
+                        <label class="form-label">Platform</label>
+                        <div class="platform-radios">
+                            <label class="platform-radio">
+                                <input type="radio" name="platform2" />
+                                <span class="platform-radio-label">
+                                    <span class="platform-radio-icon hn">
+                                        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M0 0v24h24V0H0zm12.4 14.8h-.8l-3.6-7.3h2l2.4 5.5 2.4-5.5h2l-3.6 7.3v4.3h-1.8l.8.1v-4.4z"/></svg>
+                                    </span>
+                                    <span class="platform-radio-text">HackerNews</span>
+                                </span>
+                            </label>
+                            <label class="platform-radio">
+                                <input type="radio" name="platform2" checked />
+                                <span class="platform-radio-label">
+                                    <span class="platform-radio-icon reddit">
+                                        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0z"/></svg>
+                                    </span>
+                                    <span class="platform-radio-text">Reddit</span>
+                                </span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">
+                            URL
+                            <span class="form-label-optional">Required</span>
+                        </label>
+                        <input type="url" class="form-input error" value="not-a-valid-url" />
+                        <p class="form-feedback error">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M15 9l-6 6M9 9l6 6"/></svg>
+                            Please enter a valid Reddit URL
+                        </p>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">
+                            Title
+                            <span class="form-label-optional">Optional</span>
+                        </label>
+                        <input type="text" class="form-input" placeholder="Auto-fetched from URL" />
+                    </div>
+                </div>
+
+                <div class="form-footer">
+                    <button class="btn-cancel">Cancel</button>
+                    <button class="btn-submit" disabled>
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>
+                        Add Mention
+                    </button>
+                </div>
+            </div>
+        </div>
+    </section>
+</body>
+</html>
