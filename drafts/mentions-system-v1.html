@@ -1,0 +1,896 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Social Mentions System - Variation 1: Minimal/Clean</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --color-bg: #0F0F14;
+            --color-surface: #1A1A24;
+            --color-surface-elevated: #24243A;
+            --color-text: #FFFFFF;
+            --color-text-secondary: #A0A0B8;
+            --color-border: #2E2E3A;
+            --color-border-subtle: #24243A;
+            --gradient-primary: linear-gradient(135deg, #6366F1 0%, #8B5CF6 50%, #A855F7 100%);
+            --color-primary: #6366F1;
+            --color-primary-light: #818CF8;
+            --color-hn: #FF6600;
+            --color-reddit: #FF4500;
+            --color-ph: #DA552F;
+            --color-twitter: #1DA1F2;
+            --color-success: #22C55E;
+            --radius-sm: 8px;
+            --radius-md: 12px;
+            --radius-lg: 16px;
+            --radius-xl: 24px;
+            --shadow-sm: 0 1px 2px rgba(0,0,0,0.2);
+            --shadow-md: 0 4px 12px rgba(0,0,0,0.3);
+            --shadow-lg: 0 12px 32px rgba(0,0,0,0.4);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--color-bg);
+            color: var(--color-text);
+            line-height: 1.6;
+            padding: 40px;
+        }
+
+        .design-header {
+            text-align: center;
+            margin-bottom: 60px;
+            padding-bottom: 40px;
+            border-bottom: 1px solid var(--color-border);
+        }
+
+        .design-header h1 {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 32px;
+            margin-bottom: 8px;
+            background: var(--gradient-primary);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .design-header p {
+            color: var(--color-text-secondary);
+            font-size: 16px;
+        }
+
+        .design-label {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 6px 12px;
+            background: var(--color-surface-elevated);
+            border-radius: 100px;
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--color-text-secondary);
+            margin-bottom: 16px;
+        }
+
+        .section {
+            max-width: 900px;
+            margin: 0 auto 80px;
+        }
+
+        .section-title {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 20px;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+
+        .section-desc {
+            color: var(--color-text-secondary);
+            font-size: 14px;
+            margin-bottom: 32px;
+        }
+
+        /* ===================== */
+        /* 1. PROJECT CARD MENTIONS - Minimal Inline Style */
+        /* ===================== */
+
+        .project-card {
+            background: var(--color-surface);
+            border: 1px solid var(--color-border);
+            border-radius: var(--radius-lg);
+            overflow: hidden;
+            transition: all 0.3s;
+            max-width: 380px;
+        }
+
+        .project-card:hover {
+            border-color: var(--color-primary);
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .project-screenshot {
+            width: 100%;
+            height: 160px;
+            background: linear-gradient(135deg, #1e1e2e 0%, #2a2a3e 100%);
+            position: relative;
+        }
+
+        .project-screenshot::after {
+            content: 'Screenshot';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: var(--color-text-secondary);
+            font-size: 12px;
+            opacity: 0.5;
+        }
+
+        .project-content {
+            padding: 20px;
+        }
+
+        .project-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 8px;
+        }
+
+        .project-name {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 16px;
+            font-weight: 700;
+        }
+
+        .project-stars {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            color: var(--color-text-secondary);
+            font-size: 13px;
+        }
+
+        .project-stars svg {
+            width: 14px;
+            height: 14px;
+            color: #FFC107;
+        }
+
+        .project-desc {
+            font-size: 13px;
+            color: var(--color-text-secondary);
+            margin-bottom: 16px;
+            line-height: 1.5;
+        }
+
+        /* MINIMAL: Inline mention badges */
+        .mentions-inline {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding-top: 16px;
+            border-top: 1px solid var(--color-border-subtle);
+        }
+
+        .mentions-inline-label {
+            font-size: 11px;
+            color: var(--color-text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .mention-chip {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            padding: 4px 8px;
+            border-radius: 6px;
+            font-size: 11px;
+            font-weight: 600;
+            transition: all 0.2s;
+            cursor: pointer;
+        }
+
+        .mention-chip svg {
+            width: 12px;
+            height: 12px;
+        }
+
+        .mention-chip.hn {
+            background: rgba(255, 102, 0, 0.12);
+            color: var(--color-hn);
+        }
+        .mention-chip.hn:hover {
+            background: rgba(255, 102, 0, 0.2);
+        }
+
+        .mention-chip.reddit {
+            background: rgba(255, 69, 0, 0.12);
+            color: var(--color-reddit);
+        }
+        .mention-chip.reddit:hover {
+            background: rgba(255, 69, 0, 0.2);
+        }
+
+        /* ===================== */
+        /* 2. MENTIONS DETAIL MODAL - Minimal List */
+        /* ===================== */
+
+        .modal-backdrop {
+            background: var(--color-surface);
+            border: 1px solid var(--color-border);
+            border-radius: var(--radius-xl);
+            max-width: 600px;
+            margin: 0 auto;
+            overflow: hidden;
+        }
+
+        .modal-header {
+            padding: 24px;
+            border-bottom: 1px solid var(--color-border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .modal-header h2 {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 18px;
+            font-weight: 700;
+        }
+
+        .modal-close {
+            width: 32px;
+            height: 32px;
+            border-radius: var(--radius-sm);
+            background: var(--color-surface-elevated);
+            border: none;
+            color: var(--color-text-secondary);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+        }
+
+        .modal-close:hover {
+            background: var(--color-border);
+            color: var(--color-text);
+        }
+
+        .modal-close svg {
+            width: 16px;
+            height: 16px;
+        }
+
+        /* Platform filter tabs */
+        .platform-tabs {
+            display: flex;
+            gap: 8px;
+            padding: 16px 24px;
+            border-bottom: 1px solid var(--color-border);
+            overflow-x: auto;
+        }
+
+        .platform-tab {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 8px 14px;
+            border-radius: 100px;
+            font-size: 13px;
+            font-weight: 500;
+            background: var(--color-surface-elevated);
+            color: var(--color-text-secondary);
+            border: none;
+            cursor: pointer;
+            transition: all 0.2s;
+            white-space: nowrap;
+        }
+
+        .platform-tab:hover {
+            color: var(--color-text);
+        }
+
+        .platform-tab.active {
+            background: var(--gradient-primary);
+            color: white;
+        }
+
+        .platform-tab svg {
+            width: 14px;
+            height: 14px;
+        }
+
+        .platform-tab .count {
+            padding: 2px 6px;
+            border-radius: 100px;
+            background: rgba(255,255,255,0.15);
+            font-size: 11px;
+        }
+
+        /* Mentions list - minimal style */
+        .mentions-list {
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        .mention-item {
+            padding: 20px 24px;
+            border-bottom: 1px solid var(--color-border-subtle);
+            transition: background 0.2s;
+        }
+
+        .mention-item:hover {
+            background: var(--color-surface-elevated);
+        }
+
+        .mention-item:last-child {
+            border-bottom: none;
+        }
+
+        .mention-meta {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 8px;
+        }
+
+        .mention-platform-icon {
+            width: 20px;
+            height: 20px;
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .mention-platform-icon.hn {
+            background: rgba(255, 102, 0, 0.15);
+            color: var(--color-hn);
+        }
+
+        .mention-platform-icon.reddit {
+            background: rgba(255, 69, 0, 0.15);
+            color: var(--color-reddit);
+        }
+
+        .mention-platform-icon svg {
+            width: 12px;
+            height: 12px;
+        }
+
+        .mention-source {
+            font-size: 12px;
+            color: var(--color-text-secondary);
+        }
+
+        .mention-date {
+            font-size: 11px;
+            color: var(--color-text-secondary);
+            margin-left: auto;
+        }
+
+        .mention-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--color-text);
+            margin-bottom: 8px;
+            line-height: 1.4;
+        }
+
+        .mention-title a {
+            color: inherit;
+            text-decoration: none;
+        }
+
+        .mention-title a:hover {
+            color: var(--color-primary-light);
+        }
+
+        .mention-stats {
+            display: flex;
+            gap: 16px;
+        }
+
+        .mention-stat {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            font-size: 12px;
+            color: var(--color-text-secondary);
+        }
+
+        .mention-stat svg {
+            width: 12px;
+            height: 12px;
+        }
+
+        /* Empty state */
+        .empty-state {
+            padding: 60px 24px;
+            text-align: center;
+        }
+
+        .empty-state-icon {
+            width: 64px;
+            height: 64px;
+            margin: 0 auto 16px;
+            background: var(--color-surface-elevated);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .empty-state-icon svg {
+            width: 28px;
+            height: 28px;
+            color: var(--color-text-secondary);
+        }
+
+        .empty-state h3 {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+
+        .empty-state p {
+            font-size: 14px;
+            color: var(--color-text-secondary);
+        }
+
+        /* ===================== */
+        /* 3. ADD MENTION FORM - Clean & Minimal */
+        /* ===================== */
+
+        .form-container {
+            background: var(--color-surface);
+            border: 1px solid var(--color-border);
+            border-radius: var(--radius-lg);
+            padding: 32px;
+            max-width: 500px;
+        }
+
+        .form-header {
+            margin-bottom: 24px;
+        }
+
+        .form-header h3 {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 18px;
+            font-weight: 700;
+            margin-bottom: 4px;
+        }
+
+        .form-header p {
+            font-size: 13px;
+            color: var(--color-text-secondary);
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-label {
+            display: block;
+            font-size: 13px;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: var(--color-text);
+        }
+
+        .form-label span {
+            font-weight: 400;
+            color: var(--color-text-secondary);
+        }
+
+        /* Platform selector */
+        .platform-selector {
+            display: flex;
+            gap: 10px;
+        }
+
+        .platform-option {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+            padding: 16px 12px;
+            background: var(--color-surface-elevated);
+            border: 2px solid transparent;
+            border-radius: var(--radius-md);
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .platform-option:hover {
+            border-color: var(--color-border);
+        }
+
+        .platform-option.selected {
+            border-color: var(--color-primary);
+            background: rgba(99, 102, 241, 0.1);
+        }
+
+        .platform-option svg {
+            width: 24px;
+            height: 24px;
+        }
+
+        .platform-option.hn svg { color: var(--color-hn); }
+        .platform-option.reddit svg { color: var(--color-reddit); }
+
+        .platform-option span {
+            font-size: 12px;
+            font-weight: 500;
+            color: var(--color-text-secondary);
+        }
+
+        .platform-option.selected span {
+            color: var(--color-text);
+        }
+
+        /* Text input */
+        .form-input {
+            width: 100%;
+            padding: 12px 14px;
+            background: var(--color-surface-elevated);
+            border: 1px solid var(--color-border);
+            border-radius: var(--radius-sm);
+            color: var(--color-text);
+            font-size: 14px;
+            font-family: inherit;
+            transition: all 0.2s;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: var(--color-primary);
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.15);
+        }
+
+        .form-input::placeholder {
+            color: var(--color-text-secondary);
+        }
+
+        .form-input.error {
+            border-color: #EF4444;
+        }
+
+        .form-error {
+            margin-top: 6px;
+            font-size: 12px;
+            color: #EF4444;
+        }
+
+        .form-hint {
+            margin-top: 6px;
+            font-size: 12px;
+            color: var(--color-text-secondary);
+        }
+
+        /* Submit button */
+        .btn-submit {
+            width: 100%;
+            padding: 14px;
+            background: var(--gradient-primary);
+            border: none;
+            border-radius: var(--radius-sm);
+            color: white;
+            font-size: 14px;
+            font-weight: 600;
+            font-family: inherit;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-top: 8px;
+        }
+
+        .btn-submit:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 16px rgba(99, 102, 241, 0.4);
+        }
+
+        .btn-submit:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        /* Cards grid */
+        .cards-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 24px;
+            align-items: start;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            body {
+                padding: 20px;
+            }
+
+            .cards-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .project-card {
+                max-width: 100%;
+            }
+
+            .platform-selector {
+                flex-wrap: wrap;
+            }
+
+            .platform-option {
+                min-width: calc(50% - 5px);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="design-header">
+        <span class="design-label">Variation 1</span>
+        <h1>Minimal / Clean</h1>
+        <p>Subtle inline mentions with lightweight visual treatment. Focus on content over decoration.</p>
+    </div>
+
+    <!-- Section 1: Project Card Mentions -->
+    <section class="section">
+        <h2 class="section-title">1. Project Card - Mentions Section</h2>
+        <p class="section-desc">Subtle inline chips at the bottom of project cards. Compact and scannable.</p>
+
+        <div class="cards-grid">
+            <!-- Project Card Example -->
+            <article class="project-card">
+                <div class="project-screenshot"></div>
+                <div class="project-content">
+                    <div class="project-header">
+                        <h3 class="project-name">react-query</h3>
+                        <span class="project-stars">
+                            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                            42.1k
+                        </span>
+                    </div>
+                    <p class="project-desc">Powerful asynchronous state management for React applications with smart caching.</p>
+                    <div class="mentions-inline">
+                        <span class="mentions-inline-label">Mentions</span>
+                        <span class="mention-chip hn">
+                            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M0 0v24h24V0H0zm12.4 14.8h-.8l-3.6-7.3h2l2.4 5.5 2.4-5.5h2l-3.6 7.3v4.3h-1.8l.8.1v-4.4z"/></svg>
+                            5
+                        </span>
+                        <span class="mention-chip reddit">
+                            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0zm5.01 4.744c.688 0 1.25.561 1.25 1.249a1.25 1.25 0 0 1-2.498.056l-2.597-.547-.8 3.747c1.824.07 3.48.632 4.674 1.488.308-.309.73-.491 1.207-.491.968 0 1.754.786 1.754 1.754 0 .716-.435 1.333-1.01 1.614a3.111 3.111 0 0 1 .042.52c0 2.694-3.13 4.87-7.004 4.87-3.874 0-7.004-2.176-7.004-4.87 0-.183.015-.366.043-.534A1.748 1.748 0 0 1 4.028 12c0-.968.786-1.754 1.754-1.754.463 0 .898.196 1.207.49 1.207-.883 2.878-1.43 4.744-1.487l.885-4.182a.342.342 0 0 1 .14-.197.35.35 0 0 1 .238-.042l2.906.617a1.214 1.214 0 0 1 1.108-.701zM9.25 12C8.561 12 8 12.562 8 13.25c0 .687.561 1.248 1.25 1.248.687 0 1.248-.561 1.248-1.249 0-.688-.561-1.249-1.249-1.249zm5.5 0c-.687 0-1.248.561-1.248 1.25 0 .687.561 1.248 1.249 1.248.688 0 1.249-.561 1.249-1.249 0-.687-.562-1.249-1.25-1.249zm-5.466 3.99a.327.327 0 0 0-.231.094.33.33 0 0 0 0 .463c.842.842 2.484.913 2.961.913.477 0 2.105-.056 2.961-.913a.361.361 0 0 0 .029-.463.33.33 0 0 0-.464 0c-.547.533-1.684.73-2.512.73-.828 0-1.979-.196-2.512-.73a.326.326 0 0 0-.232-.095z"/></svg>
+                            3
+                        </span>
+                    </div>
+                </div>
+            </article>
+
+            <!-- Project Card - No mentions -->
+            <article class="project-card">
+                <div class="project-screenshot"></div>
+                <div class="project-content">
+                    <div class="project-header">
+                        <h3 class="project-name">my-side-project</h3>
+                        <span class="project-stars">
+                            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                            12
+                        </span>
+                    </div>
+                    <p class="project-desc">A personal project exploring new ideas in web development.</p>
+                    <div class="mentions-inline">
+                        <span class="mentions-inline-label">No mentions yet</span>
+                    </div>
+                </div>
+            </article>
+        </div>
+    </section>
+
+    <!-- Section 2: Mentions Detail Modal -->
+    <section class="section">
+        <h2 class="section-title">2. Mentions Detail Modal</h2>
+        <p class="section-desc">Clean list view with platform filters. Focused on readability.</p>
+
+        <div class="modal-backdrop">
+            <div class="modal-header">
+                <h2>Mentions for react-query</h2>
+                <button class="modal-close">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg>
+                </button>
+            </div>
+
+            <div class="platform-tabs">
+                <button class="platform-tab active">
+                    All
+                    <span class="count">8</span>
+                </button>
+                <button class="platform-tab">
+                    <svg viewBox="0 0 24 24" fill="currentColor"><path d="M0 0v24h24V0H0zm12.4 14.8h-.8l-3.6-7.3h2l2.4 5.5 2.4-5.5h2l-3.6 7.3v4.3h-1.8l.8.1v-4.4z"/></svg>
+                    HackerNews
+                    <span class="count">5</span>
+                </button>
+                <button class="platform-tab">
+                    <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0z"/></svg>
+                    Reddit
+                    <span class="count">3</span>
+                </button>
+            </div>
+
+            <div class="mentions-list">
+                <div class="mention-item">
+                    <div class="mention-meta">
+                        <span class="mention-platform-icon hn">
+                            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M0 0v24h24V0H0zm12.4 14.8h-.8l-3.6-7.3h2l2.4 5.5 2.4-5.5h2l-3.6 7.3v4.3h-1.8l.8.1v-4.4z"/></svg>
+                        </span>
+                        <span class="mention-source">HackerNews</span>
+                        <span class="mention-date">2 days ago</span>
+                    </div>
+                    <h4 class="mention-title">
+                        <a href="#">React Query v5 released with major improvements to TypeScript support</a>
+                    </h4>
+                    <div class="mention-stats">
+                        <span class="mention-stat">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 19V5M5 12l7-7 7 7"/></svg>
+                            423 points
+                        </span>
+                        <span class="mention-stat">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+                            156 comments
+                        </span>
+                    </div>
+                </div>
+
+                <div class="mention-item">
+                    <div class="mention-meta">
+                        <span class="mention-platform-icon reddit">
+                            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0z"/></svg>
+                        </span>
+                        <span class="mention-source">r/reactjs</span>
+                        <span class="mention-date">5 days ago</span>
+                    </div>
+                    <h4 class="mention-title">
+                        <a href="#">Why I switched from SWR to React Query - a comparison</a>
+                    </h4>
+                    <div class="mention-stats">
+                        <span class="mention-stat">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 19V5M5 12l7-7 7 7"/></svg>
+                            1.2k upvotes
+                        </span>
+                        <span class="mention-stat">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+                            89 comments
+                        </span>
+                    </div>
+                </div>
+
+                <div class="mention-item">
+                    <div class="mention-meta">
+                        <span class="mention-platform-icon hn">
+                            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M0 0v24h24V0H0zm12.4 14.8h-.8l-3.6-7.3h2l2.4 5.5 2.4-5.5h2l-3.6 7.3v4.3h-1.8l.8.1v-4.4z"/></svg>
+                        </span>
+                        <span class="mention-source">HackerNews</span>
+                        <span class="mention-date">1 week ago</span>
+                    </div>
+                    <h4 class="mention-title">
+                        <a href="#">Show HN: I built a data fetching library comparison tool</a>
+                    </h4>
+                    <div class="mention-stats">
+                        <span class="mention-stat">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 19V5M5 12l7-7 7 7"/></svg>
+                            89 points
+                        </span>
+                        <span class="mention-stat">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+                            34 comments
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Empty State -->
+        <div class="modal-backdrop" style="margin-top: 32px;">
+            <div class="modal-header">
+                <h2>Mentions for new-project</h2>
+                <button class="modal-close">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg>
+                </button>
+            </div>
+            <div class="empty-state">
+                <div class="empty-state-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
+                </div>
+                <h3>No mentions found yet</h3>
+                <p>We'll keep looking for discussions about your project.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Section 3: Add Mention Form -->
+    <section class="section">
+        <h2 class="section-title">3. Manual Add Mention Form</h2>
+        <p class="section-desc">Clean form for manually adding mentions from HackerNews or Reddit.</p>
+
+        <div class="form-container">
+            <div class="form-header">
+                <h3>Add a Mention</h3>
+                <p>Manually add a link to a discussion about your project.</p>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Platform</label>
+                <div class="platform-selector">
+                    <div class="platform-option hn selected">
+                        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M0 0v24h24V0H0zm12.4 14.8h-.8l-3.6-7.3h2l2.4 5.5 2.4-5.5h2l-3.6 7.3v4.3h-1.8l.8.1v-4.4z"/></svg>
+                        <span>HackerNews</span>
+                    </div>
+                    <div class="platform-option reddit">
+                        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0zm5.01 4.744c.688 0 1.25.561 1.25 1.249a1.25 1.25 0 0 1-2.498.056l-2.597-.547-.8 3.747c1.824.07 3.48.632 4.674 1.488.308-.309.73-.491 1.207-.491.968 0 1.754.786 1.754 1.754 0 .716-.435 1.333-1.01 1.614a3.111 3.111 0 0 1 .042.52c0 2.694-3.13 4.87-7.004 4.87-3.874 0-7.004-2.176-7.004-4.87 0-.183.015-.366.043-.534A1.748 1.748 0 0 1 4.028 12c0-.968.786-1.754 1.754-1.754.463 0 .898.196 1.207.49 1.207-.883 2.878-1.43 4.744-1.487l.885-4.182a.342.342 0 0 1 .14-.197.35.35 0 0 1 .238-.042l2.906.617a1.214 1.214 0 0 1 1.108-.701zM9.25 12C8.561 12 8 12.562 8 13.25c0 .687.561 1.248 1.25 1.248.687 0 1.248-.561 1.248-1.249 0-.688-.561-1.249-1.249-1.249zm5.5 0c-.687 0-1.248.561-1.248 1.25 0 .687.561 1.248 1.249 1.248.688 0 1.249-.561 1.249-1.249 0-.687-.562-1.249-1.25-1.249zm-5.466 3.99a.327.327 0 0 0-.231.094.33.33 0 0 0 0 .463c.842.842 2.484.913 2.961.913.477 0 2.105-.056 2.961-.913a.361.361 0 0 0 .029-.463.33.33 0 0 0-.464 0c-.547.533-1.684.73-2.512.73-.828 0-1.979-.196-2.512-.73a.326.326 0 0 0-.232-.095z"/></svg>
+                        <span>Reddit</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Discussion URL <span>(required)</span></label>
+                <input type="url" class="form-input" placeholder="https://news.ycombinator.com/item?id=..." />
+                <p class="form-hint">Paste the full URL to the discussion thread</p>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Title <span>(optional - we'll auto-fetch)</span></label>
+                <input type="text" class="form-input" placeholder="Discussion title" />
+            </div>
+
+            <button class="btn-submit">Add Mention</button>
+        </div>
+
+        <!-- Form with validation error -->
+        <div class="form-container" style="margin-top: 32px;">
+            <div class="form-header">
+                <h3>Add a Mention</h3>
+                <p>Manually add a link to a discussion about your project.</p>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Platform</label>
+                <div class="platform-selector">
+                    <div class="platform-option hn">
+                        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M0 0v24h24V0H0zm12.4 14.8h-.8l-3.6-7.3h2l2.4 5.5 2.4-5.5h2l-3.6 7.3v4.3h-1.8l.8.1v-4.4z"/></svg>
+                        <span>HackerNews</span>
+                    </div>
+                    <div class="platform-option reddit selected">
+                        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0z"/></svg>
+                        <span>Reddit</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Discussion URL <span>(required)</span></label>
+                <input type="url" class="form-input error" value="not-a-valid-url" />
+                <p class="form-error">Please enter a valid Reddit URL</p>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Title <span>(optional - we'll auto-fetch)</span></label>
+                <input type="text" class="form-input" placeholder="Discussion title" />
+            </div>
+
+            <button class="btn-submit" disabled>Add Mention</button>
+        </div>
+    </section>
+</body>
+</html>
