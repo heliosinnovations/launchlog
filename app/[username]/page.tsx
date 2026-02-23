@@ -2,7 +2,9 @@ import { getSupabaseAdmin } from "@/lib/supabase"
 import Image from "next/image"
 import { Star, ExternalLink, GitBranch } from "lucide-react"
 
-export const revalidate = 60 // Revalidate every minute for fresher data
+// Force dynamic rendering so profile updates are immediately visible
+// Bio and social links are fetched fresh on each request
+export const dynamic = 'force-dynamic'
 
 interface UserRepo {
   id: string
