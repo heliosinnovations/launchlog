@@ -3,7 +3,7 @@
 
 CREATE TABLE IF NOT EXISTS mentions (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  project_id UUID REFERENCES projects(id) ON DELETE CASCADE,
+  project_id UUID REFERENCES user_repos(id) ON DELETE CASCADE,
   source_type TEXT NOT NULL, -- 'hackernews' | 'reddit' | 'twitter' | 'producthunt' | 'youtube' | 'blog'
   source_url TEXT NOT NULL UNIQUE, -- UNIQUE to prevent duplicate mentions
   title TEXT,
@@ -31,15 +31,15 @@ CREATE POLICY "Public mentions are viewable by all"
   USING (true);
 
 -- Project owners can insert mentions for their projects
--- Checks project ownership via projects.user_id = auth.uid()
+-- Checks project ownership via user_repos.user_id = auth.uid()
 CREATE POLICY "Project owners can insert mentions"
   ON mentions
   FOR INSERT
   WITH CHECK (
     EXISTS (
-      SELECT 1 FROM projects
-      WHERE projects.id = mentions.project_id
-      AND projects.user_id = auth.uid()
+      SELECT 1 FROM user_repos
+      WHERE user_repos.id = mentions.project_id
+      AND user_repos.user_id = auth.uid()
     )
   );
 
@@ -49,16 +49,16 @@ CREATE POLICY "Project owners can update mentions"
   FOR UPDATE
   USING (
     EXISTS (
-      SELECT 1 FROM projects
-      WHERE projects.id = mentions.project_id
-      AND projects.user_id = auth.uid()
+      SELECT 1 FROM user_repos
+      WHERE user_repos.id = mentions.project_id
+      AND user_repos.user_id = auth.uid()
     )
   )
   WITH CHECK (
     EXISTS (
-      SELECT 1 FROM projects
-      WHERE projects.id = mentions.project_id
-      AND projects.user_id = auth.uid()
+      SELECT 1 FROM user_repos
+      WHERE user_repos.id = mentions.project_id
+      AND user_repos.user_id = auth.uid()
     )
   );
 
@@ -68,9 +68,9 @@ CREATE POLICY "Project owners can delete mentions"
   FOR DELETE
   USING (
     EXISTS (
-      SELECT 1 FROM projects
-      WHERE projects.id = mentions.project_id
-      AND projects.user_id = auth.uid()
+      SELECT 1 FROM user_repos
+      WHERE user_repos.id = mentions.project_id
+      AND user_repos.user_id = auth.uid()
     )
   );
 
@@ -92,7 +92,7 @@ CREATE TRIGGER trigger_update_mentions_updated_at
 
 -- Comments explaining the table and columns
 COMMENT ON TABLE mentions IS 'Stores social proof mentions of projects from HackerNews, Reddit, ProductHunt, Twitter, YouTube, and blogs.';
-COMMENT ON COLUMN mentions.project_id IS 'Reference to the project this mention is about';
+COMMENT ON COLUMN mentions.project_id IS 'Reference to the user_repo (project) this mention is about';
 COMMENT ON COLUMN mentions.source_type IS 'Type of source: hackernews, reddit, twitter, producthunt, youtube, blog';
 COMMENT ON COLUMN mentions.source_url IS 'Unique URL to the original mention (prevents duplicates)';
 COMMENT ON COLUMN mentions.title IS 'Title of the post/discussion';
