@@ -6,6 +6,11 @@ import { MentionsRow } from '../MentionsRow';
 const mockFetch = jest.fn();
 global.fetch = mockFetch;
 
+const defaultProps = {
+  projectId: 'test-123',
+  projectName: 'test-project',
+};
+
 describe('MentionsRow', () => {
   beforeEach(() => {
     mockFetch.mockClear();
@@ -16,7 +21,7 @@ describe('MentionsRow', () => {
       // Mock fetch to never resolve during this test
       mockFetch.mockImplementation(() => new Promise(() => {}));
 
-      render(<MentionsRow projectId="test-123" />);
+      render(<MentionsRow {...defaultProps} />);
 
       expect(screen.getByRole('status', { name: 'Loading mentions' })).toBeInTheDocument();
       expect(screen.getByText('Loading...')).toBeInTheDocument();
@@ -27,7 +32,7 @@ describe('MentionsRow', () => {
     it('displays error state when fetch fails', async () => {
       mockFetch.mockRejectedValue(new Error('Network error'));
 
-      render(<MentionsRow projectId="test-123" />);
+      render(<MentionsRow {...defaultProps} />);
 
       await waitFor(() => {
         expect(screen.getByRole('alert')).toBeInTheDocument();
@@ -45,7 +50,7 @@ describe('MentionsRow', () => {
         });
       });
 
-      render(<MentionsRow projectId="test-123" />);
+      render(<MentionsRow {...defaultProps} />);
 
       await waitFor(() => {
         expect(screen.getByText('No mentions found')).toBeInTheDocument();
@@ -68,7 +73,7 @@ describe('MentionsRow', () => {
         });
       });
 
-      render(<MentionsRow projectId="test-123" />);
+      render(<MentionsRow {...defaultProps} />);
 
       await waitFor(() => {
         expect(screen.getByText('5')).toBeInTheDocument();
@@ -90,7 +95,7 @@ describe('MentionsRow', () => {
         });
       });
 
-      render(<MentionsRow projectId="test-123" />);
+      render(<MentionsRow {...defaultProps} />);
 
       await waitFor(() => {
         expect(screen.getByText('3')).toBeInTheDocument();
@@ -118,7 +123,7 @@ describe('MentionsRow', () => {
         });
       });
 
-      render(<MentionsRow projectId="test-123" />);
+      render(<MentionsRow {...defaultProps} />);
 
       await waitFor(() => {
         expect(screen.getByText('5')).toBeInTheDocument();
@@ -127,8 +132,8 @@ describe('MentionsRow', () => {
     });
   });
 
-  describe('View All Button', () => {
-    it('shows "View all" button when onViewAll is provided', async () => {
+  describe('View All Button and Modal', () => {
+    it('shows "View all" button when there are mentions', async () => {
       mockFetch.mockImplementation(() =>
         Promise.resolve({
           ok: true,
@@ -136,15 +141,37 @@ describe('MentionsRow', () => {
         })
       );
 
-      const mockOnViewAll = jest.fn();
-      render(<MentionsRow projectId="test-123" onViewAll={mockOnViewAll} />);
+      render(<MentionsRow {...defaultProps} />);
 
       await waitFor(() => {
         expect(screen.getByRole('button', { name: 'View all mentions' })).toBeInTheDocument();
       });
     });
 
-    it('calls onViewAll when "View all" is clicked', async () => {
+    it('opens modal when "View all" is clicked', async () => {
+      mockFetch.mockImplementation(() =>
+        Promise.resolve({
+          ok: true,
+          json: () => Promise.resolve({ mentions: [], total: 5 }),
+        })
+      );
+
+      const user = userEvent.setup();
+      render(<MentionsRow {...defaultProps} />);
+
+      await waitFor(() => {
+        expect(screen.getByRole('button', { name: 'View all mentions' })).toBeInTheDocument();
+      });
+
+      await user.click(screen.getByRole('button', { name: 'View all mentions' }));
+
+      // Modal should be open
+      await waitFor(() => {
+        expect(screen.getByRole('dialog')).toBeInTheDocument();
+      });
+    });
+
+    it('calls onViewAll callback when "View all" is clicked', async () => {
       mockFetch.mockImplementation(() =>
         Promise.resolve({
           ok: true,
@@ -154,7 +181,7 @@ describe('MentionsRow', () => {
 
       const mockOnViewAll = jest.fn();
       const user = userEvent.setup();
-      render(<MentionsRow projectId="test-123" onViewAll={mockOnViewAll} />);
+      render(<MentionsRow {...defaultProps} onViewAll={mockOnViewAll} />);
 
       await waitFor(() => {
         expect(screen.getByRole('button', { name: 'View all mentions' })).toBeInTheDocument();
@@ -165,27 +192,27 @@ describe('MentionsRow', () => {
       expect(mockOnViewAll).toHaveBeenCalledTimes(1);
     });
 
-    it('does not show "View all" button when onViewAll is not provided', async () => {
-      mockFetch.mockImplementation((url: string) => {
-        if (url.includes('hackernews')) {
-          return Promise.resolve({
-            ok: true,
-            json: () => Promise.resolve({ mentions: [], total: 5 }),
-          });
-        }
-        return Promise.resolve({
+    it('passes projectName to modal', async () => {
+      mockFetch.mockImplementation(() =>
+        Promise.resolve({
           ok: true,
-          json: () => Promise.resolve({ mentions: [], total: 0 }),
-        });
-      });
+          json: () => Promise.resolve({ mentions: [], total: 5 }),
+        })
+      );
 
-      render(<MentionsRow projectId="test-123" />);
+      const user = userEvent.setup();
+      render(<MentionsRow projectId="test-123" projectName="my-awesome-project" />);
 
       await waitFor(() => {
-        expect(screen.getByLabelText('5 HackerNews mentions')).toBeInTheDocument();
+        expect(screen.getByRole('button', { name: 'View all mentions' })).toBeInTheDocument();
       });
 
-      expect(screen.queryByRole('button', { name: 'View all mentions' })).not.toBeInTheDocument();
+      await user.click(screen.getByRole('button', { name: 'View all mentions' }));
+
+      // Modal should show project name
+      await waitFor(() => {
+        expect(screen.getByText('my-awesome-project')).toBeInTheDocument();
+      });
     });
   });
 
@@ -198,7 +225,7 @@ describe('MentionsRow', () => {
         })
       );
 
-      render(<MentionsRow projectId="my-project-id" />);
+      render(<MentionsRow projectId="my-project-id" projectName="test" />);
 
       await waitFor(() => {
         expect(mockFetch).toHaveBeenCalledWith('/api/projects/my-project-id/mentions/hackernews');
@@ -221,7 +248,7 @@ describe('MentionsRow', () => {
         });
       });
 
-      render(<MentionsRow projectId="test-123" />);
+      render(<MentionsRow {...defaultProps} />);
 
       // Should still show HN count even if Reddit fails
       await waitFor(() => {
@@ -234,7 +261,7 @@ describe('MentionsRow', () => {
     it('has proper ARIA labels for loading state', () => {
       mockFetch.mockImplementation(() => new Promise(() => {}));
 
-      render(<MentionsRow projectId="test-123" />);
+      render(<MentionsRow {...defaultProps} />);
 
       expect(screen.getByRole('status')).toHaveAttribute('aria-label', 'Loading mentions');
     });
@@ -259,7 +286,7 @@ describe('MentionsRow', () => {
         });
       });
 
-      render(<MentionsRow projectId="test-123" />);
+      render(<MentionsRow {...defaultProps} />);
 
       await waitFor(() => {
         expect(screen.getByLabelText('7 HackerNews mentions')).toBeInTheDocument();
@@ -270,7 +297,7 @@ describe('MentionsRow', () => {
     it('has proper ARIA role for error state', async () => {
       mockFetch.mockRejectedValue(new Error('Network error'));
 
-      render(<MentionsRow projectId="test-123" />);
+      render(<MentionsRow {...defaultProps} />);
 
       await waitFor(() => {
         expect(screen.getByRole('alert')).toBeInTheDocument();
