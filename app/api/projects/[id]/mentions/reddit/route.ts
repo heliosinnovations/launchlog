@@ -59,27 +59,35 @@ interface MentionsResponse {
  */
 class RateLimiter {
   private tokens: number;
-  private lastRefill: number;
+  private _lastRefill: number;
   private readonly maxTokens: number;
   private readonly refillRate: number; // tokens per ms
 
   constructor(maxRequestsPerMinute: number = 30) {
     this.maxTokens = maxRequestsPerMinute;
     this.tokens = maxRequestsPerMinute;
-    this.lastRefill = Date.now();
+    this._lastRefill = Date.now();
     this.refillRate = maxRequestsPerMinute / 60000; // per minute to per ms
+  }
+
+  /**
+   * Get the timestamp of the last token refill/access
+   * Used for cleanup of inactive rate limiters
+   */
+  get lastRefill(): number {
+    return this._lastRefill;
   }
 
   async acquire(): Promise<void> {
     const now = Date.now();
-    const timePassed = now - this.lastRefill;
+    const timePassed = now - this._lastRefill;
 
     // Refill tokens based on time passed
     this.tokens = Math.min(
       this.maxTokens,
       this.tokens + timePassed * this.refillRate,
     );
-    this.lastRefill = now;
+    this._lastRefill = now;
 
     if (this.tokens >= 1) {
       this.tokens -= 1;
@@ -90,12 +98,53 @@ class RateLimiter {
     const waitTime = Math.ceil((1 - this.tokens) / this.refillRate);
     await new Promise((resolve) => setTimeout(resolve, waitTime));
     this.tokens = 0;
-    this.lastRefill = Date.now();
+    this._lastRefill = Date.now();
   }
 }
 
-// Singleton rate limiter instance
-const rateLimiter = new RateLimiter(30);
+/**
+ * Per-user rate limiters to ensure each user gets their own 30 req/min budget
+ * Prevents one user's requests from consuming another user's rate limit tokens
+ */
+const userRateLimiters = new Map<string, RateLimiter>();
+
+/**
+ * Cleanup interval duration for inactive rate limiters (5 minutes)
+ */
+const RATE_LIMITER_CLEANUP_INTERVAL_MS = 5 * 60 * 1000;
+
+/**
+ * Inactivity threshold after which a rate limiter is considered stale (5 minutes)
+ */
+const RATE_LIMITER_INACTIVITY_THRESHOLD_MS = 5 * 60 * 1000;
+
+/**
+ * Get or create a rate limiter for a specific user
+ * Each user gets their own 30 req/min budget
+ */
+function getUserRateLimiter(userId: string): RateLimiter {
+  if (!userRateLimiters.has(userId)) {
+    userRateLimiters.set(userId, new RateLimiter(30));
+  }
+  return userRateLimiters.get(userId)!;
+}
+
+/**
+ * Cleanup inactive rate limiters to prevent memory leaks
+ * Removes rate limiters that haven't been used for 5 minutes
+ */
+function cleanupInactiveRateLimiters(): void {
+  const now = Date.now();
+  for (const [userId, limiter] of userRateLimiters.entries()) {
+    if (now - limiter.lastRefill > RATE_LIMITER_INACTIVITY_THRESHOLD_MS) {
+      userRateLimiters.delete(userId);
+    }
+  }
+}
+
+// Start cleanup interval for inactive rate limiters
+// This runs every 5 minutes to remove stale entries and prevent memory leaks
+setInterval(cleanupInactiveRateLimiters, RATE_LIMITER_CLEANUP_INTERVAL_MS);
 
 /**
  * List of subreddits to search for project mentions
@@ -118,12 +167,17 @@ const SUBREDDITS_TO_SEARCH = [
 /**
  * Search Reddit for posts mentioning a URL or term
  * Uses Reddit's JSON API (no auth required for search)
+ *
+ * @param query - Search query (URL or term to search for)
+ * @param rateLimiter - User-specific rate limiter instance
+ * @param subreddit - Optional subreddit to limit search to
  */
 async function searchReddit(
   query: string,
+  rateLimiter: RateLimiter,
   subreddit?: string,
 ): Promise<RedditPost[]> {
-  // Wait for rate limit token
+  // Wait for rate limit token from user-specific limiter
   await rateLimiter.acquire();
 
   // Build search URL
@@ -240,13 +294,16 @@ export async function GET(
       );
     }
 
+    // Get the user's rate limiter - each user gets their own 30 req/min budget
+    const userLimiter = getUserRateLimiter(user.id);
+
     // Search Reddit for mentions using both the URL and repo full name
     const allPosts: RedditPost[] = [];
     const seenIds = new Set<string>();
 
     try {
       // Search by repo URL (e.g., https://github.com/user/repo)
-      const urlPosts = await searchReddit(project.repo_url);
+      const urlPosts = await searchReddit(project.repo_url, userLimiter);
       for (const post of urlPosts) {
         if (!seenIds.has(post.data.id)) {
           seenIds.add(post.data.id);
@@ -256,7 +313,7 @@ export async function GET(
 
       // Also search by repo full name to catch more mentions (e.g., "user/repo")
       if (project.repo_full_name) {
-        const namePosts = await searchReddit(project.repo_full_name);
+        const namePosts = await searchReddit(project.repo_full_name, userLimiter);
         for (const post of namePosts) {
           if (!seenIds.has(post.data.id)) {
             seenIds.add(post.data.id);
@@ -270,6 +327,7 @@ export async function GET(
         try {
           const subredditPosts = await searchReddit(
             project.repo_url,
+            userLimiter,
             subreddit,
           );
           for (const post of subredditPosts) {
