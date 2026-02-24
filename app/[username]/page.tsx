@@ -1,6 +1,7 @@
 import { getSupabaseAdmin } from "@/lib/supabase"
 import Image from "next/image"
 import { Star, ExternalLink, GitBranch } from "lucide-react"
+import MentionsRow from "@/app/components/projects/MentionsRow"
 
 // Force dynamic rendering so profile updates are immediately visible
 // Bio and social links are fetched fresh on each request
@@ -395,42 +396,47 @@ function ProjectCard({ repo }: { repo: UserRepo }) {
     : null
 
   return (
-    <a
-      href={repo.repo_url}
-      target="_blank"
-      rel="noopener noreferrer"
-      className="block p-5 bg-[var(--color-surface)] border border-[var(--color-border)] rounded-xl hover:border-indigo-500/50 transition-all duration-200 group"
-    >
-      <div className="flex items-start justify-between gap-3 mb-3">
-        <h3 className="font-semibold text-[var(--color-text)] group-hover:text-indigo-400 transition-colors">
-          {repo.repo_name}
-        </h3>
-        <ExternalLink className="w-4 h-4 text-[var(--color-text-secondary)] opacity-0 group-hover:opacity-100 transition-opacity flex-shrink-0" />
-      </div>
+    <div className="p-5 bg-[var(--color-surface)] border border-[var(--color-border)] rounded-xl hover:border-indigo-500/50 transition-all duration-200 group">
+      <a
+        href={repo.repo_url}
+        target="_blank"
+        rel="noopener noreferrer"
+        className="block"
+      >
+        <div className="flex items-start justify-between gap-3 mb-3">
+          <h3 className="font-semibold text-[var(--color-text)] group-hover:text-indigo-400 transition-colors">
+            {repo.repo_name}
+          </h3>
+          <ExternalLink className="w-4 h-4 text-[var(--color-text-secondary)] opacity-0 group-hover:opacity-100 transition-opacity flex-shrink-0" />
+        </div>
 
-      {repo.repo_description && (
-        <p className="text-sm text-[var(--color-text-secondary)] line-clamp-2 mb-3">
-          {repo.repo_description}
-        </p>
-      )}
+        {repo.repo_description && (
+          <p className="text-sm text-[var(--color-text-secondary)] line-clamp-2 mb-3">
+            {repo.repo_description}
+          </p>
+        )}
 
-      <div className="flex items-center gap-4">
-        {repo.repo_language && (
-          <span className="inline-flex items-center gap-1.5 text-xs text-[var(--color-text-secondary)]">
-            <span
-              className="w-2.5 h-2.5 rounded-full"
-              style={{ backgroundColor: languageColor || "#6e7681" }}
-            />
-            {repo.repo_language}
-          </span>
-        )}
-        {repo.repo_stars > 0 && (
-          <span className="inline-flex items-center gap-1 text-xs text-[var(--color-text-secondary)]">
-            <Star className="w-3.5 h-3.5 fill-current text-amber-400" />
-            {repo.repo_stars.toLocaleString()}
-          </span>
-        )}
-      </div>
-    </a>
+        <div className="flex items-center gap-4">
+          {repo.repo_language && (
+            <span className="inline-flex items-center gap-1.5 text-xs text-[var(--color-text-secondary)]">
+              <span
+                className="w-2.5 h-2.5 rounded-full"
+                style={{ backgroundColor: languageColor || "#6e7681" }}
+              />
+              {repo.repo_language}
+            </span>
+          )}
+          {repo.repo_stars > 0 && (
+            <span className="inline-flex items-center gap-1 text-xs text-[var(--color-text-secondary)]">
+              <Star className="w-3.5 h-3.5 fill-current text-amber-400" />
+              {repo.repo_stars.toLocaleString()}
+            </span>
+          )}
+        </div>
+      </a>
+
+      {/* Mentions row - displays HN and Reddit mention counts */}
+      <MentionsRow projectId={repo.id} />
+    </div>
   )
 }
