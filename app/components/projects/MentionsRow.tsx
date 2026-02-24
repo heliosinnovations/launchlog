@@ -1,7 +1,8 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { MessageSquare, ChevronRight, Loader2 } from "lucide-react";
+import { MentionsModal } from "./MentionsModal";
 
 /**
  * API response types for mention endpoints
@@ -27,6 +28,7 @@ interface MentionCounts {
 
 interface MentionsRowProps {
   projectId: string;
+  projectName: string;
   onViewAll?: () => void;
 }
 
@@ -72,10 +74,20 @@ function RedditIcon({ className }: { className?: string }) {
  * - Platform colors: HN #FF6600, Reddit #FF4500
  * - 22x22px icon badges with 4px radius
  */
-export function MentionsRow({ projectId, onViewAll }: MentionsRowProps) {
+export function MentionsRow({ projectId, projectName, onViewAll }: MentionsRowProps) {
   const [counts, setCounts] = useState<MentionCounts>({ hackernews: 0, reddit: 0 });
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
+  const handleOpenModal = useCallback(() => {
+    setIsModalOpen(true);
+    onViewAll?.();
+  }, [onViewAll]);
+
+  const handleCloseModal = useCallback(() => {
+    setIsModalOpen(false);
+  }, []);
 
   useEffect(() => {
     async function fetchMentionCounts() {
@@ -208,16 +220,22 @@ export function MentionsRow({ projectId, onViewAll }: MentionsRowProps) {
       )}
 
       {/* View all link */}
-      {onViewAll && (
-        <button
-          onClick={onViewAll}
-          className="ml-auto flex items-center gap-1 text-xs font-medium text-[var(--color-primary-light)] hover:text-[var(--color-primary)] transition-colors"
-          aria-label="View all mentions"
-        >
-          View all
-          <ChevronRight className="w-3.5 h-3.5" aria-hidden="true" />
-        </button>
-      )}
+      <button
+        onClick={handleOpenModal}
+        className="ml-auto flex items-center gap-1 text-xs font-medium text-[var(--color-primary-light)] hover:text-[var(--color-primary)] transition-colors"
+        aria-label="View all mentions"
+      >
+        View all
+        <ChevronRight className="w-3.5 h-3.5" aria-hidden="true" />
+      </button>
+
+      {/* Mentions Modal */}
+      <MentionsModal
+        isOpen={isModalOpen}
+        onClose={handleCloseModal}
+        projectId={projectId}
+        projectName={projectName}
+      />
     </div>
   );
 }

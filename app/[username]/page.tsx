@@ -436,7 +436,7 @@ function ProjectCard({ repo }: { repo: UserRepo }) {
       </a>
 
       {/* Mentions row - displays HN and Reddit mention counts */}
-      <MentionsRow projectId={repo.id} />
+      <MentionsRow projectId={repo.id} projectName={repo.repo_name} />
     </div>
   )
 }
