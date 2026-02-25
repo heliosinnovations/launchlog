@@ -222,7 +222,7 @@ export function MentionsRow({ projectId, projectName, onViewAll }: MentionsRowPr
       {/* Update frequency indicator */}
       <span className="hidden sm:flex items-center gap-1 text-[11px] text-[var(--color-text-secondary)] opacity-70">
         <Info className="w-3 h-3" aria-hidden="true" />
-        Updates every 3 hours
+        Updates daily
       </span>
 
       {/* View all link */}
