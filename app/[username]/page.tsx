@@ -1,35 +1,38 @@
-import { getSupabaseAdmin } from "@/lib/supabase"
-import Image from "next/image"
-import { Star, ExternalLink, GitBranch } from "lucide-react"
-import MentionsRow from "@/app/components/projects/MentionsRow"
+import { getSupabaseAdmin } from "@/lib/supabase";
+import Image from "next/image";
+import { Star, ExternalLink, GitBranch, Code } from "lucide-react";
+import MentionsRow from "@/app/components/projects/MentionsRow";
 
 // Force dynamic rendering so profile updates are immediately visible
 // Bio and social links are fetched fresh on each request
-export const dynamic = 'force-dynamic'
+export const dynamic = "force-dynamic";
 
 interface UserRepo {
-  id: string
-  repo_id: number
-  repo_name: string
-  repo_full_name: string
-  repo_url: string
-  repo_description: string | null
-  repo_language: string | null
-  repo_stars: number
-  display_order: number
+  id: string;
+  repo_id: number;
+  repo_name: string;
+  repo_full_name: string;
+  repo_url: string;
+  repo_description: string | null;
+  repo_language: string | null;
+  repo_stars: number;
+  display_order: number;
+  screenshot_url: string | null;
+  screenshot_source: string | null;
+  demo_url: string | null;
 }
 
 interface UserProfile {
-  id: string
-  user_id: string
-  bio: string | null
-  twitter_url: string | null
-  website_url: string | null
-  linkedin_url: string | null
+  id: string;
+  user_id: string;
+  bio: string | null;
+  twitter_url: string | null;
+  website_url: string | null;
+  linkedin_url: string | null;
 }
 
 interface PageProps {
-  params: Promise<{ username: string }>
+  params: Promise<{ username: string }>;
 }
 
 const LANGUAGE_COLORS: Record<string, string> = {
@@ -51,164 +54,201 @@ const LANGUAGE_COLORS: Record<string, string> = {
   CSS: "#563d7c",
   Shell: "#89e051",
   Scala: "#c22d40",
-}
+};
+
+// Language-specific gradient colors for placeholder backgrounds
+const LANGUAGE_GRADIENTS: Record<string, { from: string; to: string }> = {
+  TypeScript: { from: "#3178c6", to: "#235a9e" },
+  JavaScript: { from: "#f7df1e", to: "#d4b800" },
+  Python: { from: "#3572A5", to: "#2b5b87" },
+  Rust: { from: "#dea584", to: "#b5836b" },
+  Go: { from: "#00ADD8", to: "#007d9c" },
+  Java: { from: "#b07219", to: "#8a5a14" },
+  "C++": { from: "#f34b7d", to: "#c73d64" },
+  C: { from: "#555555", to: "#3d3d3d" },
+  Ruby: { from: "#cc342d", to: "#a32a25" },
+  PHP: { from: "#4F5D95", to: "#3d4a78" },
+  Swift: { from: "#F05138", to: "#c4412d" },
+  Kotlin: { from: "#A97BFF", to: "#8862cc" },
+  Dart: { from: "#00B4AB", to: "#009088" },
+  Vue: { from: "#41b883", to: "#34926a" },
+  HTML: { from: "#e34c26", to: "#b73d1e" },
+  CSS: { from: "#563d7c", to: "#443062" },
+  Shell: { from: "#89e051", to: "#6eb541" },
+  Scala: { from: "#c22d40", to: "#9b2433" },
+};
+
+// Default gradient for unknown languages
+const DEFAULT_GRADIENT = { from: "#6366f1", to: "#4f46e5" };
 
 interface SupabaseUser {
-  id: string
-  email: string | null
+  id: string;
+  email: string | null;
   raw_user_meta_data: {
-    avatar_url?: string
-    full_name?: string
-    name?: string
-    user_name?: string
-    preferred_username?: string
-  }
-  github_username?: string
+    avatar_url?: string;
+    full_name?: string;
+    name?: string;
+    user_name?: string;
+    preferred_username?: string;
+  };
+  github_username?: string;
 }
 
 async function getUserByUsername(
-  username: string
+  username: string,
 ): Promise<SupabaseUser | null> {
-  const supabase = getSupabaseAdmin()
+  const supabase = getSupabaseAdmin();
 
   // Query auth.users through Supabase admin API
   // Look for users where the GitHub username matches
-  const { data: users, error } = await supabase.auth.admin.listUsers()
+  const { data: users, error } = await supabase.auth.admin.listUsers();
 
   if (error || !users) {
-    console.error("Error listing users:", error)
-    return null
+    console.error("Error listing users:", error);
+    return null;
   }
 
   // Find user by GitHub username in their metadata or identities
   const user = users.users.find((u) => {
     const githubIdentity = u.identities?.find(
-      (identity) => identity.provider === "github"
-    )
+      (identity) => identity.provider === "github",
+    );
     const githubUsername =
       githubIdentity?.identity_data?.user_name ||
       u.user_metadata?.user_name ||
-      u.user_metadata?.preferred_username
+      u.user_metadata?.preferred_username;
 
     return (
       githubUsername?.toLowerCase() === username.toLowerCase() ||
       u.user_metadata?.name?.toLowerCase() === username.toLowerCase()
-    )
-  })
+    );
+  });
 
   if (!user) {
-    return null
+    return null;
   }
 
   // Get GitHub username for the profile
   const githubIdentity = user.identities?.find(
-    (identity) => identity.provider === "github"
-  )
+    (identity) => identity.provider === "github",
+  );
   const githubUsername =
     githubIdentity?.identity_data?.user_name ||
     user.user_metadata?.user_name ||
-    user.user_metadata?.preferred_username
+    user.user_metadata?.preferred_username;
 
   return {
     id: user.id,
     email: user.email || null,
     raw_user_meta_data: user.user_metadata || {},
     github_username: githubUsername,
-  }
+  };
 }
 
 async function getUserRepos(userId: string): Promise<UserRepo[]> {
-  const supabase = getSupabaseAdmin()
+  const supabase = getSupabaseAdmin();
   const { data: repos } = await supabase
     .from("user_repos")
     .select("*")
     .eq("user_id", userId)
-    .order("display_order", { ascending: true })
+    .order("display_order", { ascending: true });
 
-  return repos || []
+  return repos || [];
 }
 
 async function getUserProfile(userId: string): Promise<UserProfile | null> {
-  const supabase = getSupabaseAdmin()
+  const supabase = getSupabaseAdmin();
   const { data: profile, error } = await supabase
     .from("user_profiles")
     .select("*")
     .eq("user_id", userId)
-    .single()
+    .single();
 
   if (error && error.code !== "PGRST116") {
-    console.error("Error fetching profile:", error)
-    return null
+    console.error("Error fetching profile:", error);
+    return null;
   }
 
-  return profile || null
+  return profile || null;
 }
 
 // Social link icon components
 function GithubIcon({ className }: { className?: string }) {
   return (
     <svg viewBox="0 0 24 24" fill="currentColor" className={className}>
-      <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
+      <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z" />
     </svg>
-  )
+  );
 }
 
 function TwitterIcon({ className }: { className?: string }) {
   return (
     <svg viewBox="0 0 24 24" fill="currentColor" className={className}>
-      <path d="M23.953 4.57a10 10 0 01-2.825.775 4.958 4.958 0 002.163-2.723c-.951.555-2.005.959-3.127 1.184a4.92 4.92 0 00-8.384 4.482C7.69 8.095 4.067 6.13 1.64 3.162a4.822 4.822 0 00-.666 2.475c0 1.71.87 3.213 2.188 4.096a4.904 4.904 0 01-2.228-.616v.06a4.923 4.923 0 003.946 4.827 4.996 4.996 0 01-2.212.085 4.936 4.936 0 004.604 3.417 9.867 9.867 0 01-6.102 2.105c-.39 0-.779-.023-1.17-.067a13.995 13.995 0 007.557 2.209c9.053 0 13.998-7.496 13.998-13.985 0-.21 0-.42-.015-.63A9.935 9.935 0 0024 4.59z"/>
+      <path d="M23.953 4.57a10 10 0 01-2.825.775 4.958 4.958 0 002.163-2.723c-.951.555-2.005.959-3.127 1.184a4.92 4.92 0 00-8.384 4.482C7.69 8.095 4.067 6.13 1.64 3.162a4.822 4.822 0 00-.666 2.475c0 1.71.87 3.213 2.188 4.096a4.904 4.904 0 01-2.228-.616v.06a4.923 4.923 0 003.946 4.827 4.996 4.996 0 01-2.212.085 4.936 4.936 0 004.604 3.417 9.867 9.867 0 01-6.102 2.105c-.39 0-.779-.023-1.17-.067a13.995 13.995 0 007.557 2.209c9.053 0 13.998-7.496 13.998-13.985 0-.21 0-.42-.015-.63A9.935 9.935 0 0024 4.59z" />
     </svg>
-  )
+  );
 }
 
 function WebsiteIcon({ className }: { className?: string }) {
   return (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className={className}>
-      <circle cx="12" cy="12" r="10"/>
-      <line x1="2" y1="12" x2="22" y2="12"/>
-      <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/>
+    <svg
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      className={className}
+    >
+      <circle cx="12" cy="12" r="10" />
+      <line x1="2" y1="12" x2="22" y2="12" />
+      <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z" />
     </svg>
-  )
+  );
 }
 
 function LinkedinIcon({ className }: { className?: string }) {
   return (
     <svg viewBox="0 0 24 24" fill="currentColor" className={className}>
-      <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/>
+      <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z" />
     </svg>
-  )
+  );
 }
 
 // Helper function to extract display name from URL
-function extractDisplayFromUrl(url: string, type: 'twitter' | 'website' | 'linkedin'): string {
+function extractDisplayFromUrl(
+  url: string,
+  type: "twitter" | "website" | "linkedin",
+): string {
   try {
-    const urlObj = new URL(url)
+    const urlObj = new URL(url);
     switch (type) {
-      case 'twitter':
+      case "twitter":
         // Extract @username from twitter.com/username or x.com/username
-        const twitterPath = urlObj.pathname.replace(/^\//, '').split('/')[0]
-        return `@${twitterPath}`
-      case 'linkedin':
+        const twitterPath = urlObj.pathname.replace(/^\//, "").split("/")[0];
+        return `@${twitterPath}`;
+      case "linkedin":
         // Extract name from linkedin.com/in/username
-        const linkedinPath = urlObj.pathname.replace(/^\/in\//, '').replace(/^\//, '').split('/')[0]
-        return linkedinPath
-      case 'website':
+        const linkedinPath = urlObj.pathname
+          .replace(/^\/in\//, "")
+          .replace(/^\//, "")
+          .split("/")[0];
+        return linkedinPath;
+      case "website":
         // Show domain without www
-        return urlObj.hostname.replace(/^www\./, '')
+        return urlObj.hostname.replace(/^www\./, "");
       default:
-        return url
+        return url;
     }
   } catch {
-    return url
+    return url;
   }
 }
 
 export default async function ProfilePage({ params }: PageProps) {
-  const { username } = await params
+  const { username } = await params;
 
   // For now, show a placeholder if we can't find the user
   // In production, this would query the database
-  const user = await getUserByUsername(username)
+  const user = await getUserByUsername(username);
 
   if (!user) {
     // Show a "coming soon" placeholder instead of 404
@@ -236,27 +276,30 @@ export default async function ProfilePage({ params }: PageProps) {
           </div>
         </div>
       </div>
-    )
+    );
   }
 
   const [repos, profile] = await Promise.all([
     getUserRepos(user.id),
     getUserProfile(user.id),
-  ])
+  ]);
 
   const displayName =
     user.raw_user_meta_data?.full_name ||
     user.raw_user_meta_data?.name ||
     user.raw_user_meta_data?.user_name ||
-    username
-  const avatarUrl = user.raw_user_meta_data?.avatar_url
+    username;
+  const avatarUrl = user.raw_user_meta_data?.avatar_url;
   const githubUrl = user.github_username
     ? `https://github.com/${user.github_username}`
-    : null
+    : null;
 
   // Check if any social links are available
   const hasSocialLinks =
-    githubUrl || profile?.twitter_url || profile?.website_url || profile?.linkedin_url
+    githubUrl ||
+    profile?.twitter_url ||
+    profile?.website_url ||
+    profile?.linkedin_url;
 
   return (
     <div className="min-h-screen bg-[var(--color-bg)] py-16 px-4">
@@ -330,7 +373,7 @@ export default async function ProfilePage({ params }: PageProps) {
                     className="inline-flex items-center gap-1.5 text-[var(--color-text-secondary)] text-sm font-medium hover:text-indigo-500 transition-colors"
                   >
                     <TwitterIcon className="w-4 h-4" />
-                    {extractDisplayFromUrl(profile.twitter_url, 'twitter')}
+                    {extractDisplayFromUrl(profile.twitter_url, "twitter")}
                   </a>
                 )}
 
@@ -343,7 +386,7 @@ export default async function ProfilePage({ params }: PageProps) {
                     className="inline-flex items-center gap-1.5 text-[var(--color-text-secondary)] text-sm font-medium hover:text-indigo-500 transition-colors"
                   >
                     <WebsiteIcon className="w-4 h-4" />
-                    {extractDisplayFromUrl(profile.website_url, 'website')}
+                    {extractDisplayFromUrl(profile.website_url, "website")}
                   </a>
                 )}
 
@@ -378,7 +421,7 @@ export default async function ProfilePage({ params }: PageProps) {
               </p>
             </div>
           ) : (
-            <div className="grid gap-4 md:grid-cols-2">
+            <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
               {repos.map((repo) => (
                 <ProjectCard key={repo.id} repo={repo} />
               ))}
@@ -387,56 +430,163 @@ export default async function ProfilePage({ params }: PageProps) {
         </div>
       </div>
     </div>
-  )
+  );
+}
+
+/**
+ * Gets the screenshot URL with fallback hierarchy:
+ * 1. Primary: screenshot_url from database
+ * 2. Fallback 1: GitHub OpenGraph preview (always available for public repos)
+ * 3. Fallback 2: null (will show gradient placeholder - not used since GitHub preview is reliable)
+ */
+function getScreenshotUrl(repo: UserRepo): string | null {
+  // Primary: Use screenshot_url if it exists
+  if (repo.screenshot_url) {
+    return repo.screenshot_url;
+  }
+
+  // Fallback: Generate GitHub OpenGraph preview URL
+  // GitHub provides social previews at: https://opengraph.githubassets.com/{hash}/{owner}/{repo}
+  // This is always available for public repositories
+  if (repo.repo_full_name) {
+    return `https://opengraph.githubassets.com/1/${repo.repo_full_name}`;
+  }
+
+  return null;
+}
+
+/**
+ * ProjectScreenshot component - Displays project screenshot with fallback hierarchy
+ * - Primary: screenshot_url from database
+ * - Fallback 1: GitHub OpenGraph preview
+ * - Fallback 2: Gradient placeholder with language icon
+ */
+function ProjectScreenshot({
+  repo,
+  onClick,
+}: {
+  repo: UserRepo;
+  onClick?: () => void;
+}) {
+  const screenshotUrl = getScreenshotUrl(repo);
+  const gradient = repo.repo_language
+    ? LANGUAGE_GRADIENTS[repo.repo_language] || DEFAULT_GRADIENT
+    : DEFAULT_GRADIENT;
+
+  // Gradient placeholder with language icon
+  if (!screenshotUrl) {
+    return (
+      <div
+        className="relative w-full aspect-video rounded-t-xl overflow-hidden cursor-pointer"
+        style={{
+          background: `linear-gradient(135deg, ${gradient.from} 0%, ${gradient.to} 100%)`,
+        }}
+        onClick={onClick}
+        role="img"
+        aria-label={`${repo.repo_name} placeholder`}
+      >
+        {/* Subtle pattern overlay */}
+        <div
+          className="absolute inset-0 opacity-10"
+          style={{
+            backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.4'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`,
+          }}
+        />
+        {/* Language icon centered */}
+        <div className="absolute inset-0 flex items-center justify-center">
+          <Code className="w-12 h-12 text-white/60" />
+        </div>
+      </div>
+    );
+  }
+
+  // Screenshot image with lazy loading and blur placeholder
+  return (
+    <div
+      className="relative w-full aspect-video rounded-t-xl overflow-hidden cursor-pointer group/screenshot"
+      onClick={onClick}
+    >
+      <Image
+        src={screenshotUrl}
+        alt={`${repo.repo_name} screenshot`}
+        fill
+        sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+        className="object-cover transition-transform duration-300 group-hover/screenshot:scale-[1.02]"
+        loading="lazy"
+        placeholder="blur"
+        blurDataURL="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAYEBQYFBAYGBQYHBwYIChAKCgkJChQODwwQFxQYGBcUFhYaHSUfGhsjHBYWICwgIyYnKSopGR8tMC0oMCUoKSj/2wBDAQcHBwoIChMKChMoGhYaKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCj/wAARCAAIAAoDASIAAhEBAxEB/8QAFgABAQEAAAAAAAAAAAAAAAAAAAUH/8QAIhAAAgIBBAIDAAAAAAAAAAAAAQIDBAARBRIhMQYTQVFh/8QAFQEBAQAAAAAAAAAAAAAAAAAAAAX/xAAZEQADAQEBAAAAAAAAAAAAAAAAAQIRITH/2gAMAwEAAhEDEEA/AJN29tVSxWrVPL41qST7J7c0h+2UykKyqNF/BwOtCes+uY5K22WtvM8UEDyyPK5d2LMSSSfsk5YwMVrpp+5P/9k="
+        onError={(e) => {
+          // If image fails to load, hide it (parent will show gradient placeholder)
+          const target = e.target as HTMLImageElement;
+          target.style.display = "none";
+        }}
+      />
+      {/* Hover shadow overlay */}
+      <div className="absolute inset-0 bg-black/0 group-hover/screenshot:bg-black/10 transition-colors duration-300" />
+    </div>
+  );
 }
 
 function ProjectCard({ repo }: { repo: UserRepo }) {
   const languageColor = repo.repo_language
     ? LANGUAGE_COLORS[repo.repo_language] || "#6e7681"
-    : null
+    : null;
+
+  // Determine click target for screenshot - demo URL if available, otherwise repo URL
+  const screenshotClickUrl = repo.demo_url || repo.repo_url;
+
+  const handleScreenshotClick = () => {
+    window.open(screenshotClickUrl, "_blank", "noopener,noreferrer");
+  };
 
   return (
-    <div className="p-5 bg-[var(--color-surface)] border border-[var(--color-border)] rounded-xl hover:border-indigo-500/50 transition-all duration-200 group">
-      <a
-        href={repo.repo_url}
-        target="_blank"
-        rel="noopener noreferrer"
-        className="block"
-      >
-        <div className="flex items-start justify-between gap-3 mb-3">
-          <h3 className="font-semibold text-[var(--color-text)] group-hover:text-indigo-400 transition-colors">
-            {repo.repo_name}
-          </h3>
-          <ExternalLink className="w-4 h-4 text-[var(--color-text-secondary)] opacity-0 group-hover:opacity-100 transition-opacity flex-shrink-0" />
-        </div>
+    <div className="bg-[var(--color-surface)] border border-[var(--color-border)] rounded-xl hover:border-indigo-500/50 hover:shadow-lg transition-all duration-200 group overflow-hidden">
+      {/* Screenshot section */}
+      <ProjectScreenshot repo={repo} onClick={handleScreenshotClick} />
 
-        {repo.repo_description && (
-          <p className="text-sm text-[var(--color-text-secondary)] line-clamp-2 mb-3">
-            {repo.repo_description}
-          </p>
-        )}
+      {/* Content section */}
+      <div className="p-5">
+        <a
+          href={repo.repo_url}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="block"
+        >
+          <div className="flex items-start justify-between gap-3 mb-2">
+            <h3 className="font-semibold text-[var(--color-text)] group-hover:text-indigo-400 transition-colors line-clamp-1">
+              {repo.repo_name}
+            </h3>
+            <ExternalLink className="w-4 h-4 text-[var(--color-text-secondary)] opacity-0 group-hover:opacity-100 transition-opacity flex-shrink-0" />
+          </div>
 
-        <div className="flex items-center gap-4">
-          {repo.repo_language && (
-            <span className="inline-flex items-center gap-1.5 text-xs text-[var(--color-text-secondary)]">
-              <span
-                className="w-2.5 h-2.5 rounded-full"
-                style={{ backgroundColor: languageColor || "#6e7681" }}
-              />
-              {repo.repo_language}
-            </span>
+          {repo.repo_description && (
+            <p className="text-sm text-[var(--color-text-secondary)] line-clamp-2 mb-3">
+              {repo.repo_description}
+            </p>
           )}
-          {repo.repo_stars > 0 && (
-            <span className="inline-flex items-center gap-1 text-xs text-[var(--color-text-secondary)]">
-              <Star className="w-3.5 h-3.5 fill-current text-amber-400" />
-              {repo.repo_stars.toLocaleString()}
-            </span>
-          )}
-        </div>
-      </a>
 
-      {/* Mentions row - displays HN and Reddit mention counts */}
-      <MentionsRow projectId={repo.id} projectName={repo.repo_name} />
+          <div className="flex items-center gap-4">
+            {repo.repo_language && (
+              <span className="inline-flex items-center gap-1.5 text-xs text-[var(--color-text-secondary)]">
+                <span
+                  className="w-2.5 h-2.5 rounded-full"
+                  style={{ backgroundColor: languageColor || "#6e7681" }}
+                />
+                {repo.repo_language}
+              </span>
+            )}
+            {repo.repo_stars > 0 && (
+              <span className="inline-flex items-center gap-1 text-xs text-[var(--color-text-secondary)]">
+                <Star className="w-3.5 h-3.5 fill-current text-amber-400" />
+                {repo.repo_stars.toLocaleString()}
+              </span>
+            )}
+          </div>
+        </a>
+
+        {/* Mentions row - displays HN and Reddit mention counts */}
+        <MentionsRow projectId={repo.id} projectName={repo.repo_name} />
+      </div>
     </div>
-  )
+  );
 }

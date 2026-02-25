@@ -1,6 +1,6 @@
 "use client"
 
-import { useEffect, useState, useCallback } from "react"
+import React, { useEffect, useState, useCallback } from "react"
 import { useRouter } from "next/navigation"
 import Link from "next/link"
 import Image from "next/image"
@@ -13,8 +13,6 @@ import {
   Copy,
   ExternalLink,
   Plus,
-  Star,
-  Share2,
   Loader2,
   Zap,
   Code,
@@ -23,20 +21,11 @@ import {
   User,
 } from "lucide-react"
 import DashboardFooter from "@/components/DashboardFooter"
+import ProjectScreenshotCard, { ProjectData } from "@/components/ProjectScreenshotCard"
+import { ToastContainer, useToast } from "@/components/Toast"
 
-interface UserRepo {
-  id: string
-  user_id: string
-  repo_id: number
-  repo_name: string
-  repo_full_name: string
-  repo_url: string
-  repo_description: string | null
-  repo_language: string | null
-  repo_stars: number
-  display_order: number
-  created_at: string
-}
+// UserRepo type alias for ProjectData
+type UserRepo = ProjectData
 
 interface User {
   id: string
@@ -59,27 +48,6 @@ interface User {
   }>
 }
 
-const LANGUAGE_COLORS: Record<string, string> = {
-  TypeScript: "#3178c6",
-  JavaScript: "#f1e05a",
-  Python: "#3572A5",
-  Rust: "#dea584",
-  Go: "#00ADD8",
-  Java: "#b07219",
-  "C++": "#f34b7d",
-  C: "#555555",
-  Ruby: "#701516",
-  PHP: "#4F5D95",
-  Swift: "#F05138",
-  Kotlin: "#A97BFF",
-  Dart: "#00B4AB",
-  Vue: "#41b883",
-  HTML: "#e34c26",
-  CSS: "#563d7c",
-  Shell: "#89e051",
-  Scala: "#c22d40",
-}
-
 export default function DashboardPage() {
   const router = useRouter()
   const [user, setUser] = useState<User | null>(null)
@@ -88,6 +56,7 @@ export default function DashboardPage() {
   const [error, setError] = useState<string | null>(null)
   const [copied, setCopied] = useState(false)
   const [sidebarOpen, setSidebarOpen] = useState(false)
+  const { toasts, removeToast, showSuccess, showError } = useToast()
 
   const fetchUserAndRepos = useCallback(async () => {
     try {
@@ -576,7 +545,13 @@ export default function DashboardPage() {
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4 mb-12">
             {repos.map((repo) => (
-              <RepoCard key={repo.id} repo={repo} />
+              <ProjectScreenshotCard
+                key={repo.id}
+                project={repo}
+                onScreenshotUpdate={fetchUserAndRepos}
+                showSuccess={showSuccess}
+                showError={showError}
+              />
             ))}
           </div>
         )}
@@ -635,53 +610,9 @@ export default function DashboardPage() {
       <div className="lg:ml-[260px] mt-auto">
         <DashboardFooter />
       </div>
+
+      {/* Toast Notifications */}
+      <ToastContainer toasts={toasts} onDismiss={removeToast} />
     </div>
-  )
-}
-
-function RepoCard({ repo }: { repo: UserRepo }) {
-  const languageColor = repo.repo_language
-    ? LANGUAGE_COLORS[repo.repo_language] || "#6e7681"
-    : null
-
-  return (
-    <a
-      href={repo.repo_url}
-      target="_blank"
-      rel="noopener noreferrer"
-      className="bg-[var(--color-surface)] border border-[var(--color-border)] rounded-2xl p-5 transition-all hover:border-indigo-500 hover:-translate-y-0.5"
-    >
-      <div className="flex items-start justify-between mb-3">
-        <span className="font-semibold">{repo.repo_name}</span>
-        <span className="px-2 py-1 bg-[var(--color-surface-elevated)] rounded text-[11px] text-[var(--color-text-secondary)] uppercase tracking-wide">
-          Public
-        </span>
-      </div>
-      {repo.repo_description && (
-        <p className="text-sm text-[var(--color-text-secondary)] line-clamp-2 mb-4">
-          {repo.repo_description}
-        </p>
-      )}
-      <div className="flex items-center gap-4">
-        {repo.repo_language && (
-          <span className="flex items-center gap-1.5 text-sm text-[var(--color-text-secondary)]">
-            <span
-              className="w-2.5 h-2.5 rounded-full"
-              style={{ backgroundColor: languageColor || "#6e7681" }}
-            />
-            {repo.repo_language}
-          </span>
-        )}
-        {repo.repo_stars > 0 && (
-          <span className="flex items-center gap-1 text-sm text-[var(--color-text-secondary)]">
-            <Star className="w-3.5 h-3.5 fill-amber-400 text-amber-400" />
-            {repo.repo_stars}
-          </span>
-        )}
-        <span className="flex items-center gap-1 text-sm text-[var(--color-text-secondary)]">
-          <Share2 className="w-3.5 h-3.5" />0
-        </span>
-      </div>
-    </a>
   )
 }

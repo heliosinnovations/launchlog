@@ -1,0 +1,8 @@
+{
+  "functions": {
+    "app/api/projects/[id]/screenshot/capture/route.ts": {
+      "memory": 1024,
+      "maxDuration": 30
+    }
+  }
+}
