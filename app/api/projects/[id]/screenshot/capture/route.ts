@@ -6,6 +6,7 @@ import {
   uploadToStorage,
   getGitHubPreview,
   fetchReadmeFromGitHub,
+  fetchRepoHomepage,
 } from "@/lib/screenshot-utils";
 import { NextRequest, NextResponse } from "next/server";
 
@@ -36,7 +37,7 @@ interface CaptureResponse {
  */
 export async function POST(
   request: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
+  { params }: { params: Promise<{ id: string }> },
 ): Promise<NextResponse<CaptureResponse>> {
   const { id: projectId } = await params;
   const capturedAt = new Date().toISOString();
@@ -53,7 +54,7 @@ export async function POST(
         source: null,
         captured_at: capturedAt,
       },
-      { status: 400 }
+      { status: 400 },
     );
   }
 
@@ -72,7 +73,7 @@ export async function POST(
         source: null,
         captured_at: capturedAt,
       },
-      { status: 401 }
+      { status: 401 },
     );
   }
 
@@ -94,7 +95,7 @@ export async function POST(
         source: null,
         captured_at: capturedAt,
       },
-      { status: 404 }
+      { status: 404 },
     );
   }
 
@@ -108,7 +109,7 @@ export async function POST(
         source: null,
         captured_at: capturedAt,
       },
-      { status: 403 }
+      { status: 403 },
     );
   }
 
@@ -121,7 +122,7 @@ export async function POST(
         source: null,
         captured_at: capturedAt,
       },
-      { status: 400 }
+      { status: 400 },
     );
   }
 
@@ -136,34 +137,57 @@ export async function POST(
   const githubToken = tokenData?.access_token;
 
   // Try to capture screenshot from live demo
+  // Priority order: 1. GitHub homepage field, 2. README demo URL, 3. GitHub OG fallback
   let screenshotUrl: string | null = null;
   let source: "auto" | "github_og" = "github_og";
+  let demoUrl: string | null = null;
 
   try {
-    // Step 1: Fetch README from GitHub
-    const readme = await fetchReadmeFromGitHub(
+    // Step 1: Check GitHub homepage field first (most authoritative source)
+    const homepage = await fetchRepoHomepage(
       project.repo_full_name,
-      githubToken
+      githubToken,
     );
 
-    if (readme) {
-      // Step 2: Extract demo URL from README
-      const demoUrl = extractDemoUrl(readme);
-
-      if (demoUrl) {
-        // Step 3: Capture screenshot
-        console.log(`Capturing screenshot from: ${demoUrl}`);
-        const screenshotBuffer = await captureScreenshot(demoUrl);
-
-        // Step 4: Upload to Supabase Storage
-        screenshotUrl = await uploadToStorage(screenshotBuffer, projectId);
-        source = "auto";
-        console.log(`Screenshot captured and uploaded: ${screenshotUrl}`);
-      } else {
-        console.log("No demo URL found in README, using fallback");
+    if (homepage) {
+      // Validate that homepage is a valid URL
+      try {
+        new URL(homepage);
+        demoUrl = homepage;
+        console.log(`Found homepage URL: ${demoUrl}`);
+      } catch {
+        console.log(`Invalid homepage URL format: ${homepage}`);
       }
-    } else {
-      console.log("Could not fetch README, using fallback");
+    }
+
+    // Step 2: If no homepage, scan README for demo URL
+    if (!demoUrl) {
+      const readme = await fetchReadmeFromGitHub(
+        project.repo_full_name,
+        githubToken,
+      );
+
+      if (readme) {
+        demoUrl = extractDemoUrl(readme);
+        if (demoUrl) {
+          console.log(`Found demo URL in README: ${demoUrl}`);
+        } else {
+          console.log("No demo URL found in README, using fallback");
+        }
+      } else {
+        console.log("Could not fetch README, using fallback");
+      }
+    }
+
+    // Step 3: Capture screenshot if we have a demo URL
+    if (demoUrl) {
+      console.log(`Capturing screenshot from: ${demoUrl}`);
+      const screenshotBuffer = await captureScreenshot(demoUrl);
+
+      // Step 4: Upload to Supabase Storage
+      screenshotUrl = await uploadToStorage(screenshotBuffer, projectId);
+      source = "auto";
+      console.log(`Screenshot captured and uploaded: ${screenshotUrl}`);
     }
   } catch (error) {
     // Log the error but don't fail - we'll use the fallback
@@ -187,7 +211,7 @@ export async function POST(
           source: null,
           captured_at: capturedAt,
         },
-        { status: 500 }
+        { status: 500 },
       );
     }
   }
@@ -224,7 +248,7 @@ export async function POST(
  */
 export async function GET(
   request: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
+  { params }: { params: Promise<{ id: string }> },
 ): Promise<NextResponse> {
   try {
     const { id: projectId } = await params;
@@ -235,7 +259,7 @@ export async function GET(
     if (!uuidRegex.test(projectId)) {
       return NextResponse.json(
         { error: "Invalid project ID format" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -254,7 +278,7 @@ export async function GET(
     const { data: project, error: projectError } = await supabaseAdmin
       .from("user_repos")
       .select(
-        "id, screenshot_url, screenshot_source, screenshot_captured_at, user_id"
+        "id, screenshot_url, screenshot_source, screenshot_captured_at, user_id",
       )
       .eq("id", projectId)
       .single();
@@ -267,7 +291,7 @@ export async function GET(
     if (project.user_id !== user.id) {
       return NextResponse.json(
         { error: "Not authorized to access this project" },
-        { status: 403 }
+        { status: 403 },
       );
     }
 
@@ -280,7 +304,7 @@ export async function GET(
     console.error("Error in screenshot GET API:", error);
     return NextResponse.json(
       { error: "Internal server error" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
