@@ -3,6 +3,11 @@
 import { useState } from "react"
 import Image from "next/image"
 import { Camera, Loader2, ImageOff } from "lucide-react"
+import {
+  captureScreenshot,
+  blobToBase64,
+  buildGitHubOGUrl,
+} from "@/lib/screenshot-capture"
 
 interface ProjectScreenshotProps {
   projectId: string
@@ -15,15 +20,10 @@ interface ProjectScreenshotProps {
 }
 
 /**
- * Build GitHub Open Graph image URL as fallback
- */
-function buildGitHubOGUrl(repoFullName: string): string {
-  return `https://opengraph.githubassets.com/1/${repoFullName}`
-}
-
-/**
  * ProjectScreenshot component displays a project screenshot with fallback to GitHub OG image
- * and allows admins to capture new screenshots
+ * and allows admins to capture new screenshots using client-side capture
+ *
+ * Issue #124: Uses client-side screenshot capture instead of server-side Playwright
  */
 export default function ProjectScreenshot({
   projectId,
@@ -56,19 +56,33 @@ export default function ProjectScreenshot({
     setError(null)
 
     try {
-      const response = await fetch(
-        `/api/projects/${projectId}/screenshot/capture`,
-        {
+      // Attempt client-side screenshot capture
+      const blob = await captureScreenshot(liveDemoUrl)
+
+      let response: Response
+
+      if (blob) {
+        // Successfully captured screenshot - upload to server
+        const base64Data = await blobToBase64(blob)
+
+        response = await fetch(`/api/projects/${projectId}/screenshot`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ live_demo_url: liveDemoUrl }),
-        }
-      )
+          body: JSON.stringify({ screenshot_data: base64Data }),
+        })
+      } else {
+        // Client-side capture failed (likely CORS) - use GitHub OG fallback
+        response = await fetch(`/api/projects/${projectId}/screenshot`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ use_github_fallback: true }),
+        })
+      }
 
       const data = await response.json()
 
       if (!response.ok) {
-        throw new Error(data.error || "Failed to capture screenshot")
+        throw new Error(data.error || "Failed to save screenshot")
       }
 
       setCurrentScreenshotUrl(data.screenshot_url)

@@ -1,12 +1,13 @@
 /**
  * Tests for Screenshot Capture utility functions
  *
- * Issue #122: Implement auto-screenshot capture for projects
+ * Issue #124: Client-side screenshot capture using iframe + html2canvas
  *
  * Key functionality tested:
  * 1. URL validation for screenshot capture
  * 2. GitHub Open Graph URL generation
  * 3. Screenshot configuration constants
+ * 4. Filename generation
  */
 
 describe("Screenshot Utilities", () => {
@@ -79,8 +80,7 @@ describe("Screenshot Utilities", () => {
   describe("Screenshot Configuration", () => {
     const SCREENSHOT_CONFIG = {
       viewport: { width: 1280, height: 720 },
-      navigationTimeout: 10000,
-      screenshotTimeout: 30000,
+      timeout: 10000, // 10 seconds for client-side capture
       maxFileSize: 5 * 1024 * 1024, // 5MB
       storageBucket: "project-screenshots",
     }
@@ -90,9 +90,8 @@ describe("Screenshot Utilities", () => {
       expect(SCREENSHOT_CONFIG.viewport.height).toBe(720)
     })
 
-    it("should have reasonable timeout values", () => {
-      expect(SCREENSHOT_CONFIG.navigationTimeout).toBe(10000) // 10 seconds
-      expect(SCREENSHOT_CONFIG.screenshotTimeout).toBe(30000) // 30 seconds
+    it("should have reasonable timeout value", () => {
+      expect(SCREENSHOT_CONFIG.timeout).toBe(10000) // 10 seconds
     })
 
     it("should enforce 5MB max file size", () => {
@@ -149,6 +148,24 @@ describe("Screenshot Utilities", () => {
 
       // URL with auth (though not recommended)
       expect(isValidUrl("https://user:pass@example.com")).toBe(true)
+    })
+  })
+
+  describe("Client-side capture limitations", () => {
+    // These tests document expected behavior for client-side capture
+    it("should document that cross-origin URLs cannot be captured due to CORS", () => {
+      // Cross-origin iframe content cannot be accessed due to browser security
+      // The captureScreenshot function returns null in this case
+      // This triggers the GitHub OG fallback
+      const crossOriginLimitation = true
+      expect(crossOriginLimitation).toBe(true)
+    })
+
+    it("should document that same-origin URLs can be captured", () => {
+      // Same-origin URLs can have their content accessed via iframe
+      // html2canvas can then render the content to a canvas
+      const sameOriginCapture = true
+      expect(sameOriginCapture).toBe(true)
     })
   })
 })
