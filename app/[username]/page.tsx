@@ -17,9 +17,6 @@ interface UserRepo {
   repo_language: string | null
   repo_stars: number
   display_order: number
-  screenshot_url: string | null
-  screenshot_source: "captured" | "github_og" | null
-  live_demo_url: string | null
 }
 
 interface UserProfile {
@@ -398,81 +395,48 @@ function ProjectCard({ repo }: { repo: UserRepo }) {
     ? LANGUAGE_COLORS[repo.repo_language] || "#6e7681"
     : null
 
-  // Build GitHub OG URL as fallback
-  const githubOGUrl = `https://opengraph.githubassets.com/1/${repo.repo_full_name}`
-
-  // Determine display URL with fallback
-  const displayImageUrl = repo.screenshot_url || githubOGUrl
-
   return (
-    <div className="bg-[var(--color-surface)] border border-[var(--color-border)] rounded-xl overflow-hidden hover:border-indigo-500/50 transition-all duration-200 group">
-      {/* Screenshot preview */}
+    <div className="p-5 bg-[var(--color-surface)] border border-[var(--color-border)] rounded-xl hover:border-indigo-500/50 transition-all duration-200 group">
       <a
         href={repo.repo_url}
         target="_blank"
         rel="noopener noreferrer"
         className="block"
       >
-        <div className="relative aspect-video bg-[var(--color-surface-elevated)]">
-          <Image
-            src={displayImageUrl}
-            alt={`${repo.repo_name} preview`}
-            fill
-            className="object-cover"
-            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-          />
-          {/* Source badge */}
-          {repo.screenshot_source && (
-            <div className="absolute bottom-2 right-2 px-2 py-1 bg-black/60 backdrop-blur-sm rounded text-[10px] text-white font-medium">
-              {repo.screenshot_source === "captured" ? "Live Screenshot" : "GitHub Preview"}
-            </div>
+        <div className="flex items-start justify-between gap-3 mb-3">
+          <h3 className="font-semibold text-[var(--color-text)] group-hover:text-indigo-400 transition-colors">
+            {repo.repo_name}
+          </h3>
+          <ExternalLink className="w-4 h-4 text-[var(--color-text-secondary)] opacity-0 group-hover:opacity-100 transition-opacity flex-shrink-0" />
+        </div>
+
+        {repo.repo_description && (
+          <p className="text-sm text-[var(--color-text-secondary)] line-clamp-2 mb-3">
+            {repo.repo_description}
+          </p>
+        )}
+
+        <div className="flex items-center gap-4">
+          {repo.repo_language && (
+            <span className="inline-flex items-center gap-1.5 text-xs text-[var(--color-text-secondary)]">
+              <span
+                className="w-2.5 h-2.5 rounded-full"
+                style={{ backgroundColor: languageColor || "#6e7681" }}
+              />
+              {repo.repo_language}
+            </span>
+          )}
+          {repo.repo_stars > 0 && (
+            <span className="inline-flex items-center gap-1 text-xs text-[var(--color-text-secondary)]">
+              <Star className="w-3.5 h-3.5 fill-current text-amber-400" />
+              {repo.repo_stars.toLocaleString()}
+            </span>
           )}
         </div>
       </a>
 
-      {/* Card content */}
-      <div className="p-5">
-        <a
-          href={repo.repo_url}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="block"
-        >
-          <div className="flex items-start justify-between gap-3 mb-3">
-            <h3 className="font-semibold text-[var(--color-text)] group-hover:text-indigo-400 transition-colors">
-              {repo.repo_name}
-            </h3>
-            <ExternalLink className="w-4 h-4 text-[var(--color-text-secondary)] opacity-0 group-hover:opacity-100 transition-opacity flex-shrink-0" />
-          </div>
-
-          {repo.repo_description && (
-            <p className="text-sm text-[var(--color-text-secondary)] line-clamp-2 mb-3">
-              {repo.repo_description}
-            </p>
-          )}
-
-          <div className="flex items-center gap-4">
-            {repo.repo_language && (
-              <span className="inline-flex items-center gap-1.5 text-xs text-[var(--color-text-secondary)]">
-                <span
-                  className="w-2.5 h-2.5 rounded-full"
-                  style={{ backgroundColor: languageColor || "#6e7681" }}
-                />
-                {repo.repo_language}
-              </span>
-            )}
-            {repo.repo_stars > 0 && (
-              <span className="inline-flex items-center gap-1 text-xs text-[var(--color-text-secondary)]">
-                <Star className="w-3.5 h-3.5 fill-current text-amber-400" />
-                {repo.repo_stars.toLocaleString()}
-              </span>
-            )}
-          </div>
-        </a>
-
-        {/* Mentions row - displays HN and Reddit mention counts */}
-        <MentionsRow projectId={repo.id} projectName={repo.repo_name} />
-      </div>
+      {/* Mentions row - displays HN and Reddit mention counts */}
+      <MentionsRow projectId={repo.id} projectName={repo.repo_name} />
     </div>
   )
 }

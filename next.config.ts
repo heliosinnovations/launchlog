@@ -13,16 +13,6 @@ const nextConfig: NextConfig = {
         hostname: "lh3.googleusercontent.com",
         pathname: "/**",
       },
-      {
-        protocol: "https",
-        hostname: "opengraph.githubassets.com",
-        pathname: "/**",
-      },
-      {
-        protocol: "https",
-        hostname: "*.supabase.co",
-        pathname: "/storage/v1/object/public/**",
-      },
     ],
   },
 };

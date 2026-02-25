@@ -21,7 +21,6 @@ import {
   Menu,
   X,
   User,
-  Camera,
 } from "lucide-react"
 import DashboardFooter from "@/components/DashboardFooter"
 
@@ -37,9 +36,6 @@ interface UserRepo {
   repo_stars: number
   display_order: number
   created_at: string
-  screenshot_url: string | null
-  screenshot_source: "captured" | "github_og" | null
-  live_demo_url: string | null
 }
 
 interface User {
@@ -643,133 +639,49 @@ export default function DashboardPage() {
   )
 }
 
-function RepoCard({ repo, onScreenshotCapture }: { repo: UserRepo; onScreenshotCapture?: (repoId: string) => void }) {
-  const [isCapturing, setIsCapturing] = useState(false)
-  const [screenshotUrl, setScreenshotUrl] = useState(repo.screenshot_url)
-  const [screenshotSource, setScreenshotSource] = useState(repo.screenshot_source)
-  const [imageError, setImageError] = useState(false)
-
+function RepoCard({ repo }: { repo: UserRepo }) {
   const languageColor = repo.repo_language
     ? LANGUAGE_COLORS[repo.repo_language] || "#6e7681"
     : null
 
-  // Build GitHub OG URL as fallback
-  const githubOGUrl = `https://opengraph.githubassets.com/1/${repo.repo_full_name}`
-
-  // Determine display URL with fallback
-  const displayImageUrl = imageError || !screenshotUrl ? githubOGUrl : screenshotUrl
-
-  const handleCapture = async (e: React.MouseEvent) => {
-    e.preventDefault()
-    e.stopPropagation()
-
-    if (!repo.live_demo_url) {
-      return
-    }
-
-    setIsCapturing(true)
-
-    try {
-      const response = await fetch(
-        `/api/projects/${repo.id}/screenshot/capture`,
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ live_demo_url: repo.live_demo_url }),
-        }
-      )
-
-      const data = await response.json()
-
-      if (response.ok) {
-        setScreenshotUrl(data.screenshot_url)
-        setScreenshotSource(data.screenshot_source)
-        setImageError(false)
-        if (onScreenshotCapture) {
-          onScreenshotCapture(repo.id)
-        }
-      }
-    } catch (error) {
-      console.error("Screenshot capture failed:", error)
-    } finally {
-      setIsCapturing(false)
-    }
-  }
-
   return (
-    <div className="bg-[var(--color-surface)] border border-[var(--color-border)] rounded-2xl overflow-hidden transition-all hover:border-indigo-500 hover:-translate-y-0.5">
-      {/* Screenshot preview */}
-      <div className="relative aspect-video bg-[var(--color-surface-elevated)]">
-        <Image
-          src={displayImageUrl}
-          alt={`${repo.repo_name} preview`}
-          fill
-          className="object-cover"
-          onError={() => setImageError(true)}
-          sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-        />
-        {/* Source badge */}
-        {screenshotSource && (
-          <div className="absolute bottom-2 right-2 px-2 py-1 bg-black/60 backdrop-blur-sm rounded text-[10px] text-white font-medium">
-            {screenshotSource === "captured" ? "Live" : "GitHub"}
-          </div>
-        )}
-        {/* Capture button overlay */}
-        {repo.live_demo_url && (
-          <button
-            onClick={handleCapture}
-            disabled={isCapturing}
-            className="absolute top-2 right-2 p-2 bg-black/60 backdrop-blur-sm rounded-lg text-white hover:bg-black/80 transition-all disabled:opacity-50"
-            title="Capture screenshot"
-          >
-            {isCapturing ? (
-              <Loader2 className="w-4 h-4 animate-spin" />
-            ) : (
-              <Camera className="w-4 h-4" />
-            )}
-          </button>
-        )}
+    <a
+      href={repo.repo_url}
+      target="_blank"
+      rel="noopener noreferrer"
+      className="bg-[var(--color-surface)] border border-[var(--color-border)] rounded-2xl p-5 transition-all hover:border-indigo-500 hover:-translate-y-0.5"
+    >
+      <div className="flex items-start justify-between mb-3">
+        <span className="font-semibold">{repo.repo_name}</span>
+        <span className="px-2 py-1 bg-[var(--color-surface-elevated)] rounded text-[11px] text-[var(--color-text-secondary)] uppercase tracking-wide">
+          Public
+        </span>
       </div>
-
-      {/* Card content */}
-      <a
-        href={repo.repo_url}
-        target="_blank"
-        rel="noopener noreferrer"
-        className="block p-5"
-      >
-        <div className="flex items-start justify-between mb-3">
-          <span className="font-semibold">{repo.repo_name}</span>
-          <span className="px-2 py-1 bg-[var(--color-surface-elevated)] rounded text-[11px] text-[var(--color-text-secondary)] uppercase tracking-wide">
-            Public
+      {repo.repo_description && (
+        <p className="text-sm text-[var(--color-text-secondary)] line-clamp-2 mb-4">
+          {repo.repo_description}
+        </p>
+      )}
+      <div className="flex items-center gap-4">
+        {repo.repo_language && (
+          <span className="flex items-center gap-1.5 text-sm text-[var(--color-text-secondary)]">
+            <span
+              className="w-2.5 h-2.5 rounded-full"
+              style={{ backgroundColor: languageColor || "#6e7681" }}
+            />
+            {repo.repo_language}
           </span>
-        </div>
-        {repo.repo_description && (
-          <p className="text-sm text-[var(--color-text-secondary)] line-clamp-2 mb-4">
-            {repo.repo_description}
-          </p>
         )}
-        <div className="flex items-center gap-4">
-          {repo.repo_language && (
-            <span className="flex items-center gap-1.5 text-sm text-[var(--color-text-secondary)]">
-              <span
-                className="w-2.5 h-2.5 rounded-full"
-                style={{ backgroundColor: languageColor || "#6e7681" }}
-              />
-              {repo.repo_language}
-            </span>
-          )}
-          {repo.repo_stars > 0 && (
-            <span className="flex items-center gap-1 text-sm text-[var(--color-text-secondary)]">
-              <Star className="w-3.5 h-3.5 fill-amber-400 text-amber-400" />
-              {repo.repo_stars}
-            </span>
-          )}
+        {repo.repo_stars > 0 && (
           <span className="flex items-center gap-1 text-sm text-[var(--color-text-secondary)]">
-            <Share2 className="w-3.5 h-3.5" />0
+            <Star className="w-3.5 h-3.5 fill-amber-400 text-amber-400" />
+            {repo.repo_stars}
           </span>
-        </div>
-      </a>
-    </div>
+        )}
+        <span className="flex items-center gap-1 text-sm text-[var(--color-text-secondary)]">
+          <Share2 className="w-3.5 h-3.5" />0
+        </span>
+      </div>
+    </a>
   )
 }
