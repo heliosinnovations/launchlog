@@ -94,54 +94,48 @@ interface SupabaseUser {
   github_username?: string;
 }
 
+/**
+ * Get user by GitHub username using direct indexed lookup on user_profiles table.
+ * This replaces the slow auth.admin.listUsers() call that fetched ALL users.
+ * Uses the github_username column with a unique index for O(1) lookup.
+ */
 async function getUserByUsername(
   username: string,
 ): Promise<SupabaseUser | null> {
   const supabase = getSupabaseAdmin();
 
-  // Query auth.users through Supabase admin API
-  // Look for users where the GitHub username matches
-  const { data: users, error } = await supabase.auth.admin.listUsers();
+  // Query user_profiles directly using indexed github_username column
+  // Case-insensitive lookup using ilike (index uses LOWER())
+  const { data: profile, error: profileError } = await supabase
+    .from("user_profiles")
+    .select("user_id, github_username")
+    .ilike("github_username", username)
+    .single();
 
-  if (error || !users) {
-    console.error("Error listing users:", error);
+  if (profileError || !profile) {
+    // Profile not found or error - return null (will show "coming soon" page)
+    if (profileError && profileError.code !== "PGRST116") {
+      console.error("Error fetching profile by username:", profileError);
+    }
     return null;
   }
 
-  // Find user by GitHub username in their metadata or identities
-  const user = users.users.find((u) => {
-    const githubIdentity = u.identities?.find(
-      (identity) => identity.provider === "github",
-    );
-    const githubUsername =
-      githubIdentity?.identity_data?.user_name ||
-      u.user_metadata?.user_name ||
-      u.user_metadata?.preferred_username;
+  // Get user details from auth.users using the user_id from profile
+  const { data: authUser, error: authError } =
+    await supabase.auth.admin.getUserById(profile.user_id);
 
-    return (
-      githubUsername?.toLowerCase() === username.toLowerCase() ||
-      u.user_metadata?.name?.toLowerCase() === username.toLowerCase()
-    );
-  });
-
-  if (!user) {
+  if (authError || !authUser?.user) {
+    console.error("Error fetching auth user:", authError);
     return null;
   }
 
-  // Get GitHub username for the profile
-  const githubIdentity = user.identities?.find(
-    (identity) => identity.provider === "github",
-  );
-  const githubUsername =
-    githubIdentity?.identity_data?.user_name ||
-    user.user_metadata?.user_name ||
-    user.user_metadata?.preferred_username;
+  const user = authUser.user;
 
   return {
     id: user.id,
     email: user.email || null,
     raw_user_meta_data: user.user_metadata || {},
-    github_username: githubUsername,
+    github_username: profile.github_username || undefined,
   };
 }
 
