@@ -87,7 +87,7 @@ export function extractDemoUrl(readme: string): string | null {
 
       // Skip excluded URLs
       const isExcluded = EXCLUDED_URL_PATTERNS.some((excludePattern) =>
-        excludePattern.test(url)
+        excludePattern.test(url),
       );
 
       if (!isExcluded && url.startsWith("http")) {
@@ -175,7 +175,7 @@ export async function captureScreenshot(url: string): Promise<Buffer> {
  */
 export async function uploadToStorage(
   buffer: Buffer,
-  projectId: string
+  projectId: string,
 ): Promise<string> {
   if (!buffer || buffer.length === 0) {
     throw new Error("Empty buffer provided");
@@ -225,6 +225,48 @@ export function getGitHubPreview(repoFullName: string): string {
 }
 
 /**
+ * Fetch the homepage URL from GitHub repository metadata
+ * The homepage field is set in the repo's "About" section and is the most
+ * authoritative source for a project's live URL.
+ * @param repoFullName - The full repository name (e.g., "owner/repo")
+ * @param githubToken - Optional GitHub token for private repos or higher rate limits
+ * @returns The homepage URL or null if not set
+ */
+export async function fetchRepoHomepage(
+  repoFullName: string,
+  githubToken?: string,
+): Promise<string | null> {
+  if (!repoFullName) {
+    return null;
+  }
+
+  const headers: HeadersInit = {
+    Accept: "application/vnd.github+json",
+    "User-Agent": "LaunchLog/1.0",
+  };
+
+  if (githubToken) {
+    headers.Authorization = `Bearer ${githubToken}`;
+  }
+
+  try {
+    const response = await fetch(
+      `https://api.github.com/repos/${repoFullName}`,
+      { headers },
+    );
+
+    if (!response.ok) {
+      return null;
+    }
+
+    const data = await response.json();
+    return data.homepage || null;
+  } catch {
+    return null;
+  }
+}
+
+/**
  * Fetch README content from GitHub API
  * @param repoFullName - The full repository name (e.g., "owner/repo")
  * @param githubToken - Optional GitHub token for private repos or higher rate limits
@@ -232,7 +274,7 @@ export function getGitHubPreview(repoFullName: string): string {
  */
 export async function fetchReadmeFromGitHub(
   repoFullName: string,
-  githubToken?: string
+  githubToken?: string,
 ): Promise<string | null> {
   if (!repoFullName) {
     return null;
@@ -250,7 +292,7 @@ export async function fetchReadmeFromGitHub(
   try {
     const response = await fetch(
       `https://api.github.com/repos/${repoFullName}/readme`,
-      { headers }
+      { headers },
     );
 
     if (!response.ok) {
@@ -283,7 +325,7 @@ export interface ScreenshotResult {
  */
 export async function captureWithFallback(
   repoFullName: string,
-  githubToken?: string
+  githubToken?: string,
 ): Promise<ScreenshotResult> {
   // Try to extract and capture from demo URL
   try {
@@ -303,7 +345,7 @@ export async function captureWithFallback(
         } catch (captureError) {
           console.warn(
             `Failed to capture screenshot from ${demoUrl}:`,
-            captureError
+            captureError,
           );
           // Fall through to GitHub preview
         }
@@ -312,7 +354,7 @@ export async function captureWithFallback(
   } catch (extractError) {
     console.warn(
       `Failed to extract demo URL for ${repoFullName}:`,
-      extractError
+      extractError,
     );
     // Fall through to GitHub preview
   }

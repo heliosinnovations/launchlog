@@ -1,4 +1,8 @@
-import { extractDemoUrl, getGitHubPreview } from "@/lib/screenshot-utils"
+import {
+  extractDemoUrl,
+  getGitHubPreview,
+  fetchRepoHomepage,
+} from "@/lib/screenshot-utils"
 
 describe("Screenshot Utils", () => {
   describe("extractDemoUrl", () => {
@@ -158,6 +162,105 @@ describe("Screenshot Utils", () => {
       )
       expect(() => getGitHubPreview(undefined as unknown as string)).toThrow(
         "Invalid repository name"
+      )
+    })
+  })
+
+  describe("fetchRepoHomepage", () => {
+    const originalFetch = global.fetch
+
+    afterEach(() => {
+      global.fetch = originalFetch
+    })
+
+    it("should return null for empty repo name", async () => {
+      expect(await fetchRepoHomepage("")).toBeNull()
+      expect(await fetchRepoHomepage(null as unknown as string)).toBeNull()
+      expect(await fetchRepoHomepage(undefined as unknown as string)).toBeNull()
+    })
+
+    it("should return homepage URL when present", async () => {
+      global.fetch = jest.fn().mockResolvedValue({
+        ok: true,
+        json: () =>
+          Promise.resolve({
+            homepage: "https://skylineivy-react.netlify.app",
+          }),
+      })
+
+      const result = await fetchRepoHomepage("Avi-Aravindh/skylineivy-react")
+      expect(result).toBe("https://skylineivy-react.netlify.app")
+      expect(global.fetch).toHaveBeenCalledWith(
+        "https://api.github.com/repos/Avi-Aravindh/skylineivy-react",
+        expect.objectContaining({
+          headers: expect.objectContaining({
+            Accept: "application/vnd.github+json",
+            "User-Agent": "LaunchLog/1.0",
+          }),
+        })
+      )
+    })
+
+    it("should return null when homepage is not set", async () => {
+      global.fetch = jest.fn().mockResolvedValue({
+        ok: true,
+        json: () =>
+          Promise.resolve({
+            homepage: "",
+          }),
+      })
+
+      const result = await fetchRepoHomepage("user/repo-without-homepage")
+      expect(result).toBeNull()
+    })
+
+    it("should return null when homepage is null", async () => {
+      global.fetch = jest.fn().mockResolvedValue({
+        ok: true,
+        json: () =>
+          Promise.resolve({
+            homepage: null,
+          }),
+      })
+
+      const result = await fetchRepoHomepage("user/repo-null-homepage")
+      expect(result).toBeNull()
+    })
+
+    it("should return null when API request fails", async () => {
+      global.fetch = jest.fn().mockResolvedValue({
+        ok: false,
+        status: 404,
+      })
+
+      const result = await fetchRepoHomepage("nonexistent/repo")
+      expect(result).toBeNull()
+    })
+
+    it("should return null when fetch throws error", async () => {
+      global.fetch = jest.fn().mockRejectedValue(new Error("Network error"))
+
+      const result = await fetchRepoHomepage("user/repo")
+      expect(result).toBeNull()
+    })
+
+    it("should include Authorization header when token provided", async () => {
+      global.fetch = jest.fn().mockResolvedValue({
+        ok: true,
+        json: () =>
+          Promise.resolve({
+            homepage: "https://example.com",
+          }),
+      })
+
+      await fetchRepoHomepage("user/repo", "test-github-token")
+      expect(global.fetch).toHaveBeenCalledWith(
+        "https://api.github.com/repos/user/repo",
+        expect.objectContaining({
+          headers: expect.objectContaining({
+            Authorization: "Bearer test-github-token",
+          }),
+        })
       )
     })
   })
