@@ -1,19 +1,34 @@
-import puppeteer from "puppeteer-core"
-import chromium from "@sparticuz/chromium"
-import sharp from "sharp"
-import { getSupabaseAdmin } from "./supabase"
+/**
+ * Screenshot utilities for capturing project screenshots.
+ * Uses Puppeteer Core with @sparticuz/chromium for Vercel serverless deployment.
+ */
+import puppeteer, { Browser, Page } from "puppeteer-core";
+import chromium from "@sparticuz/chromium";
+import sharp from "sharp";
+import { getSupabaseAdmin } from "./supabase";
 
 /**
- * Screenshot utility functions for auto-capturing project screenshots
- * Uses Puppeteer with @sparticuz/chromium for Vercel serverless compatibility
+ * Configuration constants for screenshot capture
  */
+const SCREENSHOT_CONFIG = {
+  viewport: { width: 1280, height: 720 },
+  deviceScaleFactor: 1,
+  navigationTimeout: 10000, // 10 seconds
+  waitUntil: "networkidle2" as const,
+  screenshotQuality: 80,
+  userAgent:
+    "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+};
 
 /**
  * Common demo URL patterns to look for in README files
+ * Ordered by specificity - most reliable patterns first
  */
 const DEMO_URL_PATTERNS = [
   // Markdown links with demo-related text
   /\[(?:demo|live demo|live site|website|try it|view demo|open app|launch|live preview)\]\(([^)]+)\)/gi,
+  // "Demo: https://..." or "Live: https://..." patterns
+  /(?:demo|live|website|url|site|preview):\s*(https?:\/\/[^\s\)]+)/gi,
   // Vercel deployment URLs
   /https?:\/\/[a-z0-9-]+\.vercel\.app\/?/gi,
   // Netlify deployment URLs
@@ -26,11 +41,9 @@ const DEMO_URL_PATTERNS = [
   /https?:\/\/[a-z0-9-]+\.onrender\.com\/?/gi,
   // Heroku deployment URLs
   /https?:\/\/[a-z0-9-]+\.herokuapp\.com\/?/gi,
-  // Generic "Demo:" or "Live:" followed by URL
-  /(?:demo|live|website|url|site):\s*(https?:\/\/[^\s\)]+)/gi,
   // Badge image links pointing to live sites
   /\[!\[.*?\]\([^)]+\)\]\((https?:\/\/(?!github\.com|shields\.io|badge)[^\s\)]+)\)/gi,
-]
+];
 
 /**
  * URLs to exclude from demo detection (not actually demo sites)
@@ -38,6 +51,7 @@ const DEMO_URL_PATTERNS = [
 const EXCLUDED_URL_PATTERNS = [
   /github\.com/i,
   /npmjs\.com/i,
+  /npm\.im/i,
   /shields\.io/i,
   /badge/i,
   /travis-ci/i,
@@ -46,7 +60,8 @@ const EXCLUDED_URL_PATTERNS = [
   /coveralls/i,
   /snyk\.io/i,
   /dependabot/i,
-]
+  /badge\.fury\.io/i,
+];
 
 /**
  * Extract a demo URL from a README file content
@@ -56,33 +71,33 @@ const EXCLUDED_URL_PATTERNS = [
  */
 export function extractDemoUrl(readme: string): string | null {
   if (!readme || typeof readme !== "string") {
-    return null
+    return null;
   }
 
-  const foundUrls: string[] = []
+  const foundUrls: string[] = [];
 
   for (const pattern of DEMO_URL_PATTERNS) {
     // Reset regex lastIndex for global patterns
-    pattern.lastIndex = 0
-    let match
+    pattern.lastIndex = 0;
+    let match;
 
     while ((match = pattern.exec(readme)) !== null) {
       // Extract the URL from the match (either capture group 1 or the full match)
-      const url = match[1] || match[0]
+      const url = match[1] || match[0];
 
       // Skip excluded URLs
       const isExcluded = EXCLUDED_URL_PATTERNS.some((excludePattern) =>
         excludePattern.test(url)
-      )
+      );
 
       if (!isExcluded && url.startsWith("http")) {
-        foundUrls.push(url)
+        foundUrls.push(url);
       }
     }
   }
 
   // Return the first valid URL found, or null
-  return foundUrls.length > 0 ? foundUrls[0] : null
+  return foundUrls.length > 0 ? foundUrls[0] : null;
 }
 
 /**
@@ -93,17 +108,17 @@ export function extractDemoUrl(readme: string): string | null {
  */
 export async function captureScreenshot(url: string): Promise<Buffer> {
   if (!url || typeof url !== "string") {
-    throw new Error("Invalid URL provided")
+    throw new Error("Invalid URL provided");
   }
 
   // Validate URL format
   try {
-    new URL(url)
+    new URL(url);
   } catch {
-    throw new Error(`Invalid URL format: ${url}`)
+    throw new Error(`Invalid URL format: ${url}`);
   }
 
-  let browser = null
+  let browser: Browser | null = null;
 
   try {
     // Configure Chromium for serverless environment
@@ -111,45 +126,43 @@ export async function captureScreenshot(url: string): Promise<Buffer> {
     browser = await puppeteer.launch({
       args: chromium.args,
       defaultViewport: {
-        width: 1280,
-        height: 720,
-        deviceScaleFactor: 1,
+        width: SCREENSHOT_CONFIG.viewport.width,
+        height: SCREENSHOT_CONFIG.viewport.height,
+        deviceScaleFactor: SCREENSHOT_CONFIG.deviceScaleFactor,
       },
       executablePath: await chromium.executablePath(),
       headless: true,
-    })
+    });
 
-    const page = await browser.newPage()
+    const page: Page = await browser.newPage();
 
     // Set a reasonable user agent
-    await page.setUserAgent(
-      "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
-    )
+    await page.setUserAgent(SCREENSHOT_CONFIG.userAgent);
 
-    // Navigate to the URL with 10 second timeout
+    // Navigate to the URL with timeout
     await page.goto(url, {
-      waitUntil: "networkidle2",
-      timeout: 10000,
-    })
+      waitUntil: SCREENSHOT_CONFIG.waitUntil,
+      timeout: SCREENSHOT_CONFIG.navigationTimeout,
+    });
 
     // Wait a bit for any animations to settle
-    await new Promise((resolve) => setTimeout(resolve, 1000))
+    await new Promise((resolve) => setTimeout(resolve, 1000));
 
     // Capture screenshot as PNG first (Puppeteer doesn't support WebP directly)
     const pngBuffer = await page.screenshot({
       type: "png",
       fullPage: false,
-    })
+    });
 
     // Convert to WebP using sharp for better compression
     const webpBuffer = await sharp(pngBuffer)
-      .webp({ quality: 80 })
-      .toBuffer()
+      .webp({ quality: SCREENSHOT_CONFIG.screenshotQuality })
+      .toBuffer();
 
-    return webpBuffer
+    return webpBuffer;
   } finally {
     if (browser) {
-      await browser.close()
+      await browser.close();
     }
   }
 }
@@ -165,15 +178,15 @@ export async function uploadToStorage(
   projectId: string
 ): Promise<string> {
   if (!buffer || buffer.length === 0) {
-    throw new Error("Empty buffer provided")
+    throw new Error("Empty buffer provided");
   }
 
   if (!projectId) {
-    throw new Error("Project ID is required")
+    throw new Error("Project ID is required");
   }
 
-  const supabase = getSupabaseAdmin()
-  const fileName = `${projectId}.webp`
+  const supabase = getSupabaseAdmin();
+  const fileName = `${projectId}.webp`;
 
   // Upload to Supabase Storage bucket "project-screenshots"
   const { error } = await supabase.storage
@@ -181,18 +194,18 @@ export async function uploadToStorage(
     .upload(fileName, buffer, {
       contentType: "image/webp",
       upsert: true, // Overwrite existing file
-    })
+    });
 
   if (error) {
-    throw new Error(`Failed to upload screenshot: ${error.message}`)
+    throw new Error(`Failed to upload screenshot: ${error.message}`);
   }
 
   // Get public URL
   const { data: urlData } = supabase.storage
     .from("project-screenshots")
-    .getPublicUrl(fileName)
+    .getPublicUrl(fileName);
 
-  return urlData.publicUrl
+  return urlData.publicUrl;
 }
 
 /**
@@ -203,12 +216,12 @@ export async function uploadToStorage(
  */
 export function getGitHubPreview(repoFullName: string): string {
   if (!repoFullName || typeof repoFullName !== "string") {
-    throw new Error("Invalid repository name")
+    throw new Error("Invalid repository name");
   }
 
   // GitHub's OpenGraph image URL format
   // This generates a nice preview image with repo stats
-  return `https://opengraph.githubassets.com/1/${repoFullName}`
+  return `https://opengraph.githubassets.com/1/${repoFullName}`;
 }
 
 /**
@@ -222,30 +235,116 @@ export async function fetchReadmeFromGitHub(
   githubToken?: string
 ): Promise<string | null> {
   if (!repoFullName) {
-    return null
+    return null;
   }
 
   const headers: HeadersInit = {
     Accept: "application/vnd.github.raw+json",
     "User-Agent": "LaunchLog/1.0",
-  }
+  };
 
   if (githubToken) {
-    headers.Authorization = `Bearer ${githubToken}`
+    headers.Authorization = `Bearer ${githubToken}`;
   }
 
   try {
     const response = await fetch(
       `https://api.github.com/repos/${repoFullName}/readme`,
       { headers }
-    )
+    );
 
     if (!response.ok) {
-      return null
+      return null;
     }
 
-    return await response.text()
+    return await response.text();
   } catch {
-    return null
+    return null;
+  }
+}
+
+/**
+ * Type for screenshot capture result
+ */
+export interface ScreenshotResult {
+  screenshot: Buffer | null;
+  source: "auto" | "github_preview";
+  url: string;
+  error?: string;
+}
+
+/**
+ * Attempts to capture a screenshot with automatic fallback.
+ * First tries to capture from demo URL, then falls back to GitHub preview.
+ *
+ * @param repoFullName - Full repository name (e.g., "owner/repo")
+ * @param githubToken - Optional GitHub token for API access
+ * @returns ScreenshotResult with the screenshot buffer and metadata
+ */
+export async function captureWithFallback(
+  repoFullName: string,
+  githubToken?: string
+): Promise<ScreenshotResult> {
+  // Try to extract and capture from demo URL
+  try {
+    const readme = await fetchReadmeFromGitHub(repoFullName, githubToken);
+
+    if (readme) {
+      const demoUrl = extractDemoUrl(readme);
+
+      if (demoUrl) {
+        try {
+          const screenshot = await captureScreenshot(demoUrl);
+          return {
+            screenshot,
+            source: "auto",
+            url: demoUrl,
+          };
+        } catch (captureError) {
+          console.warn(
+            `Failed to capture screenshot from ${demoUrl}:`,
+            captureError
+          );
+          // Fall through to GitHub preview
+        }
+      }
+    }
+  } catch (extractError) {
+    console.warn(
+      `Failed to extract demo URL for ${repoFullName}:`,
+      extractError
+    );
+    // Fall through to GitHub preview
+  }
+
+  // Fallback: Use GitHub preview image
+  const githubPreviewUrl = getGitHubPreview(repoFullName);
+
+  try {
+    // Fetch the GitHub preview image
+    const response = await fetch(githubPreviewUrl, {
+      headers: {
+        "User-Agent": "LaunchLog/1.0",
+      },
+    });
+
+    if (!response.ok) {
+      throw new Error(`GitHub preview fetch failed: ${response.status}`);
+    }
+
+    const arrayBuffer = await response.arrayBuffer();
+    return {
+      screenshot: Buffer.from(arrayBuffer),
+      source: "github_preview",
+      url: githubPreviewUrl,
+    };
+  } catch (error) {
+    console.error(`Failed to fetch GitHub preview for ${repoFullName}:`, error);
+    return {
+      screenshot: null,
+      source: "github_preview",
+      url: githubPreviewUrl,
+      error: error instanceof Error ? error.message : "Unknown error",
+    };
   }
 }
