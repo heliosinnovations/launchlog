@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState, useCallback } from "react";
-import { MessageSquare, ChevronRight, Loader2 } from "lucide-react";
+import { MessageSquare, ChevronRight, Loader2, Info } from "lucide-react";
 import { MentionsModal } from "./MentionsModal";
 
 /**
@@ -218,6 +218,12 @@ export function MentionsRow({ projectId, projectName, onViewAll }: MentionsRowPr
           </span>
         </div>
       )}
+
+      {/* Update frequency indicator */}
+      <span className="hidden sm:flex items-center gap-1 text-[11px] text-[var(--color-text-secondary)] opacity-70">
+        <Info className="w-3 h-3" aria-hidden="true" />
+        Updates daily
+      </span>
 
       {/* View all link */}
       <button
