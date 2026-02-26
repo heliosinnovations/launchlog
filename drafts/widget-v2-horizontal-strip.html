@@ -1,0 +1,1169 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LaunchLog Widget - Variation 2: Horizontal Strip</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500;600&display=swap" rel="stylesheet">
+    <style>
+        /* ===========================================
+           LAUNCHLOG EMBEDDABLE WIDGET
+           Variation 2: Horizontal Strip
+
+           Design Philosophy:
+           - Horizontal scrolling carousel
+           - Compact, information-dense cards
+           - Pill-shaped badges and tags
+           - Smooth scroll snap behavior
+           - Works great in sidebars or full-width sections
+           =========================================== */
+
+        /* CSS Variables */
+        :root {
+            --ll-font: inherit;
+            --ll-font-mono: 'JetBrains Mono', ui-monospace, monospace;
+            --ll-bg: #ffffff;
+            --ll-bg-card: #f8fafc;
+            --ll-bg-hover: #f1f5f9;
+            --ll-text: #0f172a;
+            --ll-text-secondary: #64748b;
+            --ll-text-muted: #94a3b8;
+            --ll-border: #e2e8f0;
+            --ll-primary: #6366f1;
+            --ll-primary-soft: rgba(99, 102, 241, 0.1);
+            --ll-radius: 16px;
+            --ll-radius-pill: 100px;
+
+            /* Platform colors */
+            --ll-hn: #ff6600;
+            --ll-reddit: #ff4500;
+            --ll-star: #f59e0b;
+            --ll-green: #10b981;
+        }
+
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --ll-bg: #0f172a;
+                --ll-bg-card: #1e293b;
+                --ll-bg-hover: #334155;
+                --ll-text: #f8fafc;
+                --ll-text-secondary: #94a3b8;
+                --ll-text-muted: #64748b;
+                --ll-border: #334155;
+                --ll-primary-soft: rgba(99, 102, 241, 0.2);
+            }
+        }
+
+        .ll-dark {
+            --ll-bg: #0f172a;
+            --ll-bg-card: #1e293b;
+            --ll-bg-hover: #334155;
+            --ll-text: #f8fafc;
+            --ll-text-secondary: #94a3b8;
+            --ll-text-muted: #64748b;
+            --ll-border: #334155;
+            --ll-primary-soft: rgba(99, 102, 241, 0.2);
+        }
+
+        /* Demo styles */
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: #f1f5f9;
+            padding: 40px;
+            line-height: 1.5;
+        }
+
+        .demo-header {
+            max-width: 800px;
+            margin: 0 auto 60px;
+            text-align: center;
+        }
+
+        .demo-header h1 {
+            font-size: 32px;
+            font-weight: 700;
+            color: #0f172a;
+            margin-bottom: 8px;
+        }
+
+        .demo-header p {
+            font-size: 16px;
+            color: #64748b;
+        }
+
+        .demo-section {
+            max-width: 1100px;
+            margin: 0 auto 80px;
+        }
+
+        .demo-section h2 {
+            font-size: 14px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: #64748b;
+            margin-bottom: 20px;
+        }
+
+        .demo-box {
+            padding: 32px;
+            border-radius: 20px;
+            margin-bottom: 32px;
+        }
+
+        .demo-box.light {
+            background: #ffffff;
+            border: 1px solid #e2e8f0;
+        }
+
+        .demo-box.dark {
+            background: #0f172a;
+        }
+
+        .demo-label {
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: #94a3b8;
+            margin-bottom: 20px;
+        }
+
+        .demo-box.dark .demo-label {
+            color: #64748b;
+        }
+
+        /* ===========================================
+           WIDGET: HORIZONTAL STRIP CONTAINER
+           =========================================== */
+        .ll-strip {
+            font-family: var(--ll-font);
+            background: var(--ll-bg);
+            border-radius: var(--ll-radius);
+            padding: 20px;
+        }
+
+        .ll-strip__header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+        }
+
+        .ll-strip__title {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .ll-strip__avatar {
+            width: 32px;
+            height: 32px;
+            border-radius: 8px;
+            background: linear-gradient(135deg, #6366f1, #8b5cf6);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 12px;
+            font-weight: 700;
+        }
+
+        .ll-strip__name {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--ll-text);
+        }
+
+        .ll-strip__handle {
+            font-size: 12px;
+            color: var(--ll-text-muted);
+        }
+
+        .ll-strip__nav {
+            display: flex;
+            gap: 8px;
+        }
+
+        .ll-strip__nav-btn {
+            width: 32px;
+            height: 32px;
+            border-radius: 8px;
+            border: 1px solid var(--ll-border);
+            background: var(--ll-bg);
+            color: var(--ll-text-secondary);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+        }
+
+        .ll-strip__nav-btn:hover {
+            background: var(--ll-bg-hover);
+            border-color: var(--ll-primary);
+            color: var(--ll-primary);
+        }
+
+        .ll-strip__nav-btn svg {
+            width: 16px;
+            height: 16px;
+        }
+
+        .ll-strip__scroll {
+            display: flex;
+            gap: 16px;
+            overflow-x: auto;
+            scroll-snap-type: x mandatory;
+            scrollbar-width: none;
+            -ms-overflow-style: none;
+            padding-bottom: 4px;
+        }
+
+        .ll-strip__scroll::-webkit-scrollbar {
+            display: none;
+        }
+
+        /* ===========================================
+           WIDGET: HORIZONTAL PROJECT CARD
+           =========================================== */
+        .ll-hcard {
+            flex: 0 0 300px;
+            scroll-snap-align: start;
+            background: var(--ll-bg-card);
+            border: 1px solid var(--ll-border);
+            border-radius: 12px;
+            padding: 16px;
+            transition: all 0.2s;
+            cursor: pointer;
+        }
+
+        .ll-hcard:hover {
+            border-color: var(--ll-primary);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px -8px rgba(99, 102, 241, 0.2);
+        }
+
+        .ll-hcard__top {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 12px;
+        }
+
+        .ll-hcard__title {
+            font-size: 15px;
+            font-weight: 600;
+            color: var(--ll-text);
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .ll-hcard__title:hover {
+            color: var(--ll-primary);
+        }
+
+        .ll-hcard__lang {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            padding: 4px 8px;
+            border-radius: var(--ll-radius-pill);
+            background: var(--ll-bg-hover);
+            font-size: 11px;
+            font-weight: 500;
+            color: var(--ll-text-secondary);
+        }
+
+        .ll-hcard__lang-dot {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+        }
+
+        .ll-hcard__desc {
+            font-size: 13px;
+            color: var(--ll-text-secondary);
+            line-height: 1.5;
+            margin-bottom: 14px;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .ll-hcard__bottom {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .ll-hcard__stats {
+            display: flex;
+            gap: 12px;
+        }
+
+        .ll-hcard__stat {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            font-size: 12px;
+            color: var(--ll-text-muted);
+            font-family: var(--ll-font-mono);
+            font-weight: 500;
+        }
+
+        .ll-hcard__stat svg {
+            width: 14px;
+            height: 14px;
+        }
+
+        .ll-hcard__stat--star svg {
+            color: var(--ll-star);
+            fill: var(--ll-star);
+        }
+
+        .ll-hcard__mentions {
+            display: flex;
+            gap: 6px;
+        }
+
+        .ll-pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            padding: 4px 8px;
+            border-radius: var(--ll-radius-pill);
+            font-size: 11px;
+            font-weight: 600;
+            font-family: var(--ll-font-mono);
+        }
+
+        .ll-pill svg {
+            width: 10px;
+            height: 10px;
+        }
+
+        .ll-pill--hn {
+            background: rgba(255, 102, 0, 0.12);
+            color: var(--ll-hn);
+        }
+
+        .ll-pill--reddit {
+            background: rgba(255, 69, 0, 0.12);
+            color: var(--ll-reddit);
+        }
+
+        .ll-pill--hot {
+            background: linear-gradient(135deg, rgba(249, 115, 22, 0.15), rgba(239, 68, 68, 0.15));
+            color: #f97316;
+        }
+
+        /* Footer */
+        .ll-strip__footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 16px;
+            padding-top: 16px;
+            border-top: 1px solid var(--ll-border);
+        }
+
+        .ll-strip__view-all {
+            font-size: 13px;
+            font-weight: 500;
+            color: var(--ll-primary);
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .ll-strip__view-all:hover {
+            text-decoration: underline;
+        }
+
+        .ll-strip__view-all svg {
+            width: 14px;
+            height: 14px;
+        }
+
+        .ll-strip__powered {
+            font-size: 11px;
+            color: var(--ll-text-muted);
+        }
+
+        .ll-strip__powered a {
+            color: var(--ll-text-secondary);
+            text-decoration: none;
+        }
+
+        .ll-strip__powered a:hover {
+            color: var(--ll-primary);
+        }
+
+        /* ===========================================
+           LOADING STATE
+           =========================================== */
+        .ll-skeleton {
+            background: linear-gradient(
+                90deg,
+                var(--ll-bg-hover) 0%,
+                var(--ll-bg-card) 50%,
+                var(--ll-bg-hover) 100%
+            );
+            background-size: 200% 100%;
+            animation: ll-shimmer 1.5s infinite;
+            border-radius: 6px;
+        }
+
+        @keyframes ll-shimmer {
+            0% { background-position: 200% 0; }
+            100% { background-position: -200% 0; }
+        }
+
+        .ll-hcard--loading .ll-skeleton-title {
+            height: 18px;
+            width: 60%;
+            margin-bottom: 8px;
+        }
+
+        .ll-hcard--loading .ll-skeleton-lang {
+            height: 22px;
+            width: 70px;
+            border-radius: 100px;
+        }
+
+        .ll-hcard--loading .ll-skeleton-desc {
+            height: 14px;
+            width: 100%;
+            margin-bottom: 6px;
+        }
+
+        .ll-hcard--loading .ll-skeleton-desc:last-of-type {
+            width: 80%;
+        }
+
+        .ll-hcard--loading .ll-skeleton-stat {
+            height: 14px;
+            width: 50px;
+        }
+
+        /* ===========================================
+           ERROR STATE
+           =========================================== */
+        .ll-strip-error {
+            background: var(--ll-bg);
+            border-radius: var(--ll-radius);
+            padding: 40px 24px;
+            text-align: center;
+        }
+
+        .ll-strip-error__icon {
+            width: 48px;
+            height: 48px;
+            margin: 0 auto 12px;
+            color: #ef4444;
+        }
+
+        .ll-strip-error__title {
+            font-size: 15px;
+            font-weight: 600;
+            color: var(--ll-text);
+            margin-bottom: 4px;
+        }
+
+        .ll-strip-error__message {
+            font-size: 13px;
+            color: var(--ll-text-secondary);
+            margin-bottom: 16px;
+        }
+
+        .ll-strip-error__retry {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 10px 20px;
+            background: var(--ll-primary);
+            color: white;
+            border: none;
+            border-radius: var(--ll-radius-pill);
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .ll-strip-error__retry:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px -2px rgba(99, 102, 241, 0.4);
+        }
+
+        .ll-strip-error__retry svg {
+            width: 14px;
+            height: 14px;
+        }
+
+        /* ===========================================
+           EMPTY STATE
+           =========================================== */
+        .ll-strip-empty {
+            background: var(--ll-bg);
+            border-radius: var(--ll-radius);
+            padding: 40px 24px;
+            text-align: center;
+        }
+
+        .ll-strip-empty__icon {
+            width: 48px;
+            height: 48px;
+            margin: 0 auto 12px;
+            color: var(--ll-text-muted);
+        }
+
+        .ll-strip-empty__title {
+            font-size: 15px;
+            font-weight: 600;
+            color: var(--ll-text);
+            margin-bottom: 4px;
+        }
+
+        .ll-strip-empty__message {
+            font-size: 13px;
+            color: var(--ll-text-secondary);
+        }
+
+        /* ===========================================
+           COMPACT SINGLE CARD
+           For sidebar use
+           =========================================== */
+        .ll-compact {
+            font-family: var(--ll-font);
+            background: var(--ll-bg-card);
+            border: 1px solid var(--ll-border);
+            border-radius: 12px;
+            padding: 14px;
+            max-width: 320px;
+            transition: all 0.2s;
+        }
+
+        .ll-compact:hover {
+            border-color: var(--ll-primary);
+        }
+
+        .ll-compact__header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+
+        .ll-compact__thumb {
+            width: 40px;
+            height: 40px;
+            border-radius: 8px;
+            background: linear-gradient(135deg, #6366f1, #8b5cf6);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .ll-compact__thumb svg {
+            width: 20px;
+            height: 20px;
+            color: white;
+        }
+
+        .ll-compact__info {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .ll-compact__title {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--ll-text);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .ll-compact__meta {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 12px;
+            color: var(--ll-text-muted);
+        }
+
+        .ll-compact__meta svg {
+            width: 12px;
+            height: 12px;
+        }
+
+        .ll-compact__desc {
+            font-size: 13px;
+            color: var(--ll-text-secondary);
+            line-height: 1.4;
+            margin-bottom: 10px;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .ll-compact__footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .ll-compact__stats {
+            display: flex;
+            gap: 10px;
+        }
+
+        .ll-compact__link {
+            font-size: 12px;
+            font-weight: 500;
+            color: var(--ll-primary);
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .ll-compact__link:hover {
+            text-decoration: underline;
+        }
+
+        .ll-compact__link svg {
+            width: 12px;
+            height: 12px;
+        }
+    </style>
+</head>
+<body>
+    <header class="demo-header">
+        <h1>Variation 2: Horizontal Strip</h1>
+        <p>Scrollable horizontal carousel with compact, information-dense cards. Perfect for full-width sections.</p>
+    </header>
+
+    <!-- LOADED STATE - FULL STRIP -->
+    <section class="demo-section">
+        <h2>Loaded State - Horizontal Scroll</h2>
+
+        <div class="demo-box light">
+            <div class="demo-label">Light Mode</div>
+            <div class="ll-strip">
+                <div class="ll-strip__header">
+                    <div class="ll-strip__title">
+                        <div class="ll-strip__avatar">PM</div>
+                        <div>
+                            <div class="ll-strip__name">pmndrs</div>
+                            <div class="ll-strip__handle">@pmndrs</div>
+                        </div>
+                    </div>
+                    <div class="ll-strip__nav">
+                        <button class="ll-strip__nav-btn" aria-label="Previous">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M15 18l-6-6 6-6"/>
+                            </svg>
+                        </button>
+                        <button class="ll-strip__nav-btn" aria-label="Next">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M9 18l6-6-6-6"/>
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="ll-strip__scroll">
+                    <!-- Card 1 -->
+                    <article class="ll-hcard">
+                        <div class="ll-hcard__top">
+                            <a href="#" class="ll-hcard__title">
+                                zustand
+                                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/>
+                                    <polyline points="15 3 21 3 21 9"/>
+                                    <line x1="10" y1="14" x2="21" y2="3"/>
+                                </svg>
+                            </a>
+                            <span class="ll-hcard__lang">
+                                <span class="ll-hcard__lang-dot" style="background: #3178c6"></span>
+                                TS
+                            </span>
+                        </div>
+                        <p class="ll-hcard__desc">Bear necessities for state management. Small, fast, and scalable.</p>
+                        <div class="ll-hcard__bottom">
+                            <div class="ll-hcard__stats">
+                                <span class="ll-hcard__stat ll-hcard__stat--star">
+                                    <svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+                                    42.1k
+                                </span>
+                            </div>
+                            <div class="ll-hcard__mentions">
+                                <span class="ll-pill ll-pill--hot">🔥 89</span>
+                            </div>
+                        </div>
+                    </article>
+
+                    <!-- Card 2 -->
+                    <article class="ll-hcard">
+                        <div class="ll-hcard__top">
+                            <a href="#" class="ll-hcard__title">
+                                react-three-fiber
+                                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/>
+                                    <polyline points="15 3 21 3 21 9"/>
+                                    <line x1="10" y1="14" x2="21" y2="3"/>
+                                </svg>
+                            </a>
+                            <span class="ll-hcard__lang">
+                                <span class="ll-hcard__lang-dot" style="background: #3178c6"></span>
+                                TS
+                            </span>
+                        </div>
+                        <p class="ll-hcard__desc">React renderer for Three.js. Build 3D experiences declaratively.</p>
+                        <div class="ll-hcard__bottom">
+                            <div class="ll-hcard__stats">
+                                <span class="ll-hcard__stat ll-hcard__stat--star">
+                                    <svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+                                    25.8k
+                                </span>
+                            </div>
+                            <div class="ll-hcard__mentions">
+                                <span class="ll-pill ll-pill--hn">HN 34</span>
+                            </div>
+                        </div>
+                    </article>
+
+                    <!-- Card 3 -->
+                    <article class="ll-hcard">
+                        <div class="ll-hcard__top">
+                            <a href="#" class="ll-hcard__title">
+                                jotai
+                                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/>
+                                    <polyline points="15 3 21 3 21 9"/>
+                                    <line x1="10" y1="14" x2="21" y2="3"/>
+                                </svg>
+                            </a>
+                            <span class="ll-hcard__lang">
+                                <span class="ll-hcard__lang-dot" style="background: #3178c6"></span>
+                                TS
+                            </span>
+                        </div>
+                        <p class="ll-hcard__desc">Primitive and flexible state management for React.</p>
+                        <div class="ll-hcard__bottom">
+                            <div class="ll-hcard__stats">
+                                <span class="ll-hcard__stat ll-hcard__stat--star">
+                                    <svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+                                    17.8k
+                                </span>
+                            </div>
+                            <div class="ll-hcard__mentions">
+                                <span class="ll-pill ll-pill--reddit">r/ 21</span>
+                            </div>
+                        </div>
+                    </article>
+
+                    <!-- Card 4 -->
+                    <article class="ll-hcard">
+                        <div class="ll-hcard__top">
+                            <a href="#" class="ll-hcard__title">
+                                valtio
+                                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/>
+                                    <polyline points="15 3 21 3 21 9"/>
+                                    <line x1="10" y1="14" x2="21" y2="3"/>
+                                </svg>
+                            </a>
+                            <span class="ll-hcard__lang">
+                                <span class="ll-hcard__lang-dot" style="background: #3178c6"></span>
+                                TS
+                            </span>
+                        </div>
+                        <p class="ll-hcard__desc">Valtio makes proxy-state simple for React and vanilla.</p>
+                        <div class="ll-hcard__bottom">
+                            <div class="ll-hcard__stats">
+                                <span class="ll-hcard__stat ll-hcard__stat--star">
+                                    <svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+                                    8.2k
+                                </span>
+                            </div>
+                        </div>
+                    </article>
+                </div>
+
+                <div class="ll-strip__footer">
+                    <a href="#" class="ll-strip__view-all">
+                        View all 12 projects
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M9 18l6-6-6-6"/>
+                        </svg>
+                    </a>
+                    <span class="ll-strip__powered">Powered by <a href="#">LaunchLog</a></span>
+                </div>
+            </div>
+        </div>
+
+        <div class="demo-box dark ll-dark">
+            <div class="demo-label">Dark Mode</div>
+            <div class="ll-strip">
+                <div class="ll-strip__header">
+                    <div class="ll-strip__title">
+                        <div class="ll-strip__avatar">PM</div>
+                        <div>
+                            <div class="ll-strip__name">pmndrs</div>
+                            <div class="ll-strip__handle">@pmndrs</div>
+                        </div>
+                    </div>
+                    <div class="ll-strip__nav">
+                        <button class="ll-strip__nav-btn" aria-label="Previous">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M15 18l-6-6 6-6"/>
+                            </svg>
+                        </button>
+                        <button class="ll-strip__nav-btn" aria-label="Next">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M9 18l6-6-6-6"/>
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="ll-strip__scroll">
+                    <article class="ll-hcard">
+                        <div class="ll-hcard__top">
+                            <a href="#" class="ll-hcard__title">
+                                zustand
+                                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/>
+                                    <polyline points="15 3 21 3 21 9"/>
+                                    <line x1="10" y1="14" x2="21" y2="3"/>
+                                </svg>
+                            </a>
+                            <span class="ll-hcard__lang">
+                                <span class="ll-hcard__lang-dot" style="background: #3178c6"></span>
+                                TS
+                            </span>
+                        </div>
+                        <p class="ll-hcard__desc">Bear necessities for state management. Small, fast, and scalable.</p>
+                        <div class="ll-hcard__bottom">
+                            <div class="ll-hcard__stats">
+                                <span class="ll-hcard__stat ll-hcard__stat--star">
+                                    <svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+                                    42.1k
+                                </span>
+                            </div>
+                            <div class="ll-hcard__mentions">
+                                <span class="ll-pill ll-pill--hot">🔥 89</span>
+                            </div>
+                        </div>
+                    </article>
+
+                    <article class="ll-hcard">
+                        <div class="ll-hcard__top">
+                            <a href="#" class="ll-hcard__title">
+                                react-three-fiber
+                                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/>
+                                    <polyline points="15 3 21 3 21 9"/>
+                                    <line x1="10" y1="14" x2="21" y2="3"/>
+                                </svg>
+                            </a>
+                            <span class="ll-hcard__lang">
+                                <span class="ll-hcard__lang-dot" style="background: #3178c6"></span>
+                                TS
+                            </span>
+                        </div>
+                        <p class="ll-hcard__desc">React renderer for Three.js. Build 3D experiences declaratively.</p>
+                        <div class="ll-hcard__bottom">
+                            <div class="ll-hcard__stats">
+                                <span class="ll-hcard__stat ll-hcard__stat--star">
+                                    <svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+                                    25.8k
+                                </span>
+                            </div>
+                            <div class="ll-hcard__mentions">
+                                <span class="ll-pill ll-pill--hn">HN 34</span>
+                            </div>
+                        </div>
+                    </article>
+
+                    <article class="ll-hcard">
+                        <div class="ll-hcard__top">
+                            <a href="#" class="ll-hcard__title">
+                                jotai
+                                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/>
+                                    <polyline points="15 3 21 3 21 9"/>
+                                    <line x1="10" y1="14" x2="21" y2="3"/>
+                                </svg>
+                            </a>
+                            <span class="ll-hcard__lang">
+                                <span class="ll-hcard__lang-dot" style="background: #3178c6"></span>
+                                TS
+                            </span>
+                        </div>
+                        <p class="ll-hcard__desc">Primitive and flexible state management for React.</p>
+                        <div class="ll-hcard__bottom">
+                            <div class="ll-hcard__stats">
+                                <span class="ll-hcard__stat ll-hcard__stat--star">
+                                    <svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+                                    17.8k
+                                </span>
+                            </div>
+                            <div class="ll-hcard__mentions">
+                                <span class="ll-pill ll-pill--reddit">r/ 21</span>
+                            </div>
+                        </div>
+                    </article>
+
+                    <article class="ll-hcard">
+                        <div class="ll-hcard__top">
+                            <a href="#" class="ll-hcard__title">valtio</a>
+                            <span class="ll-hcard__lang">
+                                <span class="ll-hcard__lang-dot" style="background: #3178c6"></span>
+                                TS
+                            </span>
+                        </div>
+                        <p class="ll-hcard__desc">Valtio makes proxy-state simple for React and vanilla.</p>
+                        <div class="ll-hcard__bottom">
+                            <div class="ll-hcard__stats">
+                                <span class="ll-hcard__stat ll-hcard__stat--star">
+                                    <svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+                                    8.2k
+                                </span>
+                            </div>
+                        </div>
+                    </article>
+                </div>
+
+                <div class="ll-strip__footer">
+                    <a href="#" class="ll-strip__view-all">
+                        View all 12 projects
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M9 18l6-6-6-6"/>
+                        </svg>
+                    </a>
+                    <span class="ll-strip__powered">Powered by <a href="#">LaunchLog</a></span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- LOADING STATE -->
+    <section class="demo-section">
+        <h2>Loading State</h2>
+        <div class="demo-box light">
+            <div class="demo-label">Skeleton Loading</div>
+            <div class="ll-strip">
+                <div class="ll-strip__header">
+                    <div class="ll-strip__title">
+                        <div class="ll-skeleton" style="width: 32px; height: 32px; border-radius: 8px;"></div>
+                        <div>
+                            <div class="ll-skeleton" style="width: 80px; height: 14px; margin-bottom: 4px;"></div>
+                            <div class="ll-skeleton" style="width: 60px; height: 12px;"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="ll-strip__scroll">
+                    <article class="ll-hcard ll-hcard--loading">
+                        <div class="ll-hcard__top">
+                            <div class="ll-skeleton ll-skeleton-title"></div>
+                            <div class="ll-skeleton ll-skeleton-lang"></div>
+                        </div>
+                        <div style="margin-bottom: 14px;">
+                            <div class="ll-skeleton ll-skeleton-desc"></div>
+                            <div class="ll-skeleton ll-skeleton-desc"></div>
+                        </div>
+                        <div class="ll-hcard__bottom">
+                            <div class="ll-skeleton ll-skeleton-stat"></div>
+                        </div>
+                    </article>
+
+                    <article class="ll-hcard ll-hcard--loading">
+                        <div class="ll-hcard__top">
+                            <div class="ll-skeleton ll-skeleton-title"></div>
+                            <div class="ll-skeleton ll-skeleton-lang"></div>
+                        </div>
+                        <div style="margin-bottom: 14px;">
+                            <div class="ll-skeleton ll-skeleton-desc"></div>
+                            <div class="ll-skeleton ll-skeleton-desc"></div>
+                        </div>
+                        <div class="ll-hcard__bottom">
+                            <div class="ll-skeleton ll-skeleton-stat"></div>
+                        </div>
+                    </article>
+
+                    <article class="ll-hcard ll-hcard--loading">
+                        <div class="ll-hcard__top">
+                            <div class="ll-skeleton ll-skeleton-title"></div>
+                            <div class="ll-skeleton ll-skeleton-lang"></div>
+                        </div>
+                        <div style="margin-bottom: 14px;">
+                            <div class="ll-skeleton ll-skeleton-desc"></div>
+                            <div class="ll-skeleton ll-skeleton-desc"></div>
+                        </div>
+                        <div class="ll-hcard__bottom">
+                            <div class="ll-skeleton ll-skeleton-stat"></div>
+                        </div>
+                    </article>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ERROR & EMPTY STATES -->
+    <section class="demo-section">
+        <h2>Error & Empty States</h2>
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 24px;">
+            <div class="demo-box light">
+                <div class="demo-label">Error State</div>
+                <div class="ll-strip-error">
+                    <svg class="ll-strip-error__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                        <circle cx="12" cy="12" r="10"/>
+                        <line x1="12" y1="8" x2="12" y2="12"/>
+                        <line x1="12" y1="16" x2="12.01" y2="16"/>
+                    </svg>
+                    <h3 class="ll-strip-error__title">Couldn't load projects</h3>
+                    <p class="ll-strip-error__message">Something went wrong. Please try again.</p>
+                    <button class="ll-strip-error__retry">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M1 4v6h6M23 20v-6h-6"/>
+                            <path d="M20.49 9A9 9 0 0 0 5.64 5.64L1 10m22 4l-4.64 4.36A9 9 0 0 1 3.51 15"/>
+                        </svg>
+                        Retry
+                    </button>
+                </div>
+            </div>
+
+            <div class="demo-box light">
+                <div class="demo-label">Empty State</div>
+                <div class="ll-strip-empty">
+                    <svg class="ll-strip-empty__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                        <rect x="3" y="3" width="7" height="7"/>
+                        <rect x="14" y="3" width="7" height="7"/>
+                        <rect x="14" y="14" width="7" height="7"/>
+                        <rect x="3" y="14" width="7" height="7"/>
+                    </svg>
+                    <h3 class="ll-strip-empty__title">No projects yet</h3>
+                    <p class="ll-strip-empty__message">This portfolio is empty.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- COMPACT SINGLE CARD -->
+    <section class="demo-section">
+        <h2>Compact Single-Project Card (Sidebar Use)</h2>
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 24px;">
+            <div class="demo-box light">
+                <div class="demo-label">Light Mode</div>
+                <div class="ll-compact">
+                    <div class="ll-compact__header">
+                        <div class="ll-compact__thumb">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M13 10V3L4 14h7v7l9-11h-7z"/>
+                            </svg>
+                        </div>
+                        <div class="ll-compact__info">
+                            <div class="ll-compact__title">shipfast-cli</div>
+                            <div class="ll-compact__meta">
+                                <span class="ll-hcard__stat ll-hcard__stat--star">
+                                    <svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+                                    8.4k
+                                </span>
+                                <span>TypeScript</span>
+                            </div>
+                        </div>
+                    </div>
+                    <p class="ll-compact__desc">Deploy full-stack apps to any cloud in under 2 minutes.</p>
+                    <div class="ll-compact__footer">
+                        <div class="ll-compact__stats">
+                            <span class="ll-pill ll-pill--hot">🔥 127</span>
+                        </div>
+                        <a href="#" class="ll-compact__link">
+                            View project
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M9 18l6-6-6-6"/>
+                            </svg>
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="demo-box dark ll-dark">
+                <div class="demo-label">Dark Mode</div>
+                <div class="ll-compact">
+                    <div class="ll-compact__header">
+                        <div class="ll-compact__thumb">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M13 10V3L4 14h7v7l9-11h-7z"/>
+                            </svg>
+                        </div>
+                        <div class="ll-compact__info">
+                            <div class="ll-compact__title">shipfast-cli</div>
+                            <div class="ll-compact__meta">
+                                <span class="ll-hcard__stat ll-hcard__stat--star">
+                                    <svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+                                    8.4k
+                                </span>
+                                <span>TypeScript</span>
+                            </div>
+                        </div>
+                    </div>
+                    <p class="ll-compact__desc">Deploy full-stack apps to any cloud in under 2 minutes.</p>
+                    <div class="ll-compact__footer">
+                        <div class="ll-compact__stats">
+                            <span class="ll-pill ll-pill--hot">🔥 127</span>
+                        </div>
+                        <a href="#" class="ll-compact__link">
+                            View project
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M9 18l6-6-6-6"/>
+                            </svg>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- EMBED CODE -->
+    <section class="demo-section">
+        <h2>Embed Code</h2>
+        <div class="demo-box light" style="background: #0f172a; border-color: #334155;">
+            <pre style="color: #e2e8f0; font-family: 'JetBrains Mono', monospace; font-size: 13px; line-height: 1.6; overflow-x: auto;">
+<span style="color: #64748b;">/* Horizontal strip widget */</span>
+
+<span style="color: #7dd3fc;">&lt;script</span>
+  <span style="color: #fde68a;">src</span>=<span style="color: #86efac;">"https://launchlog.com/widget.js"</span>
+  <span style="color: #fde68a;">data-user</span>=<span style="color: #86efac;">"pmndrs"</span>
+  <span style="color: #fde68a;">data-style</span>=<span style="color: #86efac;">"strip"</span>
+  <span style="color: #fde68a;">data-limit</span>=<span style="color: #86efac;">"5"</span>
+<span style="color: #7dd3fc;">&gt;&lt;/script&gt;</span>
+
+<span style="color: #64748b;">/* Compact single-project card */</span>
+
+<span style="color: #7dd3fc;">&lt;script</span>
+  <span style="color: #fde68a;">src</span>=<span style="color: #86efac;">"https://launchlog.com/widget.js"</span>
+  <span style="color: #fde68a;">data-user</span>=<span style="color: #86efac;">"pmndrs"</span>
+  <span style="color: #fde68a;">data-project</span>=<span style="color: #86efac;">"zustand"</span>
+  <span style="color: #fde68a;">data-style</span>=<span style="color: #86efac;">"compact"</span>
+<span style="color: #7dd3fc;">&gt;&lt;/script&gt;</span>
+            </pre>
+        </div>
+    </section>
+</body>
+</html>
