@@ -1,0 +1,1273 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LaunchLog Widget - Variation 3: Bold Feature Cards</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@500;600&display=swap" rel="stylesheet">
+    <style>
+        /* ===========================================
+           LAUNCHLOG EMBEDDABLE WIDGET
+           Variation 3: Bold Feature Cards
+
+           Design Philosophy:
+           - Bold, energetic aesthetic
+           - Gradient accents and glows
+           - Display typography (Space Grotesk)
+           - Card-based with prominent screenshots
+           - Glassmorphism touches
+           - Eye-catching hover effects
+           =========================================== */
+
+        /* CSS Variables */
+        :root {
+            --ll-font: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            --ll-font-display: 'Space Grotesk', var(--ll-font);
+            --ll-font-mono: 'JetBrains Mono', ui-monospace, monospace;
+
+            --ll-bg: #fafafa;
+            --ll-bg-card: #ffffff;
+            --ll-bg-elevated: #f4f4f5;
+            --ll-text: #18181b;
+            --ll-text-secondary: #52525b;
+            --ll-text-muted: #a1a1aa;
+            --ll-border: #e4e4e7;
+            --ll-shadow: 0 4px 24px -4px rgba(0, 0, 0, 0.08);
+            --ll-shadow-glow: 0 0 40px rgba(99, 102, 241, 0.15);
+
+            --ll-primary: #6366f1;
+            --ll-primary-light: #818cf8;
+            --ll-gradient: linear-gradient(135deg, #6366f1 0%, #8b5cf6 50%, #a855f7 100%);
+            --ll-gradient-warm: linear-gradient(135deg, #f97316 0%, #ef4444 100%);
+            --ll-gradient-cool: linear-gradient(135deg, #06b6d4 0%, #3b82f6 100%);
+
+            --ll-radius: 20px;
+            --ll-radius-md: 14px;
+            --ll-radius-sm: 10px;
+
+            /* Platform colors */
+            --ll-hn: #ff6600;
+            --ll-reddit: #ff4500;
+            --ll-star: #fbbf24;
+        }
+
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --ll-bg: #09090b;
+                --ll-bg-card: #18181b;
+                --ll-bg-elevated: #27272a;
+                --ll-text: #fafafa;
+                --ll-text-secondary: #a1a1aa;
+                --ll-text-muted: #71717a;
+                --ll-border: #27272a;
+                --ll-shadow: 0 4px 24px -4px rgba(0, 0, 0, 0.4);
+                --ll-shadow-glow: 0 0 60px rgba(99, 102, 241, 0.25);
+            }
+        }
+
+        .ll-dark {
+            --ll-bg: #09090b;
+            --ll-bg-card: #18181b;
+            --ll-bg-elevated: #27272a;
+            --ll-text: #fafafa;
+            --ll-text-secondary: #a1a1aa;
+            --ll-text-muted: #71717a;
+            --ll-border: #27272a;
+            --ll-shadow: 0 4px 24px -4px rgba(0, 0, 0, 0.4);
+            --ll-shadow-glow: 0 0 60px rgba(99, 102, 241, 0.25);
+        }
+
+        /* Demo styles */
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: linear-gradient(180deg, #fafafa 0%, #f4f4f5 100%);
+            min-height: 100vh;
+            padding: 40px;
+            line-height: 1.5;
+        }
+
+        .demo-header {
+            max-width: 800px;
+            margin: 0 auto 60px;
+            text-align: center;
+        }
+
+        .demo-header h1 {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 36px;
+            font-weight: 700;
+            color: #18181b;
+            margin-bottom: 8px;
+        }
+
+        .demo-header p {
+            font-size: 16px;
+            color: #52525b;
+        }
+
+        .demo-section {
+            max-width: 1100px;
+            margin: 0 auto 80px;
+        }
+
+        .demo-section h2 {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 14px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            color: #a1a1aa;
+            margin-bottom: 24px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .demo-section h2::before {
+            content: '';
+            width: 4px;
+            height: 20px;
+            background: var(--ll-gradient);
+            border-radius: 2px;
+        }
+
+        .demo-box {
+            padding: 40px;
+            border-radius: 24px;
+            margin-bottom: 32px;
+        }
+
+        .demo-box.light {
+            background: #ffffff;
+            border: 1px solid #e4e4e7;
+        }
+
+        .demo-box.dark {
+            background: #09090b;
+            border: 1px solid #27272a;
+        }
+
+        .demo-label {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            color: #a1a1aa;
+            margin-bottom: 24px;
+        }
+
+        .demo-box.dark .demo-label {
+            color: #71717a;
+        }
+
+        /* ===========================================
+           WIDGET: BOLD GRID
+           =========================================== */
+        .ll-bold-grid {
+            font-family: var(--ll-font);
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 24px;
+        }
+
+        @media (min-width: 768px) {
+            .ll-bold-grid--2col { grid-template-columns: repeat(2, 1fr); }
+        }
+        @media (min-width: 1024px) {
+            .ll-bold-grid--3col { grid-template-columns: repeat(3, 1fr); }
+        }
+
+        /* ===========================================
+           WIDGET: BOLD FEATURE CARD
+           =========================================== */
+        .ll-bold-card {
+            background: var(--ll-bg-card);
+            border: 1px solid var(--ll-border);
+            border-radius: var(--ll-radius);
+            overflow: hidden;
+            box-shadow: var(--ll-shadow);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+        }
+
+        .ll-bold-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: var(--ll-gradient);
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .ll-bold-card:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--ll-shadow-glow);
+            border-color: var(--ll-primary);
+        }
+
+        .ll-bold-card:hover::before {
+            opacity: 1;
+        }
+
+        .ll-bold-card__screenshot {
+            position: relative;
+            width: 100%;
+            aspect-ratio: 16/10;
+            background: var(--ll-bg-elevated);
+            overflow: hidden;
+        }
+
+        .ll-bold-card__screenshot img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.4s ease;
+        }
+
+        .ll-bold-card:hover .ll-bold-card__screenshot img {
+            transform: scale(1.05);
+        }
+
+        .ll-bold-card__screenshot-placeholder {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            background: var(--ll-gradient);
+            gap: 8px;
+        }
+
+        .ll-bold-card__screenshot-placeholder svg {
+            width: 40px;
+            height: 40px;
+            color: white;
+            opacity: 0.8;
+        }
+
+        .ll-bold-card__screenshot-placeholder span {
+            font-family: var(--ll-font-mono);
+            font-size: 11px;
+            font-weight: 600;
+            color: white;
+            opacity: 0.7;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+        }
+
+        /* Mentions badge overlay */
+        .ll-bold-card__hot-badge {
+            position: absolute;
+            top: 12px;
+            right: 12px;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            padding: 6px 12px;
+            background: rgba(0, 0, 0, 0.75);
+            backdrop-filter: blur(8px);
+            border-radius: 100px;
+            font-family: var(--ll-font-mono);
+            font-size: 12px;
+            font-weight: 600;
+            color: white;
+        }
+
+        .ll-bold-card__hot-badge--fire {
+            background: linear-gradient(135deg, rgba(249, 115, 22, 0.9), rgba(239, 68, 68, 0.9));
+        }
+
+        .ll-bold-card__body {
+            padding: 20px;
+        }
+
+        .ll-bold-card__header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: 16px;
+            margin-bottom: 8px;
+        }
+
+        .ll-bold-card__title {
+            font-family: var(--ll-font-display);
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--ll-text);
+            text-decoration: none;
+            line-height: 1.2;
+            transition: color 0.2s;
+        }
+
+        .ll-bold-card__title:hover {
+            color: var(--ll-primary);
+        }
+
+        .ll-bold-card__lang {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 5px 10px;
+            background: var(--ll-bg-elevated);
+            border-radius: var(--ll-radius-sm);
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--ll-text-secondary);
+            flex-shrink: 0;
+        }
+
+        .ll-bold-card__lang-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+        }
+
+        .ll-bold-card__desc {
+            font-size: 14px;
+            color: var(--ll-text-secondary);
+            line-height: 1.6;
+            margin-bottom: 16px;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .ll-bold-card__stats {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            padding-top: 16px;
+            border-top: 1px solid var(--ll-border);
+        }
+
+        .ll-bold-card__stat {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--ll-text-secondary);
+        }
+
+        .ll-bold-card__stat svg {
+            width: 16px;
+            height: 16px;
+        }
+
+        .ll-bold-card__stat--star svg {
+            color: var(--ll-star);
+            fill: var(--ll-star);
+        }
+
+        .ll-bold-card__mentions {
+            margin-left: auto;
+            display: flex;
+            gap: 8px;
+        }
+
+        .ll-bold-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            padding: 6px 10px;
+            border-radius: var(--ll-radius-sm);
+            font-size: 12px;
+            font-weight: 600;
+            font-family: var(--ll-font-mono);
+        }
+
+        .ll-bold-badge svg {
+            width: 14px;
+            height: 14px;
+        }
+
+        .ll-bold-badge--hn {
+            background: rgba(255, 102, 0, 0.12);
+            color: var(--ll-hn);
+        }
+
+        .ll-bold-badge--reddit {
+            background: rgba(255, 69, 0, 0.12);
+            color: var(--ll-reddit);
+        }
+
+        .ll-bold-card__footer {
+            padding: 16px 20px;
+            background: var(--ll-bg-elevated);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .ll-bold-card__updated {
+            font-size: 12px;
+            color: var(--ll-text-muted);
+        }
+
+        .ll-bold-card__link {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 8px 16px;
+            background: var(--ll-gradient);
+            color: white;
+            border-radius: var(--ll-radius-sm);
+            font-size: 13px;
+            font-weight: 600;
+            text-decoration: none;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .ll-bold-card__link:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px -2px rgba(99, 102, 241, 0.4);
+        }
+
+        .ll-bold-card__link svg {
+            width: 14px;
+            height: 14px;
+        }
+
+        /* ===========================================
+           LOADING STATE
+           =========================================== */
+        .ll-bold-skeleton {
+            background: linear-gradient(
+                90deg,
+                var(--ll-bg-elevated) 0%,
+                var(--ll-bg-card) 50%,
+                var(--ll-bg-elevated) 100%
+            );
+            background-size: 200% 100%;
+            animation: ll-bold-shimmer 1.5s infinite;
+            border-radius: 8px;
+        }
+
+        @keyframes ll-bold-shimmer {
+            0% { background-position: 200% 0; }
+            100% { background-position: -200% 0; }
+        }
+
+        .ll-bold-card--loading .ll-bold-card__screenshot {
+            background: var(--ll-bg-elevated);
+        }
+
+        .ll-bold-card--loading .ll-bold-skeleton-title {
+            height: 24px;
+            width: 65%;
+        }
+
+        .ll-bold-card--loading .ll-bold-skeleton-lang {
+            height: 28px;
+            width: 90px;
+            border-radius: 10px;
+        }
+
+        .ll-bold-card--loading .ll-bold-skeleton-desc {
+            height: 16px;
+            width: 100%;
+            margin-bottom: 8px;
+        }
+
+        .ll-bold-card--loading .ll-bold-skeleton-desc:last-of-type {
+            width: 70%;
+        }
+
+        .ll-bold-card--loading .ll-bold-skeleton-stat {
+            height: 16px;
+            width: 60px;
+        }
+
+        /* ===========================================
+           ERROR STATE
+           =========================================== */
+        .ll-bold-error {
+            background: var(--ll-bg-card);
+            border: 1px solid var(--ll-border);
+            border-radius: var(--ll-radius);
+            padding: 48px 32px;
+            text-align: center;
+        }
+
+        .ll-bold-error__icon {
+            width: 64px;
+            height: 64px;
+            margin: 0 auto 20px;
+            background: linear-gradient(135deg, #fecaca, #fca5a5);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .ll-bold-error__icon svg {
+            width: 32px;
+            height: 32px;
+            color: #dc2626;
+        }
+
+        .ll-bold-error__title {
+            font-family: var(--ll-font-display);
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--ll-text);
+            margin-bottom: 6px;
+        }
+
+        .ll-bold-error__message {
+            font-size: 14px;
+            color: var(--ll-text-secondary);
+            margin-bottom: 20px;
+        }
+
+        .ll-bold-error__retry {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 12px 24px;
+            background: var(--ll-gradient);
+            color: white;
+            border: none;
+            border-radius: var(--ll-radius-md);
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .ll-bold-error__retry:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px -4px rgba(99, 102, 241, 0.4);
+        }
+
+        .ll-bold-error__retry svg {
+            width: 16px;
+            height: 16px;
+        }
+
+        /* ===========================================
+           EMPTY STATE
+           =========================================== */
+        .ll-bold-empty {
+            background: var(--ll-bg-card);
+            border: 2px dashed var(--ll-border);
+            border-radius: var(--ll-radius);
+            padding: 60px 32px;
+            text-align: center;
+        }
+
+        .ll-bold-empty__icon {
+            width: 64px;
+            height: 64px;
+            margin: 0 auto 20px;
+            background: var(--ll-bg-elevated);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .ll-bold-empty__icon svg {
+            width: 32px;
+            height: 32px;
+            color: var(--ll-text-muted);
+        }
+
+        .ll-bold-empty__title {
+            font-family: var(--ll-font-display);
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--ll-text);
+            margin-bottom: 6px;
+        }
+
+        .ll-bold-empty__message {
+            font-size: 14px;
+            color: var(--ll-text-secondary);
+        }
+
+        /* ===========================================
+           POWERED BY BADGE
+           =========================================== */
+        .ll-bold-powered {
+            margin-top: 24px;
+            text-align: center;
+            font-size: 12px;
+            color: var(--ll-text-muted);
+        }
+
+        .ll-bold-powered a {
+            color: var(--ll-text-secondary);
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        .ll-bold-powered a:hover {
+            color: var(--ll-primary);
+        }
+
+        /* ===========================================
+           FEATURED SINGLE CARD (Hero style)
+           =========================================== */
+        .ll-featured {
+            font-family: var(--ll-font);
+            background: var(--ll-bg-card);
+            border: 1px solid var(--ll-border);
+            border-radius: var(--ll-radius);
+            overflow: hidden;
+            box-shadow: var(--ll-shadow);
+            max-width: 600px;
+            display: grid;
+            grid-template-columns: 1fr 1.2fr;
+        }
+
+        @media (max-width: 600px) {
+            .ll-featured {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .ll-featured__image {
+            background: var(--ll-gradient);
+            min-height: 200px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
+
+        .ll-featured__image svg {
+            width: 48px;
+            height: 48px;
+            color: white;
+            opacity: 0.8;
+        }
+
+        .ll-featured__hot {
+            position: absolute;
+            top: 12px;
+            left: 12px;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            padding: 6px 12px;
+            background: rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(8px);
+            border-radius: 100px;
+            font-size: 12px;
+            font-weight: 600;
+            color: white;
+        }
+
+        .ll-featured__content {
+            padding: 24px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .ll-featured__header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 12px;
+        }
+
+        .ll-featured__title {
+            font-family: var(--ll-font-display);
+            font-size: 22px;
+            font-weight: 700;
+            color: var(--ll-text);
+        }
+
+        .ll-featured__lang {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            padding: 4px 8px;
+            background: var(--ll-bg-elevated);
+            border-radius: 6px;
+            font-size: 11px;
+            font-weight: 600;
+            color: var(--ll-text-secondary);
+        }
+
+        .ll-featured__lang-dot {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+        }
+
+        .ll-featured__desc {
+            font-size: 14px;
+            color: var(--ll-text-secondary);
+            line-height: 1.6;
+            margin-bottom: 16px;
+            flex-grow: 1;
+        }
+
+        .ll-featured__meta {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            padding-top: 16px;
+            border-top: 1px solid var(--ll-border);
+        }
+
+        .ll-featured__stat {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--ll-text-secondary);
+        }
+
+        .ll-featured__stat svg {
+            width: 14px;
+            height: 14px;
+        }
+
+        .ll-featured__stat--star svg {
+            color: var(--ll-star);
+            fill: var(--ll-star);
+        }
+
+        .ll-featured__link {
+            margin-left: auto;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            padding: 8px 16px;
+            background: var(--ll-gradient);
+            color: white;
+            border-radius: 8px;
+            font-size: 13px;
+            font-weight: 600;
+            text-decoration: none;
+            transition: transform 0.2s;
+        }
+
+        .ll-featured__link:hover {
+            transform: translateY(-1px);
+        }
+
+        .ll-featured__link svg {
+            width: 14px;
+            height: 14px;
+        }
+    </style>
+</head>
+<body>
+    <header class="demo-header">
+        <h1>Variation 3: Bold Feature Cards</h1>
+        <p>Eye-catching cards with gradient accents, prominent screenshots, and animated hover effects.</p>
+    </header>
+
+    <!-- LOADED STATE - GRID -->
+    <section class="demo-section">
+        <h2>Loaded State - Feature Grid</h2>
+
+        <div class="demo-box light">
+            <div class="demo-label">Light Mode</div>
+            <div class="ll-bold-grid ll-bold-grid--3col">
+                <!-- Card 1 -->
+                <article class="ll-bold-card">
+                    <div class="ll-bold-card__screenshot">
+                        <div class="ll-bold-card__screenshot-placeholder">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                                <path d="M13 10V3L4 14h7v7l9-11h-7z"/>
+                            </svg>
+                            <span>Preview</span>
+                        </div>
+                        <span class="ll-bold-card__hot-badge ll-bold-card__hot-badge--fire">
+                            🔥 127 mentions
+                        </span>
+                    </div>
+                    <div class="ll-bold-card__body">
+                        <div class="ll-bold-card__header">
+                            <a href="#" class="ll-bold-card__title">shipfast-cli</a>
+                            <span class="ll-bold-card__lang">
+                                <span class="ll-bold-card__lang-dot" style="background: #3178c6"></span>
+                                TypeScript
+                            </span>
+                        </div>
+                        <p class="ll-bold-card__desc">Deploy full-stack applications to any cloud provider in under 2 minutes.</p>
+                        <div class="ll-bold-card__stats">
+                            <span class="ll-bold-card__stat ll-bold-card__stat--star">
+                                <svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+                                8.4k
+                            </span>
+                            <div class="ll-bold-card__mentions">
+                                <span class="ll-bold-badge ll-bold-badge--hn">
+                                    <svg viewBox="0 0 24 24" fill="currentColor"><path d="M0 24V0h24v24H0zM6.951 5.896l4.112 7.708v5.064h1.583v-4.972l4.148-7.799h-1.749l-3.21 6.039-3.135-6.04H6.951z"/></svg>
+                                    #1
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="ll-bold-card__footer">
+                        <span class="ll-bold-card__updated">Updated yesterday</span>
+                        <a href="#" class="ll-bold-card__link">
+                            View
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M9 18l6-6-6-6"/>
+                            </svg>
+                        </a>
+                    </div>
+                </article>
+
+                <!-- Card 2 -->
+                <article class="ll-bold-card">
+                    <div class="ll-bold-card__screenshot">
+                        <div class="ll-bold-card__screenshot-placeholder" style="background: var(--ll-gradient-cool);">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                                <rect x="3" y="3" width="18" height="18" rx="2"/>
+                                <path d="M3 9h18"/>
+                                <path d="M9 21V9"/>
+                            </svg>
+                            <span>Preview</span>
+                        </div>
+                        <span class="ll-bold-card__hot-badge">
+                            💬 89 mentions
+                        </span>
+                    </div>
+                    <div class="ll-bold-card__body">
+                        <div class="ll-bold-card__header">
+                            <a href="#" class="ll-bold-card__title">react-forms-pro</a>
+                            <span class="ll-bold-card__lang">
+                                <span class="ll-bold-card__lang-dot" style="background: #3178c6"></span>
+                                TypeScript
+                            </span>
+                        </div>
+                        <p class="ll-bold-card__desc">Advanced form library with validation, async handling, and nested fields.</p>
+                        <div class="ll-bold-card__stats">
+                            <span class="ll-bold-card__stat ll-bold-card__stat--star">
+                                <svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+                                6.2k
+                            </span>
+                            <div class="ll-bold-card__mentions">
+                                <span class="ll-bold-badge ll-bold-badge--reddit">
+                                    <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0z"/></svg>
+                                    56
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="ll-bold-card__footer">
+                        <span class="ll-bold-card__updated">Updated 3 days ago</span>
+                        <a href="#" class="ll-bold-card__link">
+                            View
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M9 18l6-6-6-6"/>
+                            </svg>
+                        </a>
+                    </div>
+                </article>
+
+                <!-- Card 3 -->
+                <article class="ll-bold-card">
+                    <div class="ll-bold-card__screenshot">
+                        <div class="ll-bold-card__screenshot-placeholder" style="background: var(--ll-gradient-warm);">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                                <path d="M12 2L2 7l10 5 10-5-10-5z"/>
+                                <path d="M2 17l10 5 10-5"/>
+                                <path d="M2 12l10 5 10-5"/>
+                            </svg>
+                            <span>Preview</span>
+                        </div>
+                    </div>
+                    <div class="ll-bold-card__body">
+                        <div class="ll-bold-card__header">
+                            <a href="#" class="ll-bold-card__title">tailwind-tokens</a>
+                            <span class="ll-bold-card__lang">
+                                <span class="ll-bold-card__lang-dot" style="background: #f1e05a"></span>
+                                JavaScript
+                            </span>
+                        </div>
+                        <p class="ll-bold-card__desc">Generate Tailwind config from Figma design tokens automatically.</p>
+                        <div class="ll-bold-card__stats">
+                            <span class="ll-bold-card__stat ll-bold-card__stat--star">
+                                <svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+                                4.8k
+                            </span>
+                        </div>
+                    </div>
+                    <div class="ll-bold-card__footer">
+                        <span class="ll-bold-card__updated">Updated 1 week ago</span>
+                        <a href="#" class="ll-bold-card__link">
+                            View
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M9 18l6-6-6-6"/>
+                            </svg>
+                        </a>
+                    </div>
+                </article>
+            </div>
+            <div class="ll-bold-powered">Powered by <a href="#">LaunchLog</a></div>
+        </div>
+
+        <div class="demo-box dark ll-dark">
+            <div class="demo-label">Dark Mode</div>
+            <div class="ll-bold-grid ll-bold-grid--3col">
+                <!-- Card 1 Dark -->
+                <article class="ll-bold-card">
+                    <div class="ll-bold-card__screenshot">
+                        <div class="ll-bold-card__screenshot-placeholder">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                                <path d="M13 10V3L4 14h7v7l9-11h-7z"/>
+                            </svg>
+                            <span>Preview</span>
+                        </div>
+                        <span class="ll-bold-card__hot-badge ll-bold-card__hot-badge--fire">
+                            🔥 127 mentions
+                        </span>
+                    </div>
+                    <div class="ll-bold-card__body">
+                        <div class="ll-bold-card__header">
+                            <a href="#" class="ll-bold-card__title">shipfast-cli</a>
+                            <span class="ll-bold-card__lang">
+                                <span class="ll-bold-card__lang-dot" style="background: #3178c6"></span>
+                                TypeScript
+                            </span>
+                        </div>
+                        <p class="ll-bold-card__desc">Deploy full-stack applications to any cloud provider in under 2 minutes.</p>
+                        <div class="ll-bold-card__stats">
+                            <span class="ll-bold-card__stat ll-bold-card__stat--star">
+                                <svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+                                8.4k
+                            </span>
+                            <div class="ll-bold-card__mentions">
+                                <span class="ll-bold-badge ll-bold-badge--hn">
+                                    <svg viewBox="0 0 24 24" fill="currentColor"><path d="M0 24V0h24v24H0zM6.951 5.896l4.112 7.708v5.064h1.583v-4.972l4.148-7.799h-1.749l-3.21 6.039-3.135-6.04H6.951z"/></svg>
+                                    #1
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="ll-bold-card__footer">
+                        <span class="ll-bold-card__updated">Updated yesterday</span>
+                        <a href="#" class="ll-bold-card__link">
+                            View
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M9 18l6-6-6-6"/>
+                            </svg>
+                        </a>
+                    </div>
+                </article>
+
+                <!-- Card 2 Dark -->
+                <article class="ll-bold-card">
+                    <div class="ll-bold-card__screenshot">
+                        <div class="ll-bold-card__screenshot-placeholder" style="background: var(--ll-gradient-cool);">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                                <rect x="3" y="3" width="18" height="18" rx="2"/>
+                                <path d="M3 9h18"/>
+                                <path d="M9 21V9"/>
+                            </svg>
+                            <span>Preview</span>
+                        </div>
+                        <span class="ll-bold-card__hot-badge">
+                            💬 89 mentions
+                        </span>
+                    </div>
+                    <div class="ll-bold-card__body">
+                        <div class="ll-bold-card__header">
+                            <a href="#" class="ll-bold-card__title">react-forms-pro</a>
+                            <span class="ll-bold-card__lang">
+                                <span class="ll-bold-card__lang-dot" style="background: #3178c6"></span>
+                                TypeScript
+                            </span>
+                        </div>
+                        <p class="ll-bold-card__desc">Advanced form library with validation, async handling, and nested fields.</p>
+                        <div class="ll-bold-card__stats">
+                            <span class="ll-bold-card__stat ll-bold-card__stat--star">
+                                <svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+                                6.2k
+                            </span>
+                            <div class="ll-bold-card__mentions">
+                                <span class="ll-bold-badge ll-bold-badge--reddit">
+                                    <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0z"/></svg>
+                                    56
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="ll-bold-card__footer">
+                        <span class="ll-bold-card__updated">Updated 3 days ago</span>
+                        <a href="#" class="ll-bold-card__link">
+                            View
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M9 18l6-6-6-6"/>
+                            </svg>
+                        </a>
+                    </div>
+                </article>
+
+                <!-- Card 3 Dark -->
+                <article class="ll-bold-card">
+                    <div class="ll-bold-card__screenshot">
+                        <div class="ll-bold-card__screenshot-placeholder" style="background: var(--ll-gradient-warm);">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                                <path d="M12 2L2 7l10 5 10-5-10-5z"/>
+                                <path d="M2 17l10 5 10-5"/>
+                                <path d="M2 12l10 5 10-5"/>
+                            </svg>
+                            <span>Preview</span>
+                        </div>
+                    </div>
+                    <div class="ll-bold-card__body">
+                        <div class="ll-bold-card__header">
+                            <a href="#" class="ll-bold-card__title">tailwind-tokens</a>
+                            <span class="ll-bold-card__lang">
+                                <span class="ll-bold-card__lang-dot" style="background: #f1e05a"></span>
+                                JavaScript
+                            </span>
+                        </div>
+                        <p class="ll-bold-card__desc">Generate Tailwind config from Figma design tokens automatically.</p>
+                        <div class="ll-bold-card__stats">
+                            <span class="ll-bold-card__stat ll-bold-card__stat--star">
+                                <svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+                                4.8k
+                            </span>
+                        </div>
+                    </div>
+                    <div class="ll-bold-card__footer">
+                        <span class="ll-bold-card__updated">Updated 1 week ago</span>
+                        <a href="#" class="ll-bold-card__link">
+                            View
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M9 18l6-6-6-6"/>
+                            </svg>
+                        </a>
+                    </div>
+                </article>
+            </div>
+            <div class="ll-bold-powered">Powered by <a href="#">LaunchLog</a></div>
+        </div>
+    </section>
+
+    <!-- LOADING STATE -->
+    <section class="demo-section">
+        <h2>Loading State</h2>
+        <div class="demo-box light">
+            <div class="demo-label">Skeleton Loading</div>
+            <div class="ll-bold-grid ll-bold-grid--3col">
+                <article class="ll-bold-card ll-bold-card--loading">
+                    <div class="ll-bold-card__screenshot"></div>
+                    <div class="ll-bold-card__body">
+                        <div class="ll-bold-card__header">
+                            <div class="ll-bold-skeleton ll-bold-skeleton-title"></div>
+                            <div class="ll-bold-skeleton ll-bold-skeleton-lang"></div>
+                        </div>
+                        <div style="margin-bottom: 16px;">
+                            <div class="ll-bold-skeleton ll-bold-skeleton-desc"></div>
+                            <div class="ll-bold-skeleton ll-bold-skeleton-desc"></div>
+                        </div>
+                        <div class="ll-bold-card__stats">
+                            <div class="ll-bold-skeleton ll-bold-skeleton-stat"></div>
+                        </div>
+                    </div>
+                    <div class="ll-bold-card__footer">
+                        <div class="ll-bold-skeleton" style="height: 12px; width: 100px;"></div>
+                        <div class="ll-bold-skeleton" style="height: 32px; width: 80px; border-radius: 10px;"></div>
+                    </div>
+                </article>
+
+                <article class="ll-bold-card ll-bold-card--loading">
+                    <div class="ll-bold-card__screenshot"></div>
+                    <div class="ll-bold-card__body">
+                        <div class="ll-bold-card__header">
+                            <div class="ll-bold-skeleton ll-bold-skeleton-title"></div>
+                            <div class="ll-bold-skeleton ll-bold-skeleton-lang"></div>
+                        </div>
+                        <div style="margin-bottom: 16px;">
+                            <div class="ll-bold-skeleton ll-bold-skeleton-desc"></div>
+                            <div class="ll-bold-skeleton ll-bold-skeleton-desc"></div>
+                        </div>
+                        <div class="ll-bold-card__stats">
+                            <div class="ll-bold-skeleton ll-bold-skeleton-stat"></div>
+                        </div>
+                    </div>
+                    <div class="ll-bold-card__footer">
+                        <div class="ll-bold-skeleton" style="height: 12px; width: 100px;"></div>
+                        <div class="ll-bold-skeleton" style="height: 32px; width: 80px; border-radius: 10px;"></div>
+                    </div>
+                </article>
+
+                <article class="ll-bold-card ll-bold-card--loading">
+                    <div class="ll-bold-card__screenshot"></div>
+                    <div class="ll-bold-card__body">
+                        <div class="ll-bold-card__header">
+                            <div class="ll-bold-skeleton ll-bold-skeleton-title"></div>
+                            <div class="ll-bold-skeleton ll-bold-skeleton-lang"></div>
+                        </div>
+                        <div style="margin-bottom: 16px;">
+                            <div class="ll-bold-skeleton ll-bold-skeleton-desc"></div>
+                            <div class="ll-bold-skeleton ll-bold-skeleton-desc"></div>
+                        </div>
+                        <div class="ll-bold-card__stats">
+                            <div class="ll-bold-skeleton ll-bold-skeleton-stat"></div>
+                        </div>
+                    </div>
+                    <div class="ll-bold-card__footer">
+                        <div class="ll-bold-skeleton" style="height: 12px; width: 100px;"></div>
+                        <div class="ll-bold-skeleton" style="height: 32px; width: 80px; border-radius: 10px;"></div>
+                    </div>
+                </article>
+            </div>
+        </div>
+    </section>
+
+    <!-- ERROR & EMPTY STATES -->
+    <section class="demo-section">
+        <h2>Error & Empty States</h2>
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 24px;">
+            <div class="demo-box light">
+                <div class="demo-label">Error State</div>
+                <div class="ll-bold-error">
+                    <div class="ll-bold-error__icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                            <circle cx="12" cy="12" r="10"/>
+                            <line x1="12" y1="8" x2="12" y2="12"/>
+                            <line x1="12" y1="16" x2="12.01" y2="16"/>
+                        </svg>
+                    </div>
+                    <h3 class="ll-bold-error__title">Unable to load projects</h3>
+                    <p class="ll-bold-error__message">Something went wrong fetching the project data.</p>
+                    <button class="ll-bold-error__retry">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M1 4v6h6M23 20v-6h-6"/>
+                            <path d="M20.49 9A9 9 0 0 0 5.64 5.64L1 10m22 4l-4.64 4.36A9 9 0 0 1 3.51 15"/>
+                        </svg>
+                        Try Again
+                    </button>
+                </div>
+            </div>
+
+            <div class="demo-box light">
+                <div class="demo-label">Empty State</div>
+                <div class="ll-bold-empty">
+                    <div class="ll-bold-empty__icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                            <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/>
+                        </svg>
+                    </div>
+                    <h3 class="ll-bold-empty__title">No projects yet</h3>
+                    <p class="ll-bold-empty__message">This portfolio doesn't have any projects to show.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- FEATURED SINGLE CARD -->
+    <section class="demo-section">
+        <h2>Featured Single Project Card</h2>
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 24px;">
+            <div class="demo-box light">
+                <div class="demo-label">Light Mode</div>
+                <div class="ll-featured">
+                    <div class="ll-featured__image">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                            <path d="M13 10V3L4 14h7v7l9-11h-7z"/>
+                        </svg>
+                        <span class="ll-featured__hot">🔥 127 mentions</span>
+                    </div>
+                    <div class="ll-featured__content">
+                        <div class="ll-featured__header">
+                            <h3 class="ll-featured__title">next-saas-starter</h3>
+                            <span class="ll-featured__lang">
+                                <span class="ll-featured__lang-dot" style="background: #3178c6"></span>
+                                TS
+                            </span>
+                        </div>
+                        <p class="ll-featured__desc">Production-ready SaaS boilerplate with authentication, payments, and team management built-in.</p>
+                        <div class="ll-featured__meta">
+                            <span class="ll-featured__stat ll-featured__stat--star">
+                                <svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+                                12.4k
+                            </span>
+                            <a href="#" class="ll-featured__link">
+                                View
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M9 18l6-6-6-6"/>
+                                </svg>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="demo-box dark ll-dark">
+                <div class="demo-label">Dark Mode</div>
+                <div class="ll-featured">
+                    <div class="ll-featured__image">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                            <path d="M13 10V3L4 14h7v7l9-11h-7z"/>
+                        </svg>
+                        <span class="ll-featured__hot">🔥 127 mentions</span>
+                    </div>
+                    <div class="ll-featured__content">
+                        <div class="ll-featured__header">
+                            <h3 class="ll-featured__title">next-saas-starter</h3>
+                            <span class="ll-featured__lang">
+                                <span class="ll-featured__lang-dot" style="background: #3178c6"></span>
+                                TS
+                            </span>
+                        </div>
+                        <p class="ll-featured__desc">Production-ready SaaS boilerplate with authentication, payments, and team management built-in.</p>
+                        <div class="ll-featured__meta">
+                            <span class="ll-featured__stat ll-featured__stat--star">
+                                <svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+                                12.4k
+                            </span>
+                            <a href="#" class="ll-featured__link">
+                                View
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M9 18l6-6-6-6"/>
+                                </svg>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- EMBED CODE -->
+    <section class="demo-section">
+        <h2>Embed Code</h2>
+        <div class="demo-box light" style="background: #09090b; border-color: #27272a;">
+            <pre style="color: #fafafa; font-family: 'JetBrains Mono', monospace; font-size: 13px; line-height: 1.7; overflow-x: auto;">
+<span style="color: #71717a;">/* Bold feature card grid */</span>
+
+<span style="color: #a78bfa;">&lt;script</span>
+  <span style="color: #fde047;">src</span>=<span style="color: #86efac;">"https://launchlog.com/widget.js"</span>
+  <span style="color: #fde047;">data-user</span>=<span style="color: #86efac;">"your-username"</span>
+  <span style="color: #fde047;">data-style</span>=<span style="color: #86efac;">"bold"</span>
+  <span style="color: #fde047;">data-columns</span>=<span style="color: #86efac;">"3"</span>
+  <span style="color: #fde047;">data-limit</span>=<span style="color: #86efac;">"6"</span>
+<span style="color: #a78bfa;">&gt;&lt;/script&gt;</span>
+
+<span style="color: #71717a;">/* Featured single project */</span>
+
+<span style="color: #a78bfa;">&lt;script</span>
+  <span style="color: #fde047;">src</span>=<span style="color: #86efac;">"https://launchlog.com/widget.js"</span>
+  <span style="color: #fde047;">data-user</span>=<span style="color: #86efac;">"your-username"</span>
+  <span style="color: #fde047;">data-project</span>=<span style="color: #86efac;">"next-saas-starter"</span>
+  <span style="color: #fde047;">data-style</span>=<span style="color: #86efac;">"featured"</span>
+<span style="color: #a78bfa;">&gt;&lt;/script&gt;</span>
+            </pre>
+        </div>
+    </section>
+</body>
+</html>
