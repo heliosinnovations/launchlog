@@ -104,7 +104,7 @@ function ActivityBadge({ status }: { status: ActivityStatus }) {
 
   return (
     <span
-      className={`absolute top-3 right-3 px-2.5 py-1 rounded-full text-[11px] font-semibold uppercase tracking-wide ${classes}`}
+      className={`absolute top-3 right-3 px-2.5 py-1 rounded-full text-xs font-semibold uppercase tracking-wide ${classes}`}
     >
       {label}
     </span>

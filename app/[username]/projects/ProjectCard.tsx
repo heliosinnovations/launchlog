@@ -152,7 +152,7 @@ function ActivityBadge({
 
   return (
     <span
-      className={`absolute top-3 right-3 px-2.5 py-1 rounded-full text-[11px] font-semibold uppercase tracking-wide ${classes}`}
+      className={`absolute top-3 right-3 px-2.5 py-1 rounded-full text-xs font-semibold uppercase tracking-wide ${classes}`}
     >
       {label}
     </span>
@@ -299,7 +299,7 @@ export function ProjectCard({ project }: ProjectCardProps) {
         {/* Mentions Row */}
         {totalMentions > 0 ? (
           <div className="flex items-center gap-3 px-3 py-2.5 bg-[var(--color-surface-elevated)] rounded-lg mb-4">
-            <span className="flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-wider text-[var(--color-text-secondary)]">
+            <span className="flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wider text-[var(--color-text-secondary)]">
               <MessageSquare className="w-3.5 h-3.5" />
               Mentions
             </span>
@@ -333,7 +333,7 @@ export function ProjectCard({ project }: ProjectCardProps) {
           </div>
         ) : (
           <div className="flex items-center gap-3 px-3 py-2.5 bg-[var(--color-surface-elevated)] rounded-lg mb-4">
-            <span className="flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-wider text-[var(--color-text-secondary)]">
+            <span className="flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wider text-[var(--color-text-secondary)]">
               <MessageSquare className="w-3.5 h-3.5" />
               Mentions
             </span>

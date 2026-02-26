@@ -298,18 +298,18 @@ export default async function ProfilePage({ params }: PageProps) {
               </p>
             )}
 
-            {/* Social Links */}
+            {/* Social Links - 44x44px minimum touch targets for WCAG AA compliance */}
             {hasSocialLinks && (
-              <div className="flex flex-wrap gap-4 justify-center md:justify-start">
+              <div className="flex flex-wrap gap-2 justify-center md:justify-start -ml-2">
                 {/* GitHub Link */}
                 {githubUrl && (
                   <a
                     href={githubUrl}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="inline-flex items-center gap-1.5 text-[var(--color-text-secondary)] text-sm font-medium hover:text-indigo-500 transition-colors"
+                    className="inline-flex items-center gap-1.5 text-[var(--color-text-secondary)] text-sm font-medium hover:text-indigo-500 transition-colors min-w-[44px] min-h-[44px] px-3 py-2 rounded-lg hover:bg-[var(--color-surface)]"
                   >
-                    <GithubIcon className="w-4 h-4" />
+                    <GithubIcon className="w-5 h-5" />
                     {user.github_username}
                   </a>
                 )}
@@ -320,9 +320,9 @@ export default async function ProfilePage({ params }: PageProps) {
                     href={profile.twitter_url}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="inline-flex items-center gap-1.5 text-[var(--color-text-secondary)] text-sm font-medium hover:text-indigo-500 transition-colors"
+                    className="inline-flex items-center gap-1.5 text-[var(--color-text-secondary)] text-sm font-medium hover:text-indigo-500 transition-colors min-w-[44px] min-h-[44px] px-3 py-2 rounded-lg hover:bg-[var(--color-surface)]"
                   >
-                    <TwitterIcon className="w-4 h-4" />
+                    <TwitterIcon className="w-5 h-5" />
                     {extractDisplayFromUrl(profile.twitter_url, "twitter")}
                   </a>
                 )}
@@ -333,9 +333,9 @@ export default async function ProfilePage({ params }: PageProps) {
                     href={profile.website_url}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="inline-flex items-center gap-1.5 text-[var(--color-text-secondary)] text-sm font-medium hover:text-indigo-500 transition-colors"
+                    className="inline-flex items-center gap-1.5 text-[var(--color-text-secondary)] text-sm font-medium hover:text-indigo-500 transition-colors min-w-[44px] min-h-[44px] px-3 py-2 rounded-lg hover:bg-[var(--color-surface)]"
                   >
-                    <WebsiteIcon className="w-4 h-4" />
+                    <WebsiteIcon className="w-5 h-5" />
                     {extractDisplayFromUrl(profile.website_url, "website")}
                   </a>
                 )}
@@ -346,9 +346,9 @@ export default async function ProfilePage({ params }: PageProps) {
                     href={profile.linkedin_url}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="inline-flex items-center gap-1.5 text-[var(--color-text-secondary)] text-sm font-medium hover:text-indigo-500 transition-colors"
+                    className="inline-flex items-center gap-1.5 text-[var(--color-text-secondary)] text-sm font-medium hover:text-indigo-500 transition-colors min-w-[44px] min-h-[44px] px-3 py-2 rounded-lg hover:bg-[var(--color-surface)]"
                   >
-                    <LinkedinIcon className="w-4 h-4" />
+                    <LinkedinIcon className="w-5 h-5" />
                     LinkedIn
                   </a>
                 )}

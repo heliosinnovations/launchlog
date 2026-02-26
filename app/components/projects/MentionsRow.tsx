@@ -137,7 +137,7 @@ export function MentionsRow({ projectId, projectName, onViewAll }: MentionsRowPr
         role="status"
         aria-label="Loading mentions"
       >
-        <span className="flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-[0.05em] text-[var(--color-text-secondary)]">
+        <span className="flex items-center gap-1.5 text-xs font-semibold uppercase tracking-[0.05em] text-[var(--color-text-secondary)]">
           <MessageSquare className="w-3.5 h-3.5" aria-hidden="true" />
           Mentions
         </span>
@@ -155,7 +155,7 @@ export function MentionsRow({ projectId, projectName, onViewAll }: MentionsRowPr
         className="flex items-center gap-4 px-4 py-3.5 bg-[var(--color-surface-elevated)] rounded-[10px] mt-1"
         role="alert"
       >
-        <span className="flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-[0.05em] text-[var(--color-text-secondary)]">
+        <span className="flex items-center gap-1.5 text-xs font-semibold uppercase tracking-[0.05em] text-[var(--color-text-secondary)]">
           <MessageSquare className="w-3.5 h-3.5" aria-hidden="true" />
           Mentions
         </span>
@@ -169,7 +169,7 @@ export function MentionsRow({ projectId, projectName, onViewAll }: MentionsRowPr
   if (totalMentions === 0) {
     return (
       <div className="flex items-center gap-4 px-4 py-3.5 bg-[var(--color-surface-elevated)] rounded-[10px] mt-1">
-        <span className="flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-[0.05em] text-[var(--color-text-secondary)]">
+        <span className="flex items-center gap-1.5 text-xs font-semibold uppercase tracking-[0.05em] text-[var(--color-text-secondary)]">
           <MessageSquare className="w-3.5 h-3.5" aria-hidden="true" />
           Mentions
         </span>
@@ -183,7 +183,7 @@ export function MentionsRow({ projectId, projectName, onViewAll }: MentionsRowPr
   return (
     <div className="flex items-center gap-4 px-4 py-3.5 bg-[var(--color-surface-elevated)] rounded-[10px] mt-1">
       {/* Label */}
-      <span className="flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-[0.05em] text-[var(--color-text-secondary)]">
+      <span className="flex items-center gap-1.5 text-xs font-semibold uppercase tracking-[0.05em] text-[var(--color-text-secondary)]">
         <MessageSquare className="w-3.5 h-3.5" aria-hidden="true" />
         Mentions
       </span>
@@ -220,7 +220,7 @@ export function MentionsRow({ projectId, projectName, onViewAll }: MentionsRowPr
       )}
 
       {/* Update frequency indicator */}
-      <span className="hidden sm:flex items-center gap-1 text-[11px] text-[var(--color-text-secondary)] opacity-70">
+      <span className="hidden sm:flex items-center gap-1 text-xs text-[var(--color-text-secondary)] opacity-70">
         <Info className="w-3 h-3" aria-hidden="true" />
         Updates daily
       </span>
