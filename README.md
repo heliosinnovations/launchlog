@@ -22,7 +22,7 @@ Connect your GitHub. LaunchLog auto-generates beautiful showcase pages that upda
 
 1. **Connect GitHub** - Sign in, select repos to showcase
 2. **Get your page** - `launchlog.com/yourusername`
-3. **Embed anywhere** - `<script src="launchlog.com/embed/yourusername.js"></script>`
+3. **Embed anywhere** - `<script src="launchlog.com/embed/launchlog-widget.js" data-username="yourusername"></script>`
 4. **Ship and forget** - Updates automatically when you push code
 
 ## What Gets Showcased
@@ -82,80 +82,88 @@ Your portfolio should reflect your work, not your ability to maintain a portfoli
 
 ## Embeddable Widget
 
-Drop a widget on your portfolio site. It stays fresh forever, automatically updating when you push code.
+Add your LaunchLog projects to any website with a single script tag.
 
 ### Quick Start
 
-Add this to your website where you want the widget to appear:
-
 ```html
-<!-- 1. Add a container div -->
-<div data-launchlog="your-username"></div>
-
-<!-- 2. Include the widget script (before </body>) -->
-<script src="https://launchlog.com/api/embed/your-username/widget.js"></script>
+<script
+  src="https://launchlog.com/embed/launchlog-widget.js"
+  data-username="your-username"
+  data-variant="grid"
+></script>
 ```
 
-### Widget Styles
+### Widget Variants
 
-Choose from three design variations:
+**Grid** (default) - Responsive project cards with screenshots
 
-| Style | Description |
-|-------|-------------|
-| `grid` | Clean, editorial grid layout (default) |
-| `horizontal` | Horizontal scrolling carousel |
-| `feature` | Bold feature cards with gradients |
+```html
+<script
+  src="https://launchlog.com/embed/launchlog-widget.js"
+  data-username="your-username"
+  data-variant="grid"
+  data-columns="3"
+  data-limit="6"
+></script>
+```
+
+**Horizontal Strip** - Scrollable carousel for full-width sections
+
+```html
+<script
+  src="https://launchlog.com/embed/launchlog-widget.js"
+  data-username="your-username"
+  data-variant="horizontal"
+  data-limit="5"
+></script>
+```
+
+**Bold Feature Cards** - Eye-catching cards with gradient accents
+
+```html
+<script
+  src="https://launchlog.com/embed/launchlog-widget.js"
+  data-username="your-username"
+  data-variant="bold"
+  data-columns="3"
+></script>
+```
 
 ### Configuration Options
 
-Customize the widget with query parameters:
-
-```html
-<script src="https://launchlog.com/api/embed/your-username/widget.js?style=grid&theme=auto&limit=6"></script>
-```
-
-| Parameter | Values | Default | Description |
-|-----------|--------|---------|-------------|
-| `style` | `grid`, `horizontal`, `feature` | `grid` | Widget layout style |
-| `theme` | `light`, `dark`, `auto` | `auto` | Color theme (auto follows system) |
-| `limit` | `1-12` | `6` | Max number of projects to show |
-
-### Customizing Colors
-
-The widget inherits CSS variables from your site. Override them to match your brand:
-
-```css
-:root {
-  /* Typography */
-  --ll-font: 'Your Font', sans-serif;
-
-  /* Colors */
-  --ll-bg: #ffffff;
-  --ll-bg-hover: #fafafa;
-  --ll-text: #111827;
-  --ll-text-secondary: #6b7280;
-  --ll-text-tertiary: #9ca3af;
-  --ll-border: #e5e7eb;
-  --ll-primary: #6366f1;
-  --ll-primary-hover: #4f46e5;
-
-  /* Border radius */
-  --ll-radius: 12px;
-  --ll-radius-sm: 8px;
-}
-```
+| Attribute | Description | Values | Default |
+|-----------|-------------|--------|---------|
+| `data-username` | Your LaunchLog username (required) | string | - |
+| `data-variant` | Widget style | `grid`, `horizontal`, `bold` | `grid` |
+| `data-limit` | Number of projects to show | number | `6` |
+| `data-columns` | Grid columns (grid/bold only) | `2`, `3` | `3` |
+| `data-theme` | Color theme | `auto`, `light`, `dark` | `auto` |
 
 ### Dark Mode
 
-The widget automatically supports dark mode:
-
-- **Auto theme** (`theme=auto`): Follows `prefers-color-scheme`
-- **Manual toggle**: Add `.ll-dark` class to the container
-- **Force light**: Use `theme=light` parameter
+Widgets automatically detect your site's color scheme via `prefers-color-scheme`. You can also force a theme:
 
 ```html
+<!-- Force light mode -->
+<script ... data-theme="light"></script>
+
 <!-- Force dark mode -->
-<div data-launchlog="your-username" class="ll-dark"></div>
+<script ... data-theme="dark"></script>
+```
+
+### Customization
+
+Override CSS variables to match your site's design:
+
+```css
+.ll-widget {
+  --ll-bg: #your-background;
+  --ll-text: #your-text-color;
+  --ll-primary: #your-brand-color;
+  --ll-border: #your-border-color;
+  --ll-radius: 12px;
+}
 ```
 
 ### Technical Details
@@ -169,13 +177,37 @@ The widget automatically supports dark mode:
 
 ### API Endpoint
 
-Direct API access for custom integrations:
+For custom integrations, fetch widget data directly:
 
-```bash
-GET /api/embed/{username}?limit=6
+```
+GET /api/widget/[username]
 ```
 
-Returns JSON with project data, mentions, and metadata.
+Response:
+```json
+{
+  "user": {
+    "username": "...",
+    "avatar": "...",
+    "displayName": "..."
+  },
+  "projects": [
+    {
+      "name": "...",
+      "description": "...",
+      "screenshot": "...",
+      "stars": 0,
+      "language": "...",
+      "repoUrl": "...",
+      "demoUrl": "...",
+      "mentions": {
+        "hackernews": 5,
+        "reddit": 3
+      }
+    }
+  ]
+}
+```
 
 ---
 
