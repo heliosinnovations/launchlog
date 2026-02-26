@@ -80,4 +80,103 @@ Your portfolio should reflect your work, not your ability to maintain a portfoli
 
 ---
 
+## Embeddable Widget
+
+Drop a widget on your portfolio site. It stays fresh forever, automatically updating when you push code.
+
+### Quick Start
+
+Add this to your website where you want the widget to appear:
+
+```html
+<!-- 1. Add a container div -->
+<div data-launchlog="your-username"></div>
+
+<!-- 2. Include the widget script (before </body>) -->
+<script src="https://launchlog.com/api/embed/your-username/widget.js"></script>
+```
+
+### Widget Styles
+
+Choose from three design variations:
+
+| Style | Description |
+|-------|-------------|
+| `grid` | Clean, editorial grid layout (default) |
+| `horizontal` | Horizontal scrolling carousel |
+| `feature` | Bold feature cards with gradients |
+
+### Configuration Options
+
+Customize the widget with query parameters:
+
+```html
+<script src="https://launchlog.com/api/embed/your-username/widget.js?style=grid&theme=auto&limit=6"></script>
+```
+
+| Parameter | Values | Default | Description |
+|-----------|--------|---------|-------------|
+| `style` | `grid`, `horizontal`, `feature` | `grid` | Widget layout style |
+| `theme` | `light`, `dark`, `auto` | `auto` | Color theme (auto follows system) |
+| `limit` | `1-12` | `6` | Max number of projects to show |
+
+### Customizing Colors
+
+The widget inherits CSS variables from your site. Override them to match your brand:
+
+```css
+:root {
+  /* Typography */
+  --ll-font: 'Your Font', sans-serif;
+
+  /* Colors */
+  --ll-bg: #ffffff;
+  --ll-bg-hover: #fafafa;
+  --ll-text: #111827;
+  --ll-text-secondary: #6b7280;
+  --ll-text-tertiary: #9ca3af;
+  --ll-border: #e5e7eb;
+  --ll-primary: #6366f1;
+  --ll-primary-hover: #4f46e5;
+
+  /* Border radius */
+  --ll-radius: 12px;
+  --ll-radius-sm: 8px;
+}
+```
+
+### Dark Mode
+
+The widget automatically supports dark mode:
+
+- **Auto theme** (`theme=auto`): Follows `prefers-color-scheme`
+- **Manual toggle**: Add `.ll-dark` class to the container
+- **Force light**: Use `theme=light` parameter
+
+```html
+<!-- Force dark mode -->
+<div data-launchlog="your-username" class="ll-dark"></div>
+```
+
+### Technical Details
+
+- **Pure vanilla JS** - No dependencies
+- **~5KB gzipped** - Minimal footprint
+- **DOM injection** - No iframes
+- **Lazy loading** - Images load on scroll
+- **CORS enabled** - Works on any domain
+- **CDN cached** - 1 hour cache with stale-while-revalidate
+
+### API Endpoint
+
+Direct API access for custom integrations:
+
+```bash
+GET /api/embed/{username}?limit=6
+```
+
+Returns JSON with project data, mentions, and metadata.
+
+---
+
 **Status:** In development. First version coming soon.

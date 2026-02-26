@@ -1,0 +1,452 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LaunchLog Widget Demo</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            line-height: 1.5;
+            background: #f9fafb;
+            color: #111827;
+        }
+
+        .demo-header {
+            background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 50%, #a855f7 100%);
+            color: white;
+            padding: 60px 20px;
+            text-align: center;
+        }
+
+        .demo-header h1 {
+            font-size: 36px;
+            font-weight: 700;
+            margin-bottom: 12px;
+        }
+
+        .demo-header p {
+            font-size: 18px;
+            opacity: 0.9;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .demo-controls {
+            background: white;
+            border-bottom: 1px solid #e5e7eb;
+            padding: 20px;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .demo-controls-inner {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .control-group {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .control-group label {
+            font-size: 14px;
+            font-weight: 500;
+            color: #374151;
+        }
+
+        .control-group select,
+        .control-group input {
+            padding: 8px 12px;
+            border: 1px solid #d1d5db;
+            border-radius: 8px;
+            font-size: 14px;
+            background: white;
+        }
+
+        .control-group select:focus,
+        .control-group input:focus {
+            outline: none;
+            border-color: #6366f1;
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+        }
+
+        .reload-btn {
+            padding: 8px 16px;
+            background: #6366f1;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .reload-btn:hover {
+            background: #4f46e5;
+        }
+
+        .demo-section {
+            max-width: 1200px;
+            margin: 40px auto;
+            padding: 0 20px;
+        }
+
+        .demo-section h2 {
+            font-size: 24px;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: #111827;
+        }
+
+        .demo-section p {
+            font-size: 16px;
+            color: #6b7280;
+            margin-bottom: 24px;
+        }
+
+        .demo-box {
+            padding: 32px;
+            border-radius: 16px;
+            margin-bottom: 40px;
+        }
+
+        .demo-box.light {
+            background: #ffffff;
+            border: 1px solid #e5e7eb;
+        }
+
+        .demo-box.dark {
+            background: #18181b;
+        }
+
+        .demo-label {
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: #9ca3af;
+            margin-bottom: 16px;
+        }
+
+        .demo-box.dark .demo-label {
+            color: #71717a;
+        }
+
+        .code-block {
+            background: #1e1e2e;
+            border-radius: 12px;
+            padding: 20px;
+            overflow-x: auto;
+            margin-top: 24px;
+        }
+
+        .code-block pre {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 13px;
+            line-height: 1.6;
+            color: #cdd6f4;
+        }
+
+        .code-block .comment { color: #6c7086; }
+        .code-block .tag { color: #89b4fa; }
+        .code-block .attr { color: #f9e2af; }
+        .code-block .string { color: #a6e3a1; }
+
+        .viewport-section {
+            margin-top: 60px;
+            padding-top: 40px;
+            border-top: 1px solid #e5e7eb;
+        }
+
+        .viewport-grid {
+            display: grid;
+            gap: 40px;
+        }
+
+        .viewport-box {
+            background: white;
+            border: 1px solid #e5e7eb;
+            border-radius: 16px;
+            overflow: hidden;
+        }
+
+        .viewport-header {
+            padding: 12px 16px;
+            background: #f9fafb;
+            border-bottom: 1px solid #e5e7eb;
+            font-size: 14px;
+            font-weight: 500;
+            color: #374151;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .viewport-header .icon {
+            width: 20px;
+            height: 20px;
+            color: #6b7280;
+        }
+
+        .viewport-content {
+            padding: 24px;
+        }
+
+        /* Mobile viewport simulation */
+        .viewport-mobile .viewport-content {
+            max-width: 375px;
+            margin: 0 auto;
+        }
+
+        /* Tablet viewport simulation */
+        .viewport-tablet .viewport-content {
+            max-width: 768px;
+            margin: 0 auto;
+        }
+
+        @media (max-width: 768px) {
+            .demo-header h1 { font-size: 28px; }
+            .demo-controls-inner { flex-direction: column; }
+            .demo-section { margin: 24px auto; }
+            .demo-box { padding: 20px; }
+        }
+    </style>
+</head>
+<body>
+    <header class="demo-header">
+        <h1>LaunchLog Widget Demo</h1>
+        <p>Test all widget variations, themes, and responsive breakpoints. Enter a LaunchLog username to preview the widget.</p>
+    </header>
+
+    <div class="demo-controls">
+        <div class="demo-controls-inner">
+            <div class="control-group">
+                <label for="username">Username:</label>
+                <input type="text" id="username" value="avi-aravindh" placeholder="Enter username">
+            </div>
+            <div class="control-group">
+                <label for="style">Style:</label>
+                <select id="style">
+                    <option value="grid">Grid (Minimal)</option>
+                    <option value="horizontal">Horizontal Strip</option>
+                    <option value="feature">Bold Feature</option>
+                </select>
+            </div>
+            <div class="control-group">
+                <label for="theme">Theme:</label>
+                <select id="theme">
+                    <option value="auto">Auto (System)</option>
+                    <option value="light">Light</option>
+                    <option value="dark">Dark</option>
+                </select>
+            </div>
+            <div class="control-group">
+                <label for="limit">Limit:</label>
+                <select id="limit">
+                    <option value="3">3 Projects</option>
+                    <option value="6" selected>6 Projects</option>
+                    <option value="9">9 Projects</option>
+                    <option value="12">12 Projects</option>
+                </select>
+            </div>
+            <button class="reload-btn" onclick="reloadWidget()">Reload Widget</button>
+        </div>
+    </div>
+
+    <!-- VARIATION 1: Grid (Minimal) -->
+    <section class="demo-section" id="grid-section">
+        <h2>Variation 1: Minimal Grid</h2>
+        <p>Clean, editorial aesthetic with responsive 1-3 column grid layout.</p>
+
+        <div class="demo-box light">
+            <div class="demo-label">Light Mode</div>
+            <div data-launchlog="demo-grid-light" id="widget-grid-light"></div>
+        </div>
+
+        <div class="demo-box dark">
+            <div class="demo-label">Dark Mode</div>
+            <div data-launchlog="demo-grid-dark" id="widget-grid-dark"></div>
+        </div>
+    </section>
+
+    <!-- VARIATION 2: Horizontal Strip -->
+    <section class="demo-section" id="horizontal-section">
+        <h2>Variation 2: Horizontal Strip</h2>
+        <p>Horizontal scrolling carousel with smooth scroll snap behavior.</p>
+
+        <div class="demo-box light">
+            <div class="demo-label">Light Mode</div>
+            <div data-launchlog="demo-horizontal-light" id="widget-horizontal-light"></div>
+        </div>
+
+        <div class="demo-box dark">
+            <div class="demo-label">Dark Mode</div>
+            <div data-launchlog="demo-horizontal-dark" id="widget-horizontal-dark"></div>
+        </div>
+    </section>
+
+    <!-- VARIATION 3: Bold Feature -->
+    <section class="demo-section" id="feature-section">
+        <h2>Variation 3: Bold Feature Cards</h2>
+        <p>Bold, energetic aesthetic with gradient accents and prominent screenshots.</p>
+
+        <div class="demo-box light">
+            <div class="demo-label">Light Mode</div>
+            <div data-launchlog="demo-feature-light" id="widget-feature-light"></div>
+        </div>
+
+        <div class="demo-box dark">
+            <div class="demo-label">Dark Mode</div>
+            <div data-launchlog="demo-feature-dark" id="widget-feature-dark"></div>
+        </div>
+    </section>
+
+    <!-- RESPONSIVE VIEWPORT TESTING -->
+    <section class="demo-section viewport-section">
+        <h2>Responsive Breakpoints</h2>
+        <p>Test widget appearance at different viewport sizes.</p>
+
+        <div class="viewport-grid">
+            <div class="viewport-box viewport-mobile">
+                <div class="viewport-header">
+                    <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <rect x="5" y="2" width="14" height="20" rx="2" ry="2"/>
+                        <line x1="12" y1="18" x2="12.01" y2="18"/>
+                    </svg>
+                    Mobile (375px)
+                </div>
+                <div class="viewport-content">
+                    <div data-launchlog="demo-mobile" id="widget-mobile"></div>
+                </div>
+            </div>
+
+            <div class="viewport-box viewport-tablet">
+                <div class="viewport-header">
+                    <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <rect x="4" y="2" width="16" height="20" rx="2" ry="2"/>
+                        <line x1="12" y1="18" x2="12.01" y2="18"/>
+                    </svg>
+                    Tablet (768px)
+                </div>
+                <div class="viewport-content">
+                    <div data-launchlog="demo-tablet" id="widget-tablet"></div>
+                </div>
+            </div>
+
+            <div class="viewport-box">
+                <div class="viewport-header">
+                    <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <rect x="2" y="3" width="20" height="14" rx="2" ry="2"/>
+                        <line x1="8" y1="21" x2="16" y2="21"/>
+                        <line x1="12" y1="17" x2="12" y2="21"/>
+                    </svg>
+                    Desktop (Full Width)
+                </div>
+                <div class="viewport-content">
+                    <div data-launchlog="demo-desktop" id="widget-desktop"></div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- EMBED CODE EXAMPLE -->
+    <section class="demo-section">
+        <h2>Embed Code</h2>
+        <p>Copy this code to embed the widget on your website.</p>
+
+        <div class="code-block">
+            <pre><span class="comment">&lt;!-- Add this div where you want the widget to appear --&gt;</span>
+<span class="tag">&lt;div</span> <span class="attr">data-launchlog</span>=<span class="string">"your-username"</span><span class="tag">&gt;&lt;/div&gt;</span>
+
+<span class="comment">&lt;!-- Add this script tag before closing &lt;/body&gt; --&gt;</span>
+<span class="tag">&lt;script</span>
+  <span class="attr">src</span>=<span class="string">"https://launchlog.com/api/embed/your-username/widget.js?style=grid&theme=auto&limit=6"</span>
+<span class="tag">&gt;&lt;/script&gt;</span>
+
+<span class="comment">&lt;!-- Optional: Override CSS variables to match your site --&gt;</span>
+<span class="tag">&lt;style&gt;</span>
+  <span class="attr">:root</span> {
+    <span class="attr">--ll-font</span>: <span class="string">'Your Font', sans-serif</span>;
+    <span class="attr">--ll-bg</span>: <span class="string">#your-background</span>;
+    <span class="attr">--ll-text</span>: <span class="string">#your-text-color</span>;
+    <span class="attr">--ll-primary</span>: <span class="string">#your-brand-color</span>;
+  }
+<span class="tag">&lt;/style&gt;</span></pre>
+        </div>
+    </section>
+
+    <script>
+        // Get the base URL
+        var baseUrl = window.location.origin;
+
+        // Load a widget into a container
+        function loadWidget(containerId, username, style, theme, limit) {
+            var container = document.getElementById(containerId);
+            if (!container) return;
+
+            // Clear existing content
+            container.innerHTML = '';
+
+            // Update data-launchlog attribute
+            container.setAttribute('data-launchlog', username);
+
+            // Remove old script if exists
+            var oldScript = document.getElementById('ll-script-' + containerId);
+            if (oldScript) oldScript.remove();
+
+            // Create new script
+            var script = document.createElement('script');
+            script.id = 'll-script-' + containerId;
+            script.src = baseUrl + '/api/embed/' + encodeURIComponent(username) + '/widget.js?style=' + style + '&theme=' + theme + '&limit=' + limit;
+            document.body.appendChild(script);
+        }
+
+        // Reload all widgets with current settings
+        function reloadWidget() {
+            var username = document.getElementById('username').value || 'avi-aravindh';
+            var style = document.getElementById('style').value;
+            var theme = document.getElementById('theme').value;
+            var limit = document.getElementById('limit').value;
+
+            // Remove existing widget styles to force refresh
+            var oldStyles = document.getElementById('ll-widget-styles');
+            if (oldStyles) oldStyles.remove();
+
+            // Load grid variations
+            loadWidget('widget-grid-light', username, 'grid', 'light', limit);
+            loadWidget('widget-grid-dark', username, 'grid', 'dark', limit);
+
+            // Load horizontal variations
+            loadWidget('widget-horizontal-light', username, 'horizontal', 'light', limit);
+            loadWidget('widget-horizontal-dark', username, 'horizontal', 'dark', limit);
+
+            // Load feature variations
+            loadWidget('widget-feature-light', username, 'feature', 'light', limit);
+            loadWidget('widget-feature-dark', username, 'feature', 'dark', limit);
+
+            // Load responsive test widgets
+            loadWidget('widget-mobile', username, style, theme, 3);
+            loadWidget('widget-tablet', username, style, theme, 4);
+            loadWidget('widget-desktop', username, style, theme, limit);
+        }
+
+        // Initial load
+        reloadWidget();
+    </script>
+</body>
+</html>
