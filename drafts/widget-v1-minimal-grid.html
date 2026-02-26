@@ -1,0 +1,1111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LaunchLog Widget - Variation 1: Minimal Grid</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet">
+    <style>
+        /* ===========================================
+           LAUNCHLOG EMBEDDABLE WIDGET
+           Variation 1: Minimal Grid
+
+           Design Philosophy:
+           - Clean, editorial aesthetic
+           - Lots of whitespace
+           - Simple sans-serif typography
+           - Subtle borders, no heavy shadows
+           - Responsive 1-3 column grid
+           =========================================== */
+
+        /* CSS Variables - Inherit from parent site */
+        :root {
+            --ll-font: inherit;
+            --ll-font-mono: 'JetBrains Mono', ui-monospace, monospace;
+            --ll-bg: #ffffff;
+            --ll-bg-hover: #fafafa;
+            --ll-text: #111827;
+            --ll-text-secondary: #6b7280;
+            --ll-text-tertiary: #9ca3af;
+            --ll-border: #e5e7eb;
+            --ll-primary: #6366f1;
+            --ll-primary-hover: #4f46e5;
+            --ll-radius: 12px;
+            --ll-radius-sm: 8px;
+
+            /* Platform colors - fixed */
+            --ll-hn: #ff6600;
+            --ll-reddit: #ff4500;
+            --ll-twitter: #1da1f2;
+            --ll-star: #fbbf24;
+        }
+
+        /* Dark mode */
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --ll-bg: #18181b;
+                --ll-bg-hover: #27272a;
+                --ll-text: #fafafa;
+                --ll-text-secondary: #a1a1aa;
+                --ll-text-tertiary: #71717a;
+                --ll-border: #3f3f46;
+            }
+        }
+
+        /* Dark theme class override */
+        .ll-dark {
+            --ll-bg: #18181b;
+            --ll-bg-hover: #27272a;
+            --ll-text: #fafafa;
+            --ll-text-secondary: #a1a1aa;
+            --ll-text-tertiary: #71717a;
+            --ll-border: #3f3f46;
+        }
+
+        /* Demo page styles */
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: #f9fafb;
+            padding: 40px;
+            line-height: 1.5;
+        }
+
+        .demo-header {
+            max-width: 800px;
+            margin: 0 auto 60px;
+            text-align: center;
+        }
+
+        .demo-header h1 {
+            font-size: 32px;
+            font-weight: 700;
+            color: #111827;
+            margin-bottom: 8px;
+        }
+
+        .demo-header p {
+            font-size: 16px;
+            color: #6b7280;
+        }
+
+        .demo-section {
+            max-width: 1000px;
+            margin: 0 auto 80px;
+        }
+
+        .demo-section h2 {
+            font-size: 14px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: #6b7280;
+            margin-bottom: 20px;
+        }
+
+        .demo-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 32px;
+            margin-bottom: 40px;
+        }
+
+        .demo-box {
+            padding: 32px;
+            border-radius: 16px;
+        }
+
+        .demo-box.light {
+            background: #ffffff;
+            border: 1px solid #e5e7eb;
+        }
+
+        .demo-box.dark {
+            background: #0f0f14;
+        }
+
+        .demo-label {
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: #9ca3af;
+            margin-bottom: 16px;
+        }
+
+        .demo-box.dark .demo-label {
+            color: #71717a;
+        }
+
+        @media (max-width: 768px) {
+            body { padding: 20px; }
+            .demo-row { grid-template-columns: 1fr; }
+        }
+
+        /* ===========================================
+           WIDGET: GRID CONTAINER
+           =========================================== */
+        .ll-grid {
+            font-family: var(--ll-font);
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+        }
+
+        /* Responsive breakpoints */
+        @media (min-width: 640px) {
+            .ll-grid--2col { grid-template-columns: repeat(2, 1fr); }
+        }
+        @media (min-width: 1024px) {
+            .ll-grid--3col { grid-template-columns: repeat(3, 1fr); }
+        }
+
+        /* ===========================================
+           WIDGET: PROJECT CARD
+           =========================================== */
+        .ll-card {
+            background: var(--ll-bg);
+            border: 1px solid var(--ll-border);
+            border-radius: var(--ll-radius);
+            overflow: hidden;
+            transition: border-color 0.2s, transform 0.2s;
+        }
+
+        .ll-card:hover {
+            border-color: var(--ll-primary);
+            transform: translateY(-2px);
+        }
+
+        .ll-card__screenshot {
+            position: relative;
+            width: 100%;
+            aspect-ratio: 16/9;
+            background: var(--ll-bg-hover);
+            overflow: hidden;
+        }
+
+        .ll-card__screenshot img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.3s;
+        }
+
+        .ll-card:hover .ll-card__screenshot img {
+            transform: scale(1.03);
+        }
+
+        .ll-card__screenshot-placeholder {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .ll-card__screenshot-placeholder svg {
+            width: 40px;
+            height: 40px;
+            color: var(--ll-text-tertiary);
+            opacity: 0.5;
+        }
+
+        .ll-card__body {
+            padding: 16px;
+        }
+
+        .ll-card__header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: 12px;
+            margin-bottom: 8px;
+        }
+
+        .ll-card__title {
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--ll-text);
+            text-decoration: none;
+            line-height: 1.3;
+        }
+
+        .ll-card__title:hover {
+            color: var(--ll-primary);
+        }
+
+        .ll-card__lang {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            font-size: 12px;
+            color: var(--ll-text-secondary);
+            flex-shrink: 0;
+        }
+
+        .ll-card__lang-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+        }
+
+        .ll-card__desc {
+            font-size: 14px;
+            color: var(--ll-text-secondary);
+            line-height: 1.5;
+            margin-bottom: 12px;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .ll-card__meta {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            font-size: 13px;
+            color: var(--ll-text-secondary);
+        }
+
+        .ll-card__stat {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .ll-card__stat svg {
+            width: 14px;
+            height: 14px;
+        }
+
+        .ll-card__stat--star svg {
+            color: var(--ll-star);
+            fill: var(--ll-star);
+        }
+
+        .ll-card__mentions {
+            margin-left: auto;
+            display: flex;
+            gap: 6px;
+        }
+
+        .ll-mention {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            padding: 3px 8px;
+            border-radius: 6px;
+            font-size: 11px;
+            font-weight: 600;
+            font-family: var(--ll-font-mono);
+        }
+
+        .ll-mention svg {
+            width: 12px;
+            height: 12px;
+        }
+
+        .ll-mention--hn {
+            background: rgba(255, 102, 0, 0.1);
+            color: var(--ll-hn);
+        }
+
+        .ll-mention--reddit {
+            background: rgba(255, 69, 0, 0.1);
+            color: var(--ll-reddit);
+        }
+
+        .ll-card__footer {
+            padding: 12px 16px;
+            border-top: 1px solid var(--ll-border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .ll-card__updated {
+            font-size: 12px;
+            color: var(--ll-text-tertiary);
+        }
+
+        .ll-card__link {
+            font-size: 12px;
+            color: var(--ll-primary);
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .ll-card__link:hover {
+            text-decoration: underline;
+        }
+
+        .ll-card__link svg {
+            width: 14px;
+            height: 14px;
+        }
+
+        /* ===========================================
+           STATES: LOADING SKELETON
+           =========================================== */
+        .ll-skeleton {
+            background: linear-gradient(
+                90deg,
+                var(--ll-bg-hover) 0%,
+                var(--ll-bg) 50%,
+                var(--ll-bg-hover) 100%
+            );
+            background-size: 200% 100%;
+            animation: ll-shimmer 1.5s infinite;
+            border-radius: 4px;
+        }
+
+        @keyframes ll-shimmer {
+            0% { background-position: 200% 0; }
+            100% { background-position: -200% 0; }
+        }
+
+        .ll-card--loading .ll-card__screenshot {
+            background: var(--ll-bg-hover);
+        }
+
+        .ll-card--loading .ll-skeleton-title {
+            height: 18px;
+            width: 60%;
+        }
+
+        .ll-card--loading .ll-skeleton-lang {
+            height: 14px;
+            width: 80px;
+        }
+
+        .ll-card--loading .ll-skeleton-desc {
+            height: 14px;
+            width: 100%;
+            margin-bottom: 6px;
+        }
+
+        .ll-card--loading .ll-skeleton-desc:last-child {
+            width: 75%;
+            margin-bottom: 0;
+        }
+
+        .ll-card--loading .ll-skeleton-meta {
+            height: 14px;
+            width: 120px;
+        }
+
+        /* ===========================================
+           STATES: ERROR
+           =========================================== */
+        .ll-error {
+            background: var(--ll-bg);
+            border: 1px solid var(--ll-border);
+            border-radius: var(--ll-radius);
+            padding: 32px;
+            text-align: center;
+        }
+
+        .ll-error__icon {
+            width: 48px;
+            height: 48px;
+            margin: 0 auto 16px;
+            color: #ef4444;
+        }
+
+        .ll-error__title {
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--ll-text);
+            margin-bottom: 4px;
+        }
+
+        .ll-error__message {
+            font-size: 14px;
+            color: var(--ll-text-secondary);
+            margin-bottom: 16px;
+        }
+
+        .ll-error__retry {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 8px 16px;
+            background: var(--ll-primary);
+            color: white;
+            border: none;
+            border-radius: var(--ll-radius-sm);
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .ll-error__retry:hover {
+            background: var(--ll-primary-hover);
+        }
+
+        .ll-error__retry svg {
+            width: 16px;
+            height: 16px;
+        }
+
+        /* ===========================================
+           STATES: EMPTY
+           =========================================== */
+        .ll-empty {
+            background: var(--ll-bg);
+            border: 1px dashed var(--ll-border);
+            border-radius: var(--ll-radius);
+            padding: 48px 32px;
+            text-align: center;
+        }
+
+        .ll-empty__icon {
+            width: 48px;
+            height: 48px;
+            margin: 0 auto 16px;
+            color: var(--ll-text-tertiary);
+        }
+
+        .ll-empty__title {
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--ll-text);
+            margin-bottom: 4px;
+        }
+
+        .ll-empty__message {
+            font-size: 14px;
+            color: var(--ll-text-secondary);
+        }
+
+        /* ===========================================
+           POWERED BY BADGE
+           =========================================== */
+        .ll-powered {
+            margin-top: 16px;
+            text-align: center;
+            font-size: 11px;
+            color: var(--ll-text-tertiary);
+        }
+
+        .ll-powered a {
+            color: var(--ll-text-secondary);
+            text-decoration: none;
+        }
+
+        .ll-powered a:hover {
+            color: var(--ll-primary);
+        }
+    </style>
+</head>
+<body>
+    <header class="demo-header">
+        <h1>Variation 1: Minimal Grid</h1>
+        <p>Clean, editorial aesthetic with lots of whitespace. Responsive 1-3 column layout.</p>
+    </header>
+
+    <!-- DEFAULT/LOADED STATE -->
+    <section class="demo-section">
+        <h2>Loaded State - 3 Column Grid</h2>
+        <div class="demo-row">
+            <div class="demo-box light">
+                <div class="demo-label">Light Mode</div>
+                <div class="ll-grid ll-grid--3col">
+                    <!-- Card 1 -->
+                    <article class="ll-card">
+                        <div class="ll-card__screenshot">
+                            <div class="ll-card__screenshot-placeholder">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                                    <rect x="3" y="3" width="18" height="18" rx="2"/>
+                                    <circle cx="8.5" cy="8.5" r="1.5"/>
+                                    <path d="M21 15l-5-5L5 21"/>
+                                </svg>
+                            </div>
+                        </div>
+                        <div class="ll-card__body">
+                            <div class="ll-card__header">
+                                <a href="#" class="ll-card__title">react-query</a>
+                                <span class="ll-card__lang">
+                                    <span class="ll-card__lang-dot" style="background: #3178c6"></span>
+                                    TypeScript
+                                </span>
+                            </div>
+                            <p class="ll-card__desc">Powerful data fetching and caching for React applications.</p>
+                            <div class="ll-card__meta">
+                                <span class="ll-card__stat ll-card__stat--star">
+                                    <svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+                                    38.2k
+                                </span>
+                                <div class="ll-card__mentions">
+                                    <span class="ll-mention ll-mention--hn">
+                                        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M0 24V0h24v24H0zM6.951 5.896l4.112 7.708v5.064h1.583v-4.972l4.148-7.799h-1.749l-3.21 6.039-3.135-6.04H6.951z"/></svg>
+                                        23
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="ll-card__footer">
+                            <span class="ll-card__updated">Updated 2 days ago</span>
+                            <a href="#" class="ll-card__link">
+                                View
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/>
+                                    <polyline points="15 3 21 3 21 9"/>
+                                    <line x1="10" y1="14" x2="21" y2="3"/>
+                                </svg>
+                            </a>
+                        </div>
+                    </article>
+
+                    <!-- Card 2 -->
+                    <article class="ll-card">
+                        <div class="ll-card__screenshot">
+                            <div class="ll-card__screenshot-placeholder">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                                    <rect x="3" y="3" width="18" height="18" rx="2"/>
+                                    <circle cx="8.5" cy="8.5" r="1.5"/>
+                                    <path d="M21 15l-5-5L5 21"/>
+                                </svg>
+                            </div>
+                        </div>
+                        <div class="ll-card__body">
+                            <div class="ll-card__header">
+                                <a href="#" class="ll-card__title">zustand</a>
+                                <span class="ll-card__lang">
+                                    <span class="ll-card__lang-dot" style="background: #3178c6"></span>
+                                    TypeScript
+                                </span>
+                            </div>
+                            <p class="ll-card__desc">Bear necessities for state management in React.</p>
+                            <div class="ll-card__meta">
+                                <span class="ll-card__stat ll-card__stat--star">
+                                    <svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+                                    42.1k
+                                </span>
+                                <div class="ll-card__mentions">
+                                    <span class="ll-mention ll-mention--reddit">
+                                        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0z"/></svg>
+                                        15
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="ll-card__footer">
+                            <span class="ll-card__updated">Updated 1 week ago</span>
+                            <a href="#" class="ll-card__link">
+                                View
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/>
+                                    <polyline points="15 3 21 3 21 9"/>
+                                    <line x1="10" y1="14" x2="21" y2="3"/>
+                                </svg>
+                            </a>
+                        </div>
+                    </article>
+
+                    <!-- Card 3 -->
+                    <article class="ll-card">
+                        <div class="ll-card__screenshot">
+                            <div class="ll-card__screenshot-placeholder">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                                    <rect x="3" y="3" width="18" height="18" rx="2"/>
+                                    <circle cx="8.5" cy="8.5" r="1.5"/>
+                                    <path d="M21 15l-5-5L5 21"/>
+                                </svg>
+                            </div>
+                        </div>
+                        <div class="ll-card__body">
+                            <div class="ll-card__header">
+                                <a href="#" class="ll-card__title">jotai</a>
+                                <span class="ll-card__lang">
+                                    <span class="ll-card__lang-dot" style="background: #3178c6"></span>
+                                    TypeScript
+                                </span>
+                            </div>
+                            <p class="ll-card__desc">Primitive and flexible state management for React.</p>
+                            <div class="ll-card__meta">
+                                <span class="ll-card__stat ll-card__stat--star">
+                                    <svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+                                    17.8k
+                                </span>
+                            </div>
+                        </div>
+                        <div class="ll-card__footer">
+                            <span class="ll-card__updated">Updated 3 days ago</span>
+                            <a href="#" class="ll-card__link">
+                                View
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/>
+                                    <polyline points="15 3 21 3 21 9"/>
+                                    <line x1="10" y1="14" x2="21" y2="3"/>
+                                </svg>
+                            </a>
+                        </div>
+                    </article>
+                </div>
+                <div class="ll-powered">Powered by <a href="#">LaunchLog</a></div>
+            </div>
+
+            <div class="demo-box dark ll-dark">
+                <div class="demo-label">Dark Mode</div>
+                <div class="ll-grid ll-grid--3col">
+                    <!-- Card 1 Dark -->
+                    <article class="ll-card">
+                        <div class="ll-card__screenshot">
+                            <div class="ll-card__screenshot-placeholder">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                                    <rect x="3" y="3" width="18" height="18" rx="2"/>
+                                    <circle cx="8.5" cy="8.5" r="1.5"/>
+                                    <path d="M21 15l-5-5L5 21"/>
+                                </svg>
+                            </div>
+                        </div>
+                        <div class="ll-card__body">
+                            <div class="ll-card__header">
+                                <a href="#" class="ll-card__title">react-query</a>
+                                <span class="ll-card__lang">
+                                    <span class="ll-card__lang-dot" style="background: #3178c6"></span>
+                                    TypeScript
+                                </span>
+                            </div>
+                            <p class="ll-card__desc">Powerful data fetching and caching for React applications.</p>
+                            <div class="ll-card__meta">
+                                <span class="ll-card__stat ll-card__stat--star">
+                                    <svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+                                    38.2k
+                                </span>
+                                <div class="ll-card__mentions">
+                                    <span class="ll-mention ll-mention--hn">
+                                        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M0 24V0h24v24H0zM6.951 5.896l4.112 7.708v5.064h1.583v-4.972l4.148-7.799h-1.749l-3.21 6.039-3.135-6.04H6.951z"/></svg>
+                                        23
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="ll-card__footer">
+                            <span class="ll-card__updated">Updated 2 days ago</span>
+                            <a href="#" class="ll-card__link">
+                                View
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/>
+                                    <polyline points="15 3 21 3 21 9"/>
+                                    <line x1="10" y1="14" x2="21" y2="3"/>
+                                </svg>
+                            </a>
+                        </div>
+                    </article>
+
+                    <!-- Card 2 Dark -->
+                    <article class="ll-card">
+                        <div class="ll-card__screenshot">
+                            <div class="ll-card__screenshot-placeholder">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                                    <rect x="3" y="3" width="18" height="18" rx="2"/>
+                                    <circle cx="8.5" cy="8.5" r="1.5"/>
+                                    <path d="M21 15l-5-5L5 21"/>
+                                </svg>
+                            </div>
+                        </div>
+                        <div class="ll-card__body">
+                            <div class="ll-card__header">
+                                <a href="#" class="ll-card__title">zustand</a>
+                                <span class="ll-card__lang">
+                                    <span class="ll-card__lang-dot" style="background: #3178c6"></span>
+                                    TypeScript
+                                </span>
+                            </div>
+                            <p class="ll-card__desc">Bear necessities for state management in React.</p>
+                            <div class="ll-card__meta">
+                                <span class="ll-card__stat ll-card__stat--star">
+                                    <svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+                                    42.1k
+                                </span>
+                                <div class="ll-card__mentions">
+                                    <span class="ll-mention ll-mention--reddit">
+                                        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0z"/></svg>
+                                        15
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="ll-card__footer">
+                            <span class="ll-card__updated">Updated 1 week ago</span>
+                            <a href="#" class="ll-card__link">
+                                View
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/>
+                                    <polyline points="15 3 21 3 21 9"/>
+                                    <line x1="10" y1="14" x2="21" y2="3"/>
+                                </svg>
+                            </a>
+                        </div>
+                    </article>
+
+                    <!-- Card 3 Dark -->
+                    <article class="ll-card">
+                        <div class="ll-card__screenshot">
+                            <div class="ll-card__screenshot-placeholder">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                                    <rect x="3" y="3" width="18" height="18" rx="2"/>
+                                    <circle cx="8.5" cy="8.5" r="1.5"/>
+                                    <path d="M21 15l-5-5L5 21"/>
+                                </svg>
+                            </div>
+                        </div>
+                        <div class="ll-card__body">
+                            <div class="ll-card__header">
+                                <a href="#" class="ll-card__title">jotai</a>
+                                <span class="ll-card__lang">
+                                    <span class="ll-card__lang-dot" style="background: #3178c6"></span>
+                                    TypeScript
+                                </span>
+                            </div>
+                            <p class="ll-card__desc">Primitive and flexible state management for React.</p>
+                            <div class="ll-card__meta">
+                                <span class="ll-card__stat ll-card__stat--star">
+                                    <svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+                                    17.8k
+                                </span>
+                            </div>
+                        </div>
+                        <div class="ll-card__footer">
+                            <span class="ll-card__updated">Updated 3 days ago</span>
+                            <a href="#" class="ll-card__link">
+                                View
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/>
+                                    <polyline points="15 3 21 3 21 9"/>
+                                    <line x1="10" y1="14" x2="21" y2="3"/>
+                                </svg>
+                            </a>
+                        </div>
+                    </article>
+                </div>
+                <div class="ll-powered">Powered by <a href="#">LaunchLog</a></div>
+            </div>
+        </div>
+    </section>
+
+    <!-- LOADING STATE -->
+    <section class="demo-section">
+        <h2>Loading State - Skeleton</h2>
+        <div class="demo-row">
+            <div class="demo-box light">
+                <div class="demo-label">Light Mode</div>
+                <div class="ll-grid ll-grid--3col">
+                    <article class="ll-card ll-card--loading">
+                        <div class="ll-card__screenshot"></div>
+                        <div class="ll-card__body">
+                            <div class="ll-card__header">
+                                <div class="ll-skeleton ll-skeleton-title"></div>
+                                <div class="ll-skeleton ll-skeleton-lang"></div>
+                            </div>
+                            <div style="margin-bottom: 12px;">
+                                <div class="ll-skeleton ll-skeleton-desc"></div>
+                                <div class="ll-skeleton ll-skeleton-desc"></div>
+                            </div>
+                            <div class="ll-skeleton ll-skeleton-meta"></div>
+                        </div>
+                    </article>
+                    <article class="ll-card ll-card--loading">
+                        <div class="ll-card__screenshot"></div>
+                        <div class="ll-card__body">
+                            <div class="ll-card__header">
+                                <div class="ll-skeleton ll-skeleton-title"></div>
+                                <div class="ll-skeleton ll-skeleton-lang"></div>
+                            </div>
+                            <div style="margin-bottom: 12px;">
+                                <div class="ll-skeleton ll-skeleton-desc"></div>
+                                <div class="ll-skeleton ll-skeleton-desc"></div>
+                            </div>
+                            <div class="ll-skeleton ll-skeleton-meta"></div>
+                        </div>
+                    </article>
+                    <article class="ll-card ll-card--loading">
+                        <div class="ll-card__screenshot"></div>
+                        <div class="ll-card__body">
+                            <div class="ll-card__header">
+                                <div class="ll-skeleton ll-skeleton-title"></div>
+                                <div class="ll-skeleton ll-skeleton-lang"></div>
+                            </div>
+                            <div style="margin-bottom: 12px;">
+                                <div class="ll-skeleton ll-skeleton-desc"></div>
+                                <div class="ll-skeleton ll-skeleton-desc"></div>
+                            </div>
+                            <div class="ll-skeleton ll-skeleton-meta"></div>
+                        </div>
+                    </article>
+                </div>
+            </div>
+
+            <div class="demo-box dark ll-dark">
+                <div class="demo-label">Dark Mode</div>
+                <div class="ll-grid ll-grid--3col">
+                    <article class="ll-card ll-card--loading">
+                        <div class="ll-card__screenshot"></div>
+                        <div class="ll-card__body">
+                            <div class="ll-card__header">
+                                <div class="ll-skeleton ll-skeleton-title"></div>
+                                <div class="ll-skeleton ll-skeleton-lang"></div>
+                            </div>
+                            <div style="margin-bottom: 12px;">
+                                <div class="ll-skeleton ll-skeleton-desc"></div>
+                                <div class="ll-skeleton ll-skeleton-desc"></div>
+                            </div>
+                            <div class="ll-skeleton ll-skeleton-meta"></div>
+                        </div>
+                    </article>
+                    <article class="ll-card ll-card--loading">
+                        <div class="ll-card__screenshot"></div>
+                        <div class="ll-card__body">
+                            <div class="ll-card__header">
+                                <div class="ll-skeleton ll-skeleton-title"></div>
+                                <div class="ll-skeleton ll-skeleton-lang"></div>
+                            </div>
+                            <div style="margin-bottom: 12px;">
+                                <div class="ll-skeleton ll-skeleton-desc"></div>
+                                <div class="ll-skeleton ll-skeleton-desc"></div>
+                            </div>
+                            <div class="ll-skeleton ll-skeleton-meta"></div>
+                        </div>
+                    </article>
+                    <article class="ll-card ll-card--loading">
+                        <div class="ll-card__screenshot"></div>
+                        <div class="ll-card__body">
+                            <div class="ll-card__header">
+                                <div class="ll-skeleton ll-skeleton-title"></div>
+                                <div class="ll-skeleton ll-skeleton-lang"></div>
+                            </div>
+                            <div style="margin-bottom: 12px;">
+                                <div class="ll-skeleton ll-skeleton-desc"></div>
+                                <div class="ll-skeleton ll-skeleton-desc"></div>
+                            </div>
+                            <div class="ll-skeleton ll-skeleton-meta"></div>
+                        </div>
+                    </article>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ERROR STATE -->
+    <section class="demo-section">
+        <h2>Error State</h2>
+        <div class="demo-row">
+            <div class="demo-box light">
+                <div class="demo-label">Light Mode</div>
+                <div class="ll-error">
+                    <svg class="ll-error__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                        <circle cx="12" cy="12" r="10"/>
+                        <line x1="12" y1="8" x2="12" y2="12"/>
+                        <line x1="12" y1="16" x2="12.01" y2="16"/>
+                    </svg>
+                    <h3 class="ll-error__title">Unable to load projects</h3>
+                    <p class="ll-error__message">We couldn't fetch the project data. Please try again.</p>
+                    <button class="ll-error__retry">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M1 4v6h6M23 20v-6h-6"/>
+                            <path d="M20.49 9A9 9 0 0 0 5.64 5.64L1 10m22 4l-4.64 4.36A9 9 0 0 1 3.51 15"/>
+                        </svg>
+                        Retry
+                    </button>
+                </div>
+            </div>
+
+            <div class="demo-box dark ll-dark">
+                <div class="demo-label">Dark Mode</div>
+                <div class="ll-error">
+                    <svg class="ll-error__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                        <circle cx="12" cy="12" r="10"/>
+                        <line x1="12" y1="8" x2="12" y2="12"/>
+                        <line x1="12" y1="16" x2="12.01" y2="16"/>
+                    </svg>
+                    <h3 class="ll-error__title">Unable to load projects</h3>
+                    <p class="ll-error__message">We couldn't fetch the project data. Please try again.</p>
+                    <button class="ll-error__retry">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M1 4v6h6M23 20v-6h-6"/>
+                            <path d="M20.49 9A9 9 0 0 0 5.64 5.64L1 10m22 4l-4.64 4.36A9 9 0 0 1 3.51 15"/>
+                        </svg>
+                        Retry
+                    </button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- EMPTY STATE -->
+    <section class="demo-section">
+        <h2>Empty State</h2>
+        <div class="demo-row">
+            <div class="demo-box light">
+                <div class="demo-label">Light Mode</div>
+                <div class="ll-empty">
+                    <svg class="ll-empty__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                        <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/>
+                    </svg>
+                    <h3 class="ll-empty__title">No projects yet</h3>
+                    <p class="ll-empty__message">This user hasn't added any projects to their portfolio.</p>
+                </div>
+            </div>
+
+            <div class="demo-box dark ll-dark">
+                <div class="demo-label">Dark Mode</div>
+                <div class="ll-empty">
+                    <svg class="ll-empty__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                        <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/>
+                    </svg>
+                    <h3 class="ll-empty__title">No projects yet</h3>
+                    <p class="ll-empty__message">This user hasn't added any projects to their portfolio.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- SINGLE CARD -->
+    <section class="demo-section">
+        <h2>Single Project Card</h2>
+        <div class="demo-row">
+            <div class="demo-box light">
+                <div class="demo-label">Light Mode</div>
+                <div style="max-width: 360px;">
+                    <article class="ll-card">
+                        <div class="ll-card__screenshot">
+                            <div class="ll-card__screenshot-placeholder">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                                    <rect x="3" y="3" width="18" height="18" rx="2"/>
+                                    <circle cx="8.5" cy="8.5" r="1.5"/>
+                                    <path d="M21 15l-5-5L5 21"/>
+                                </svg>
+                            </div>
+                        </div>
+                        <div class="ll-card__body">
+                            <div class="ll-card__header">
+                                <a href="#" class="ll-card__title">next-saas-starter</a>
+                                <span class="ll-card__lang">
+                                    <span class="ll-card__lang-dot" style="background: #3178c6"></span>
+                                    TypeScript
+                                </span>
+                            </div>
+                            <p class="ll-card__desc">Production-ready SaaS boilerplate with auth, payments, and more.</p>
+                            <div class="ll-card__meta">
+                                <span class="ll-card__stat ll-card__stat--star">
+                                    <svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+                                    12.4k
+                                </span>
+                                <div class="ll-card__mentions">
+                                    <span class="ll-mention ll-mention--hn">
+                                        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M0 24V0h24v24H0zM6.951 5.896l4.112 7.708v5.064h1.583v-4.972l4.148-7.799h-1.749l-3.21 6.039-3.135-6.04H6.951z"/></svg>
+                                        89
+                                    </span>
+                                    <span class="ll-mention ll-mention--reddit">
+                                        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0z"/></svg>
+                                        34
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="ll-card__footer">
+                            <span class="ll-card__updated">Updated yesterday</span>
+                            <a href="#" class="ll-card__link">
+                                Live Demo
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/>
+                                    <polyline points="15 3 21 3 21 9"/>
+                                    <line x1="10" y1="14" x2="21" y2="3"/>
+                                </svg>
+                            </a>
+                        </div>
+                    </article>
+                </div>
+            </div>
+
+            <div class="demo-box dark ll-dark">
+                <div class="demo-label">Dark Mode</div>
+                <div style="max-width: 360px;">
+                    <article class="ll-card">
+                        <div class="ll-card__screenshot">
+                            <div class="ll-card__screenshot-placeholder">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                                    <rect x="3" y="3" width="18" height="18" rx="2"/>
+                                    <circle cx="8.5" cy="8.5" r="1.5"/>
+                                    <path d="M21 15l-5-5L5 21"/>
+                                </svg>
+                            </div>
+                        </div>
+                        <div class="ll-card__body">
+                            <div class="ll-card__header">
+                                <a href="#" class="ll-card__title">next-saas-starter</a>
+                                <span class="ll-card__lang">
+                                    <span class="ll-card__lang-dot" style="background: #3178c6"></span>
+                                    TypeScript
+                                </span>
+                            </div>
+                            <p class="ll-card__desc">Production-ready SaaS boilerplate with auth, payments, and more.</p>
+                            <div class="ll-card__meta">
+                                <span class="ll-card__stat ll-card__stat--star">
+                                    <svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+                                    12.4k
+                                </span>
+                                <div class="ll-card__mentions">
+                                    <span class="ll-mention ll-mention--hn">
+                                        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M0 24V0h24v24H0zM6.951 5.896l4.112 7.708v5.064h1.583v-4.972l4.148-7.799h-1.749l-3.21 6.039-3.135-6.04H6.951z"/></svg>
+                                        89
+                                    </span>
+                                    <span class="ll-mention ll-mention--reddit">
+                                        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0z"/></svg>
+                                        34
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="ll-card__footer">
+                            <span class="ll-card__updated">Updated yesterday</span>
+                            <a href="#" class="ll-card__link">
+                                Live Demo
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/>
+                                    <polyline points="15 3 21 3 21 9"/>
+                                    <line x1="10" y1="14" x2="21" y2="3"/>
+                                </svg>
+                            </a>
+                        </div>
+                    </article>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- EMBED CODE -->
+    <section class="demo-section">
+        <h2>Embed Code</h2>
+        <div class="demo-box light" style="background: #1e1e2e; border-color: #3f3f46;">
+            <pre style="color: #cdd6f4; font-family: 'JetBrains Mono', monospace; font-size: 13px; line-height: 1.6; overflow-x: auto;">
+<span style="color: #6c7086;">/* Add this script tag to your website */</span>
+
+<span style="color: #89b4fa;">&lt;script</span>
+  <span style="color: #f9e2af;">src</span>=<span style="color: #a6e3a1;">"https://launchlog.com/widget.js"</span>
+  <span style="color: #f9e2af;">data-user</span>=<span style="color: #a6e3a1;">"your-username"</span>
+  <span style="color: #f9e2af;">data-style</span>=<span style="color: #a6e3a1;">"grid"</span>
+  <span style="color: #f9e2af;">data-columns</span>=<span style="color: #a6e3a1;">"3"</span>
+  <span style="color: #f9e2af;">data-limit</span>=<span style="color: #a6e3a1;">"6"</span>
+<span style="color: #89b4fa;">&gt;&lt;/script&gt;</span>
+
+<span style="color: #6c7086;">/* Optional: Override CSS variables to match your site */</span>
+<span style="color: #cba6f7;">:root</span> {
+  <span style="color: #f9e2af;">--ll-bg</span>: <span style="color: #a6e3a1;">#your-background</span>;
+  <span style="color: #f9e2af;">--ll-text</span>: <span style="color: #a6e3a1;">#your-text-color</span>;
+  <span style="color: #f9e2af;">--ll-primary</span>: <span style="color: #a6e3a1;">#your-brand-color</span>;
+}
+            </pre>
+        </div>
+    </section>
+</body>
+</html>
