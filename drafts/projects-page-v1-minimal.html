@@ -1,0 +1,1552 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Projects | @username | LaunchLog</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&family=JetBrains+Mono:wght@500;600&display=swap" rel="stylesheet">
+    <style>
+        /* ===========================================
+           VARIATION 1: MINIMAL / CLEAN
+
+           Design Philosophy:
+           - Generous whitespace, breathing room
+           - Subtle interactions, no overwhelming gradients
+           - Typography-driven hierarchy
+           - Sidebar filters on desktop
+           - Clean pill-based filter UI
+           =========================================== */
+
+        :root {
+            /* Light mode - clean, minimal */
+            --color-bg: #FAFAFA;
+            --color-surface: #FFFFFF;
+            --color-surface-elevated: #F4F4F5;
+            --color-text: #18181B;
+            --color-text-secondary: #71717A;
+            --color-text-tertiary: #A1A1AA;
+            --color-border: #E4E4E7;
+            --color-border-subtle: #F4F4F5;
+            --color-primary: #6366F1;
+            --color-primary-light: #818CF8;
+            --color-primary-bg: rgba(99, 102, 241, 0.08);
+
+            /* Platform colors */
+            --color-hn: #FF6600;
+            --color-reddit: #FF4500;
+            --color-twitter: #1DA1F2;
+            --color-success: #22C55E;
+
+            /* Spacing */
+            --radius-sm: 8px;
+            --radius-md: 12px;
+            --radius-lg: 16px;
+            --radius-xl: 24px;
+
+            /* Shadows */
+            --shadow-sm: 0 1px 2px rgba(0,0,0,0.04);
+            --shadow-md: 0 4px 12px rgba(0,0,0,0.06);
+            --shadow-lg: 0 12px 32px rgba(0,0,0,0.08);
+        }
+
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --color-bg: #0F0F14;
+                --color-surface: #1A1A24;
+                --color-surface-elevated: #24243A;
+                --color-text: #FFFFFF;
+                --color-text-secondary: #A0A0B8;
+                --color-text-tertiary: #6B6B80;
+                --color-border: #2E2E3A;
+                --color-border-subtle: #24243A;
+                --color-primary-bg: rgba(99, 102, 241, 0.15);
+            }
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--color-bg);
+            color: var(--color-text);
+            line-height: 1.6;
+            min-height: 100vh;
+        }
+
+        /* Header - Minimal sticky */
+        header {
+            border-bottom: 1px solid var(--color-border);
+            padding: 16px 32px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            background: var(--color-bg);
+            backdrop-filter: blur(12px);
+            z-index: 100;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-family: 'Space Grotesk', sans-serif;
+            font-weight: 700;
+            font-size: 18px;
+            color: var(--color-text);
+            text-decoration: none;
+        }
+
+        .logo-icon {
+            width: 28px;
+            height: 28px;
+            background: linear-gradient(135deg, #6366F1 0%, #8B5CF6 50%, #A855F7 100%);
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .logo-icon svg {
+            width: 16px;
+            height: 16px;
+            color: white;
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+        }
+
+        .btn {
+            padding: 8px 16px;
+            border-radius: var(--radius-sm);
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+            border: none;
+            font-size: 14px;
+            font-family: inherit;
+            text-decoration: none;
+        }
+
+        .btn-ghost {
+            background: transparent;
+            color: var(--color-text-secondary);
+        }
+
+        .btn-ghost:hover {
+            color: var(--color-text);
+        }
+
+        .btn-primary {
+            background: var(--color-primary);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: var(--color-primary-light);
+        }
+
+        /* Main Layout - Sidebar + Content */
+        main {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 40px 32px;
+            display: grid;
+            grid-template-columns: 280px 1fr;
+            gap: 48px;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            position: sticky;
+            top: 100px;
+            height: fit-content;
+        }
+
+        /* User Summary Card */
+        .user-summary {
+            background: var(--color-surface);
+            border: 1px solid var(--color-border);
+            border-radius: var(--radius-lg);
+            padding: 24px;
+            margin-bottom: 24px;
+        }
+
+        .user-avatar {
+            width: 64px;
+            height: 64px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #6366F1 0%, #8B5CF6 50%, #A855F7 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 24px;
+            font-weight: 700;
+            color: white;
+            margin-bottom: 16px;
+        }
+
+        .user-name {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 20px;
+            font-weight: 700;
+            margin-bottom: 4px;
+        }
+
+        .user-handle {
+            color: var(--color-text-secondary);
+            font-size: 14px;
+            margin-bottom: 16px;
+        }
+
+        .user-stats {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+        }
+
+        .user-stat {
+            text-align: center;
+            padding: 12px;
+            background: var(--color-surface-elevated);
+            border-radius: var(--radius-sm);
+        }
+
+        .user-stat-value {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--color-text);
+        }
+
+        .user-stat-label {
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--color-text-secondary);
+            margin-top: 2px;
+        }
+
+        .back-to-profile {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            color: var(--color-text-secondary);
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 500;
+            margin-top: 16px;
+            transition: color 0.2s;
+        }
+
+        .back-to-profile:hover {
+            color: var(--color-primary);
+        }
+
+        .back-to-profile svg {
+            width: 16px;
+            height: 16px;
+        }
+
+        /* Filter Section */
+        .filter-section {
+            background: var(--color-surface);
+            border: 1px solid var(--color-border);
+            border-radius: var(--radius-lg);
+            padding: 24px;
+        }
+
+        .filter-title {
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--color-text-secondary);
+            margin-bottom: 16px;
+        }
+
+        .filter-group {
+            margin-bottom: 24px;
+        }
+
+        .filter-group:last-child {
+            margin-bottom: 0;
+        }
+
+        .filter-group-label {
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--color-text);
+            margin-bottom: 10px;
+        }
+
+        .filter-pills {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .filter-pill {
+            padding: 6px 12px;
+            border-radius: 100px;
+            font-size: 13px;
+            font-weight: 500;
+            color: var(--color-text-secondary);
+            background: var(--color-surface-elevated);
+            border: 1px solid transparent;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .filter-pill:hover {
+            border-color: var(--color-border);
+            color: var(--color-text);
+        }
+
+        .filter-pill.active {
+            background: var(--color-primary-bg);
+            color: var(--color-primary);
+            border-color: var(--color-primary);
+        }
+
+        .filter-pill .count {
+            margin-left: 4px;
+            opacity: 0.6;
+        }
+
+        /* Search Input */
+        .search-container {
+            margin-bottom: 24px;
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 10px 14px 10px 38px;
+            border: 1px solid var(--color-border);
+            border-radius: var(--radius-sm);
+            background: var(--color-bg);
+            font-size: 14px;
+            color: var(--color-text);
+            transition: all 0.2s;
+        }
+
+        .search-input:focus {
+            outline: none;
+            border-color: var(--color-primary);
+            box-shadow: 0 0 0 3px var(--color-primary-bg);
+        }
+
+        .search-input::placeholder {
+            color: var(--color-text-tertiary);
+        }
+
+        .search-wrapper {
+            position: relative;
+        }
+
+        .search-icon {
+            position: absolute;
+            left: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 18px;
+            height: 18px;
+            color: var(--color-text-tertiary);
+        }
+
+        .search-clear {
+            position: absolute;
+            right: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 18px;
+            height: 18px;
+            color: var(--color-text-tertiary);
+            cursor: pointer;
+            opacity: 0;
+            transition: opacity 0.2s;
+        }
+
+        .search-input:not(:placeholder-shown) + .search-icon + .search-clear {
+            opacity: 1;
+        }
+
+        /* Content Area */
+        .content {
+            min-width: 0;
+        }
+
+        /* Page Header */
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 32px;
+        }
+
+        .page-title {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 28px;
+            font-weight: 700;
+        }
+
+        .project-count {
+            color: var(--color-text-secondary);
+            font-weight: 400;
+            margin-left: 8px;
+        }
+
+        .sort-dropdown {
+            padding: 8px 32px 8px 14px;
+            border-radius: var(--radius-sm);
+            border: 1px solid var(--color-border);
+            background: var(--color-surface);
+            font-size: 14px;
+            color: var(--color-text);
+            cursor: pointer;
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%2371717A' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 10px center;
+        }
+
+        .sort-dropdown:focus {
+            outline: none;
+            border-color: var(--color-primary);
+        }
+
+        /* Projects Grid */
+        .projects-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 24px;
+        }
+
+        /* Project Card - Minimal */
+        .project-card {
+            background: var(--color-surface);
+            border: 1px solid var(--color-border);
+            border-radius: var(--radius-lg);
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .project-card:hover {
+            border-color: var(--color-primary);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+        }
+
+        .project-screenshot {
+            width: 100%;
+            aspect-ratio: 16/10;
+            background: var(--color-surface-elevated);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .project-screenshot img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.3s ease;
+        }
+
+        .project-card:hover .project-screenshot img {
+            transform: scale(1.02);
+        }
+
+        .project-screenshot-placeholder {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, var(--color-surface-elevated) 0%, var(--color-border-subtle) 100%);
+        }
+
+        .project-screenshot-placeholder svg {
+            width: 48px;
+            height: 48px;
+            color: var(--color-text-tertiary);
+        }
+
+        /* Activity Badge */
+        .activity-badge {
+            position: absolute;
+            top: 12px;
+            right: 12px;
+            padding: 4px 10px;
+            border-radius: 100px;
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.03em;
+        }
+
+        .activity-badge.active {
+            background: rgba(34, 197, 94, 0.15);
+            color: var(--color-success);
+        }
+
+        .activity-badge.recent {
+            background: rgba(99, 102, 241, 0.15);
+            color: var(--color-primary);
+        }
+
+        .activity-badge.archived {
+            background: var(--color-surface-elevated);
+            color: var(--color-text-tertiary);
+        }
+
+        .project-content {
+            padding: 20px;
+        }
+
+        .project-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 8px;
+        }
+
+        .project-name {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--color-text);
+            text-decoration: none;
+            transition: color 0.2s;
+        }
+
+        .project-name:hover {
+            color: var(--color-primary);
+        }
+
+        .project-lang {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 12px;
+            color: var(--color-text-secondary);
+            font-weight: 500;
+        }
+
+        .project-lang .dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+        }
+
+        .dot.ts { background: #3178C6; }
+        .dot.js { background: #F7DF1E; }
+        .dot.py { background: #3776AB; }
+        .dot.go { background: #00ADD8; }
+        .dot.rust { background: #DEA584; }
+
+        .project-description {
+            color: var(--color-text-secondary);
+            font-size: 14px;
+            line-height: 1.5;
+            margin-bottom: 16px;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        /* Project Meta Row */
+        .project-meta {
+            display: flex;
+            gap: 16px;
+            margin-bottom: 16px;
+            padding-bottom: 16px;
+            border-bottom: 1px solid var(--color-border-subtle);
+        }
+
+        .project-stat {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            font-size: 13px;
+            color: var(--color-text-secondary);
+        }
+
+        .project-stat svg {
+            width: 14px;
+            height: 14px;
+        }
+
+        .project-stat.stars svg {
+            fill: #FBBF24;
+            color: #FBBF24;
+        }
+
+        .project-updated {
+            margin-left: auto;
+            font-size: 12px;
+            color: var(--color-text-tertiary);
+        }
+
+        /* Tech Stack Tags */
+        .tech-stack {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            margin-bottom: 16px;
+        }
+
+        .tech-tag {
+            padding: 3px 8px;
+            border-radius: 4px;
+            font-size: 11px;
+            font-weight: 500;
+            background: var(--color-surface-elevated);
+            color: var(--color-text-secondary);
+        }
+
+        /* Mentions Row */
+        .mentions-row {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px;
+            background: var(--color-surface-elevated);
+            border-radius: var(--radius-sm);
+        }
+
+        .mentions-label {
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--color-text-secondary);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .mentions-label svg {
+            width: 14px;
+            height: 14px;
+        }
+
+        .mentions-divider {
+            width: 1px;
+            height: 16px;
+            background: var(--color-border);
+        }
+
+        .mention-badge {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .mention-badge svg {
+            width: 14px;
+            height: 14px;
+        }
+
+        .mention-badge.hn {
+            color: var(--color-hn);
+        }
+
+        .mention-badge.reddit {
+            color: var(--color-reddit);
+        }
+
+        .mention-badge .icon-bg {
+            width: 20px;
+            height: 20px;
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .mention-badge.hn .icon-bg {
+            background: rgba(255, 102, 0, 0.15);
+        }
+
+        .mention-badge.reddit .icon-bg {
+            background: rgba(255, 69, 0, 0.15);
+        }
+
+        .mentions-cta {
+            margin-left: auto;
+            font-size: 12px;
+            color: var(--color-primary);
+            text-decoration: none;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .mentions-cta:hover {
+            text-decoration: underline;
+        }
+
+        .mentions-cta svg {
+            width: 14px;
+            height: 14px;
+        }
+
+        /* Project Links */
+        .project-links {
+            display: flex;
+            gap: 10px;
+            margin-top: 16px;
+        }
+
+        .project-link {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            padding: 6px 12px;
+            border-radius: var(--radius-sm);
+            font-size: 13px;
+            font-weight: 500;
+            color: var(--color-text-secondary);
+            text-decoration: none;
+            border: 1px solid var(--color-border);
+            transition: all 0.2s;
+        }
+
+        .project-link:hover {
+            border-color: var(--color-primary);
+            color: var(--color-primary);
+        }
+
+        .project-link svg {
+            width: 14px;
+            height: 14px;
+        }
+
+        /* Pagination */
+        .pagination {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 8px;
+            margin-top: 48px;
+        }
+
+        .pagination-btn {
+            padding: 8px 14px;
+            border-radius: var(--radius-sm);
+            font-size: 14px;
+            font-weight: 500;
+            color: var(--color-text-secondary);
+            background: var(--color-surface);
+            border: 1px solid var(--color-border);
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .pagination-btn:hover:not(:disabled) {
+            border-color: var(--color-primary);
+            color: var(--color-primary);
+        }
+
+        .pagination-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .pagination-btn.active {
+            background: var(--color-primary);
+            color: white;
+            border-color: var(--color-primary);
+        }
+
+        /* Empty State */
+        .empty-state {
+            text-align: center;
+            padding: 80px 40px;
+            background: var(--color-surface);
+            border: 1px solid var(--color-border);
+            border-radius: var(--radius-lg);
+        }
+
+        .empty-state svg {
+            width: 64px;
+            height: 64px;
+            color: var(--color-text-tertiary);
+            margin-bottom: 24px;
+        }
+
+        .empty-state-title {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 20px;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+
+        .empty-state-text {
+            color: var(--color-text-secondary);
+            font-size: 14px;
+            max-width: 300px;
+            margin: 0 auto;
+        }
+
+        /* Loading Skeleton */
+        .skeleton {
+            background: linear-gradient(
+                90deg,
+                var(--color-surface-elevated) 25%,
+                var(--color-border-subtle) 50%,
+                var(--color-surface-elevated) 75%
+            );
+            background-size: 200% 100%;
+            animation: skeleton-loading 1.5s infinite;
+            border-radius: var(--radius-sm);
+        }
+
+        @keyframes skeleton-loading {
+            0% { background-position: 200% 0; }
+            100% { background-position: -200% 0; }
+        }
+
+        .skeleton-card {
+            background: var(--color-surface);
+            border: 1px solid var(--color-border);
+            border-radius: var(--radius-lg);
+            overflow: hidden;
+        }
+
+        .skeleton-image {
+            aspect-ratio: 16/10;
+        }
+
+        .skeleton-content {
+            padding: 20px;
+        }
+
+        .skeleton-title {
+            height: 20px;
+            width: 60%;
+            margin-bottom: 12px;
+        }
+
+        .skeleton-text {
+            height: 14px;
+            width: 100%;
+            margin-bottom: 8px;
+        }
+
+        .skeleton-text.short {
+            width: 70%;
+        }
+
+        /* Footer */
+        footer {
+            margin-top: 80px;
+            padding: 32px;
+            text-align: center;
+            border-top: 1px solid var(--color-border);
+        }
+
+        .footer-branding {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            color: var(--color-text-secondary);
+            font-size: 14px;
+        }
+
+        .footer-branding a {
+            color: var(--color-primary);
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        .footer-branding a:hover {
+            text-decoration: underline;
+        }
+
+        /* Responsive */
+        @media (max-width: 1024px) {
+            main {
+                grid-template-columns: 1fr;
+                gap: 32px;
+            }
+
+            .sidebar {
+                position: static;
+                display: grid;
+                grid-template-columns: 280px 1fr;
+                gap: 24px;
+            }
+
+            .user-summary {
+                margin-bottom: 0;
+            }
+        }
+
+        @media (max-width: 768px) {
+            header {
+                padding: 12px 16px;
+            }
+
+            main {
+                padding: 24px 16px;
+            }
+
+            .sidebar {
+                grid-template-columns: 1fr;
+            }
+
+            .projects-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .page-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 16px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header>
+        <a href="/" class="logo">
+            <div class="logo-icon">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M15.59 14.37a6 6 0 01-5.84 7.38v-4.8m5.84-2.58a14.98 14.98 0 006.16-12.12A14.98 14.98 0 009.631 8.41m5.96 5.96a14.926 14.926 0 01-5.841 2.58m-.119-8.54a6 6 0 00-7.381 5.84h4.8m2.581-5.84a14.927 14.927 0 00-2.58 5.84m2.699 2.7c-.103.021-.207.041-.311.06a15.09 15.09 0 01-2.448-2.448 14.9 14.9 0 01.06-.312m-2.24 2.39a4.493 4.493 0 00-1.757 4.306 4.493 4.493 0 004.306-1.758M16.5 9a1.5 1.5 0 11-3 0 1.5 1.5 0 013 0z" />
+                </svg>
+            </div>
+            LaunchLog
+        </a>
+        <div class="header-actions">
+            <a href="#" class="btn btn-ghost">Sign In</a>
+            <a href="#" class="btn btn-primary">Create Your Portfolio</a>
+        </div>
+    </header>
+
+    <main>
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <!-- User Summary -->
+            <div class="user-summary">
+                <div class="user-avatar">SG</div>
+                <h2 class="user-name">Sarah Guo</h2>
+                <p class="user-handle">@sarahguo</p>
+                <div class="user-stats">
+                    <div class="user-stat">
+                        <div class="user-stat-value">18</div>
+                        <div class="user-stat-label">Projects</div>
+                    </div>
+                    <div class="user-stat">
+                        <div class="user-stat-value">24.7k</div>
+                        <div class="user-stat-label">Stars</div>
+                    </div>
+                    <div class="user-stat">
+                        <div class="user-stat-value">347</div>
+                        <div class="user-stat-label">Mentions</div>
+                    </div>
+                    <div class="user-stat">
+                        <div class="user-stat-value">89k</div>
+                        <div class="user-stat-label">Downloads</div>
+                    </div>
+                </div>
+                <a href="#" class="back-to-profile">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M19 12H5M12 19l-7-7 7-7"/>
+                    </svg>
+                    Back to profile
+                </a>
+            </div>
+
+            <!-- Filters -->
+            <div class="filter-section">
+                <h3 class="filter-title">Filters</h3>
+
+                <!-- Search -->
+                <div class="search-container">
+                    <div class="search-wrapper">
+                        <input type="text" class="search-input" placeholder="Search projects...">
+                        <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="11" cy="11" r="8"/>
+                            <path d="m21 21-4.35-4.35"/>
+                        </svg>
+                        <svg class="search-clear" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M18 6L6 18M6 6l12 12"/>
+                        </svg>
+                    </div>
+                </div>
+
+                <!-- Language Filter -->
+                <div class="filter-group">
+                    <div class="filter-group-label">Language</div>
+                    <div class="filter-pills">
+                        <button class="filter-pill active">All</button>
+                        <button class="filter-pill">TypeScript <span class="count">8</span></button>
+                        <button class="filter-pill">JavaScript <span class="count">4</span></button>
+                        <button class="filter-pill">Python <span class="count">3</span></button>
+                        <button class="filter-pill">Go <span class="count">2</span></button>
+                        <button class="filter-pill">Rust <span class="count">1</span></button>
+                    </div>
+                </div>
+
+                <!-- Status Filter -->
+                <div class="filter-group">
+                    <div class="filter-group-label">Status</div>
+                    <div class="filter-pills">
+                        <button class="filter-pill active">All</button>
+                        <button class="filter-pill">Active <span class="count">12</span></button>
+                        <button class="filter-pill">Recent <span class="count">4</span></button>
+                        <button class="filter-pill">Archived <span class="count">2</span></button>
+                    </div>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Content -->
+        <div class="content">
+            <!-- Page Header -->
+            <div class="page-header">
+                <h1 class="page-title">
+                    All Projects
+                    <span class="project-count">(18)</span>
+                </h1>
+                <select class="sort-dropdown">
+                    <option>Sort by mentions</option>
+                    <option>Sort by stars</option>
+                    <option>Sort by recent</option>
+                    <option>Sort by name</option>
+                </select>
+            </div>
+
+            <!-- Projects Grid -->
+            <div class="projects-grid">
+                <!-- Project Card 1 -->
+                <article class="project-card">
+                    <div class="project-screenshot">
+                        <div class="project-screenshot-placeholder">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                                <path d="M13 10V3L4 14h7v7l9-11h-7z"/>
+                            </svg>
+                        </div>
+                        <span class="activity-badge active">Active</span>
+                    </div>
+                    <div class="project-content">
+                        <div class="project-header">
+                            <a href="#" class="project-name">shipfast-cli</a>
+                            <span class="project-lang">
+                                <span class="dot ts"></span>
+                                TypeScript
+                            </span>
+                        </div>
+                        <p class="project-description">
+                            Deploy full-stack applications to any cloud in under 2 minutes. Zero config, maximum speed.
+                        </p>
+                        <div class="project-meta">
+                            <span class="project-stat stars">
+                                <svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+                                8.4k
+                            </span>
+                            <span class="project-stat">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M7 17l9.2-9.2M17 17V7H7"/>
+                                </svg>
+                                2.1k
+                            </span>
+                            <span class="project-updated">Updated 2 days ago</span>
+                        </div>
+                        <div class="tech-stack">
+                            <span class="tech-tag">Node.js</span>
+                            <span class="tech-tag">Docker</span>
+                            <span class="tech-tag">AWS</span>
+                            <span class="tech-tag">CLI</span>
+                        </div>
+                        <div class="mentions-row">
+                            <span class="mentions-label">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+                                </svg>
+                                Mentions
+                            </span>
+                            <span class="mentions-divider"></span>
+                            <span class="mention-badge hn">
+                                <span class="icon-bg">
+                                    <svg viewBox="0 0 24 24" fill="currentColor"><path d="M0 24V0h24v24H0zM6.951 5.896l4.112 7.708v5.064h1.583v-4.972l4.148-7.799h-1.749l-3.21 6.039-3.135-6.04H6.951z"/></svg>
+                                </span>
+                                127
+                            </span>
+                            <span class="mention-badge reddit">
+                                <span class="icon-bg">
+                                    <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0z"/></svg>
+                                </span>
+                                45
+                            </span>
+                            <a href="#" class="mentions-cta">
+                                View all
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M9 18l6-6-6-6"/>
+                                </svg>
+                            </a>
+                        </div>
+                        <div class="project-links">
+                            <a href="#" class="project-link">
+                                <svg viewBox="0 0 24 24" fill="currentColor">
+                                    <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
+                                </svg>
+                                GitHub
+                            </a>
+                            <a href="#" class="project-link">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/>
+                                    <polyline points="15 3 21 3 21 9"/>
+                                    <line x1="10" y1="14" x2="21" y2="3"/>
+                                </svg>
+                                Demo
+                            </a>
+                        </div>
+                    </div>
+                </article>
+
+                <!-- Project Card 2 -->
+                <article class="project-card">
+                    <div class="project-screenshot">
+                        <div class="project-screenshot-placeholder">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                                <rect x="3" y="3" width="18" height="18" rx="2"/>
+                                <line x1="3" y1="9" x2="21" y2="9"/>
+                                <line x1="9" y1="21" x2="9" y2="9"/>
+                            </svg>
+                        </div>
+                        <span class="activity-badge recent">Recently Updated</span>
+                    </div>
+                    <div class="project-content">
+                        <div class="project-header">
+                            <a href="#" class="project-name">react-forms-pro</a>
+                            <span class="project-lang">
+                                <span class="dot ts"></span>
+                                TypeScript
+                            </span>
+                        </div>
+                        <p class="project-description">
+                            High-performance, type-safe form library for React. Built-in validation, accessibility, and beautiful defaults.
+                        </p>
+                        <div class="project-meta">
+                            <span class="project-stat stars">
+                                <svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+                                6.2k
+                            </span>
+                            <span class="project-stat">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M7 17l9.2-9.2M17 17V7H7"/>
+                                </svg>
+                                847
+                            </span>
+                            <span class="project-updated">Updated 5 days ago</span>
+                        </div>
+                        <div class="tech-stack">
+                            <span class="tech-tag">React</span>
+                            <span class="tech-tag">Zod</span>
+                            <span class="tech-tag">TypeScript</span>
+                        </div>
+                        <div class="mentions-row">
+                            <span class="mentions-label">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+                                </svg>
+                                Mentions
+                            </span>
+                            <span class="mentions-divider"></span>
+                            <span class="mention-badge hn">
+                                <span class="icon-bg">
+                                    <svg viewBox="0 0 24 24" fill="currentColor"><path d="M0 24V0h24v24H0zM6.951 5.896l4.112 7.708v5.064h1.583v-4.972l4.148-7.799h-1.749l-3.21 6.039-3.135-6.04H6.951z"/></svg>
+                                </span>
+                                84
+                            </span>
+                            <span class="mention-badge reddit">
+                                <span class="icon-bg">
+                                    <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0z"/></svg>
+                                </span>
+                                32
+                            </span>
+                            <a href="#" class="mentions-cta">
+                                View all
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M9 18l6-6-6-6"/>
+                                </svg>
+                            </a>
+                        </div>
+                        <div class="project-links">
+                            <a href="#" class="project-link">
+                                <svg viewBox="0 0 24 24" fill="currentColor">
+                                    <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
+                                </svg>
+                                GitHub
+                            </a>
+                            <a href="#" class="project-link">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/>
+                                    <polyline points="15 3 21 3 21 9"/>
+                                    <line x1="10" y1="14" x2="21" y2="3"/>
+                                </svg>
+                                Demo
+                            </a>
+                        </div>
+                    </div>
+                </article>
+
+                <!-- Project Card 3 -->
+                <article class="project-card">
+                    <div class="project-screenshot">
+                        <div class="project-screenshot-placeholder">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                                <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/>
+                            </svg>
+                        </div>
+                        <span class="activity-badge active">Active</span>
+                    </div>
+                    <div class="project-content">
+                        <div class="project-header">
+                            <a href="#" class="project-name">tailwind-tokens</a>
+                            <span class="project-lang">
+                                <span class="dot js"></span>
+                                JavaScript
+                            </span>
+                        </div>
+                        <p class="project-description">
+                            Generate design tokens from Figma and export to Tailwind config. Keep design and code in sync.
+                        </p>
+                        <div class="project-meta">
+                            <span class="project-stat stars">
+                                <svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+                                4.8k
+                            </span>
+                            <span class="project-stat">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M7 17l9.2-9.2M17 17V7H7"/>
+                                </svg>
+                                312
+                            </span>
+                            <span class="project-updated">Updated 1 week ago</span>
+                        </div>
+                        <div class="tech-stack">
+                            <span class="tech-tag">Figma API</span>
+                            <span class="tech-tag">Tailwind</span>
+                            <span class="tech-tag">PostCSS</span>
+                        </div>
+                        <div class="mentions-row">
+                            <span class="mentions-label">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+                                </svg>
+                                Mentions
+                            </span>
+                            <span class="mentions-divider"></span>
+                            <span class="mention-badge hn">
+                                <span class="icon-bg">
+                                    <svg viewBox="0 0 24 24" fill="currentColor"><path d="M0 24V0h24v24H0zM6.951 5.896l4.112 7.708v5.064h1.583v-4.972l4.148-7.799h-1.749l-3.21 6.039-3.135-6.04H6.951z"/></svg>
+                                </span>
+                                56
+                            </span>
+                            <a href="#" class="mentions-cta">
+                                View all
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M9 18l6-6-6-6"/>
+                                </svg>
+                            </a>
+                        </div>
+                        <div class="project-links">
+                            <a href="#" class="project-link">
+                                <svg viewBox="0 0 24 24" fill="currentColor">
+                                    <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
+                                </svg>
+                                GitHub
+                            </a>
+                        </div>
+                    </div>
+                </article>
+
+                <!-- Project Card 4 - Archived -->
+                <article class="project-card">
+                    <div class="project-screenshot">
+                        <div class="project-screenshot-placeholder">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                                <circle cx="12" cy="12" r="10"/>
+                                <polyline points="12 6 12 12 16 14"/>
+                            </svg>
+                        </div>
+                        <span class="activity-badge archived">Archived</span>
+                    </div>
+                    <div class="project-content">
+                        <div class="project-header">
+                            <a href="#" class="project-name">cron-scheduler</a>
+                            <span class="project-lang">
+                                <span class="dot go"></span>
+                                Go
+                            </span>
+                        </div>
+                        <p class="project-description">
+                            Distributed cron job scheduler with retry logic, dead letter queues, and monitoring built-in.
+                        </p>
+                        <div class="project-meta">
+                            <span class="project-stat stars">
+                                <svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+                                3.1k
+                            </span>
+                            <span class="project-stat">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M7 17l9.2-9.2M17 17V7H7"/>
+                                </svg>
+                                189
+                            </span>
+                            <span class="project-updated">Updated 3 months ago</span>
+                        </div>
+                        <div class="tech-stack">
+                            <span class="tech-tag">Go</span>
+                            <span class="tech-tag">Redis</span>
+                            <span class="tech-tag">gRPC</span>
+                        </div>
+                        <div class="mentions-row">
+                            <span class="mentions-label">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+                                </svg>
+                                Mentions
+                            </span>
+                            <span class="mentions-divider"></span>
+                            <span class="mention-badge hn">
+                                <span class="icon-bg">
+                                    <svg viewBox="0 0 24 24" fill="currentColor"><path d="M0 24V0h24v24H0zM6.951 5.896l4.112 7.708v5.064h1.583v-4.972l4.148-7.799h-1.749l-3.21 6.039-3.135-6.04H6.951z"/></svg>
+                                </span>
+                                42
+                            </span>
+                            <span class="mention-badge reddit">
+                                <span class="icon-bg">
+                                    <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0z"/></svg>
+                                </span>
+                                78
+                            </span>
+                            <a href="#" class="mentions-cta">
+                                View all
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M9 18l6-6-6-6"/>
+                                </svg>
+                            </a>
+                        </div>
+                        <div class="project-links">
+                            <a href="#" class="project-link">
+                                <svg viewBox="0 0 24 24" fill="currentColor">
+                                    <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
+                                </svg>
+                                GitHub
+                            </a>
+                        </div>
+                    </div>
+                </article>
+
+                <!-- Project Card 5 -->
+                <article class="project-card">
+                    <div class="project-screenshot">
+                        <div class="project-screenshot-placeholder">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                                <rect x="2" y="3" width="20" height="14" rx="2" ry="2"/>
+                                <line x1="8" y1="21" x2="16" y2="21"/>
+                                <line x1="12" y1="17" x2="12" y2="21"/>
+                            </svg>
+                        </div>
+                        <span class="activity-badge active">Active</span>
+                    </div>
+                    <div class="project-content">
+                        <div class="project-header">
+                            <a href="#" class="project-name">api-mocker</a>
+                            <span class="project-lang">
+                                <span class="dot ts"></span>
+                                TypeScript
+                            </span>
+                        </div>
+                        <p class="project-description">
+                            Mock any REST or GraphQL API instantly. Record real responses and replay them in tests.
+                        </p>
+                        <div class="project-meta">
+                            <span class="project-stat stars">
+                                <svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+                                2.2k
+                            </span>
+                            <span class="project-stat">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M7 17l9.2-9.2M17 17V7H7"/>
+                                </svg>
+                                156
+                            </span>
+                            <span class="project-updated">Updated 4 days ago</span>
+                        </div>
+                        <div class="tech-stack">
+                            <span class="tech-tag">Express</span>
+                            <span class="tech-tag">GraphQL</span>
+                            <span class="tech-tag">Jest</span>
+                        </div>
+                        <div class="mentions-row">
+                            <span class="mentions-label">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+                                </svg>
+                                Mentions
+                            </span>
+                            <span class="mentions-divider"></span>
+                            <span class="mention-badge hn">
+                                <span class="icon-bg">
+                                    <svg viewBox="0 0 24 24" fill="currentColor"><path d="M0 24V0h24v24H0zM6.951 5.896l4.112 7.708v5.064h1.583v-4.972l4.148-7.799h-1.749l-3.21 6.039-3.135-6.04H6.951z"/></svg>
+                                </span>
+                                23
+                            </span>
+                            <a href="#" class="mentions-cta">
+                                View all
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M9 18l6-6-6-6"/>
+                                </svg>
+                            </a>
+                        </div>
+                        <div class="project-links">
+                            <a href="#" class="project-link">
+                                <svg viewBox="0 0 24 24" fill="currentColor">
+                                    <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
+                                </svg>
+                                GitHub
+                            </a>
+                            <a href="#" class="project-link">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/>
+                                    <polyline points="15 3 21 3 21 9"/>
+                                    <line x1="10" y1="14" x2="21" y2="3"/>
+                                </svg>
+                                Docs
+                            </a>
+                        </div>
+                    </div>
+                </article>
+
+                <!-- Project Card 6 -->
+                <article class="project-card">
+                    <div class="project-screenshot">
+                        <div class="project-screenshot-placeholder">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                                <polyline points="14 2 14 8 20 8"/>
+                                <line x1="16" y1="13" x2="8" y2="13"/>
+                                <line x1="16" y1="17" x2="8" y2="17"/>
+                            </svg>
+                        </div>
+                        <span class="activity-badge active">Active</span>
+                    </div>
+                    <div class="project-content">
+                        <div class="project-header">
+                            <a href="#" class="project-name">readme-gen</a>
+                            <span class="project-lang">
+                                <span class="dot py"></span>
+                                Python
+                            </span>
+                        </div>
+                        <p class="project-description">
+                            AI-powered README generator. Analyze your codebase and create beautiful documentation instantly.
+                        </p>
+                        <div class="project-meta">
+                            <span class="project-stat stars">
+                                <svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+                                1.8k
+                            </span>
+                            <span class="project-stat">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M7 17l9.2-9.2M17 17V7H7"/>
+                                </svg>
+                                89
+                            </span>
+                            <span class="project-updated">Updated 2 weeks ago</span>
+                        </div>
+                        <div class="tech-stack">
+                            <span class="tech-tag">OpenAI</span>
+                            <span class="tech-tag">FastAPI</span>
+                            <span class="tech-tag">Markdown</span>
+                        </div>
+                        <div class="mentions-row">
+                            <span class="mentions-label">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+                                </svg>
+                                Mentions
+                            </span>
+                            <span class="mentions-divider"></span>
+                            <span class="mention-badge hn">
+                                <span class="icon-bg">
+                                    <svg viewBox="0 0 24 24" fill="currentColor"><path d="M0 24V0h24v24H0zM6.951 5.896l4.112 7.708v5.064h1.583v-4.972l4.148-7.799h-1.749l-3.21 6.039-3.135-6.04H6.951z"/></svg>
+                                </span>
+                                15
+                            </span>
+                            <a href="#" class="mentions-cta">
+                                View all
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M9 18l6-6-6-6"/>
+                                </svg>
+                            </a>
+                        </div>
+                        <div class="project-links">
+                            <a href="#" class="project-link">
+                                <svg viewBox="0 0 24 24" fill="currentColor">
+                                    <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
+                                </svg>
+                                GitHub
+                            </a>
+                            <a href="#" class="project-link">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/>
+                                    <polyline points="15 3 21 3 21 9"/>
+                                    <line x1="10" y1="14" x2="21" y2="3"/>
+                                </svg>
+                                Try it
+                            </a>
+                        </div>
+                    </div>
+                </article>
+            </div>
+
+            <!-- Pagination -->
+            <div class="pagination">
+                <button class="pagination-btn" disabled>
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16">
+                        <path d="M15 18l-6-6 6-6"/>
+                    </svg>
+                </button>
+                <button class="pagination-btn active">1</button>
+                <button class="pagination-btn">2</button>
+                <button class="pagination-btn">3</button>
+                <button class="pagination-btn">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16">
+                        <path d="M9 18l6-6-6-6"/>
+                    </svg>
+                </button>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer>
+        <div class="footer-branding">
+            Portfolio powered by <a href="/">LaunchLog</a> &bull; <a href="#">Create your free portfolio</a>
+        </div>
+    </footer>
+</body>
+</html>
