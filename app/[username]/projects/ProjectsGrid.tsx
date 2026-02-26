@@ -3,10 +3,7 @@
 import { useState, useMemo } from "react";
 import { FolderOpen, Search } from "lucide-react";
 import { ProjectCard } from "./ProjectCard";
-import {
-  FilterContext,
-  useProjectFilters,
-} from "./ProjectsFilters";
+import { FilterContext, useProjectFilters } from "./ProjectsFilters";
 
 interface MentionCount {
   hackernews: number;
@@ -29,7 +26,7 @@ interface EnrichedRepo {
   demo_url: string | null;
   updated_at: string | null;
   created_at: string | null;
-  activityStatus: "active" | "recent" | "archived";
+  activityStatus: "active" | "recent" | "archived" | "new";
   mentions: MentionCount;
 }
 
@@ -39,17 +36,10 @@ interface ProjectsGridProps {
 
 const ITEMS_PER_PAGE = 12;
 
-export function ProjectsGrid({
-  projects,
-}: ProjectsGridProps) {
+export function ProjectsGrid({ projects }: ProjectsGridProps) {
   const filterState = useProjectFilters();
-  const {
-    searchQuery,
-    selectedLanguage,
-    selectedStatus,
-    sortBy,
-    setSortBy,
-  } = filterState;
+  const { searchQuery, selectedLanguage, selectedStatus, sortBy, setSortBy } =
+    filterState;
 
   const [currentPage, setCurrentPage] = useState(1);
 
@@ -108,7 +98,7 @@ export function ProjectsGrid({
         break;
       case "name":
         sorted.sort((a, b) =>
-          a.repo_name.toLowerCase().localeCompare(b.repo_name.toLowerCase())
+          a.repo_name.toLowerCase().localeCompare(b.repo_name.toLowerCase()),
         );
         break;
     }
@@ -214,10 +204,7 @@ export function ProjectsGrid({
 
                     if (!showPage) {
                       // Show ellipsis for gaps
-                      if (
-                        page === 2 ||
-                        page === totalPages - 1
-                      ) {
+                      if (page === 2 || page === totalPages - 1) {
                         return (
                           <span
                             key={page}
@@ -243,7 +230,7 @@ export function ProjectsGrid({
                         {page}
                       </button>
                     );
-                  }
+                  },
                 )}
 
                 <button

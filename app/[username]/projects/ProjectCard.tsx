@@ -1,7 +1,14 @@
 "use client";
 
 import Image from "next/image";
-import { Star, ExternalLink, GitFork, Code, MessageSquare, ChevronRight } from "lucide-react";
+import {
+  Star,
+  ExternalLink,
+  GitFork,
+  Code,
+  MessageSquare,
+  ChevronRight,
+} from "lucide-react";
 import { useState } from "react";
 import { MentionsModal } from "@/app/components/projects/MentionsModal";
 
@@ -26,7 +33,7 @@ interface EnrichedRepo {
   demo_url: string | null;
   updated_at: string | null;
   created_at: string | null;
-  activityStatus: "active" | "recent" | "archived";
+  activityStatus: "active" | "recent" | "archived" | "new";
   mentions: MentionCount;
 }
 
@@ -119,9 +126,13 @@ function getRelativeTime(dateString: string | null): string {
 function ActivityBadge({
   status,
 }: {
-  status: "active" | "recent" | "archived";
+  status: "active" | "recent" | "archived" | "new";
 }) {
   const config = {
+    new: {
+      label: "New",
+      classes: "bg-blue-500/15 text-blue-500",
+    },
     active: {
       label: "Active",
       classes: "bg-green-500/15 text-green-500",
@@ -132,7 +143,8 @@ function ActivityBadge({
     },
     archived: {
       label: "Archived",
-      classes: "bg-[var(--color-surface-elevated)] text-[var(--color-text-secondary)]",
+      classes:
+        "bg-[var(--color-surface-elevated)] text-[var(--color-text-secondary)]",
     },
   };
 

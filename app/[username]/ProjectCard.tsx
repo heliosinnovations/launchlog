@@ -3,6 +3,12 @@
 import Image from "next/image";
 import { Star, ExternalLink, Code } from "lucide-react";
 import MentionsRow from "@/app/components/projects/MentionsRow";
+import {
+  type ActivityStatus,
+  getActivityStatus,
+  getActivityLabel,
+  getActivityBadgeClasses,
+} from "@/lib/activity-status";
 
 interface UserRepo {
   id: string;
@@ -17,6 +23,8 @@ interface UserRepo {
   screenshot_url: string | null;
   screenshot_source: string | null;
   demo_url: string | null;
+  updated_at?: string | null;
+  created_at?: string | null;
 }
 
 const LANGUAGE_COLORS: Record<string, string> = {
@@ -88,6 +96,22 @@ function getScreenshotUrl(repo: UserRepo): string | null {
 }
 
 /**
+ * Activity badge component for project cards
+ */
+function ActivityBadge({ status }: { status: ActivityStatus }) {
+  const label = getActivityLabel(status);
+  const classes = getActivityBadgeClasses(status);
+
+  return (
+    <span
+      className={`absolute top-3 right-3 px-2.5 py-1 rounded-full text-[11px] font-semibold uppercase tracking-wide ${classes}`}
+    >
+      {label}
+    </span>
+  );
+}
+
+/**
  * ProjectScreenshot component - Displays project screenshot with fallback hierarchy
  * - Primary: screenshot_url from database
  * - Fallback 1: GitHub OpenGraph preview
@@ -96,9 +120,11 @@ function getScreenshotUrl(repo: UserRepo): string | null {
 function ProjectScreenshot({
   repo,
   onClick,
+  activityStatus,
 }: {
   repo: UserRepo;
   onClick?: () => void;
+  activityStatus?: ActivityStatus;
 }) {
   const screenshotUrl = getScreenshotUrl(repo);
   const gradient = repo.repo_language
@@ -128,6 +154,8 @@ function ProjectScreenshot({
         <div className="absolute inset-0 flex items-center justify-center">
           <Code className="w-12 h-12 text-white/60" />
         </div>
+        {/* Activity badge */}
+        {activityStatus && <ActivityBadge status={activityStatus} />}
       </div>
     );
   }
@@ -155,11 +183,15 @@ function ProjectScreenshot({
       />
       {/* Hover shadow overlay */}
       <div className="absolute inset-0 bg-black/0 group-hover/screenshot:bg-black/10 transition-colors duration-300" />
+      {/* Activity badge */}
+      {activityStatus && <ActivityBadge status={activityStatus} />}
     </div>
   );
 }
 
 export default function ProjectCard({ repo }: { repo: UserRepo }) {
+  // Calculate activity status from timestamps
+  const activityStatus = getActivityStatus(repo.updated_at, repo.created_at);
   const languageColor = repo.repo_language
     ? LANGUAGE_COLORS[repo.repo_language] || "#6e7681"
     : null;
@@ -174,7 +206,11 @@ export default function ProjectCard({ repo }: { repo: UserRepo }) {
   return (
     <div className="bg-[var(--color-surface)] border border-[var(--color-border)] rounded-xl hover:border-indigo-500/50 hover:shadow-lg transition-all duration-200 group overflow-hidden">
       {/* Screenshot section */}
-      <ProjectScreenshot repo={repo} onClick={handleScreenshotClick} />
+      <ProjectScreenshot
+        repo={repo}
+        onClick={handleScreenshotClick}
+        activityStatus={activityStatus}
+      />
 
       {/* Content section */}
       <div className="p-5">

@@ -20,6 +20,8 @@ interface UserRepo {
   screenshot_url: string | null;
   screenshot_source: string | null;
   demo_url: string | null;
+  updated_at: string | null;
+  created_at: string | null;
 }
 
 interface UserProfile {

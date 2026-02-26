@@ -1,5 +1,6 @@
 import { Metadata } from "next";
 import { getSupabaseAdmin } from "@/lib/supabase";
+import { getActivityStatus } from "@/lib/activity-status";
 import { ArrowLeft, FolderOpen } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
@@ -86,7 +87,7 @@ export async function generateMetadata({
  * Get user by GitHub username using direct indexed lookup on user_profiles table.
  */
 async function getUserByUsername(
-  username: string
+  username: string,
 ): Promise<SupabaseUser | null> {
   const supabase = getSupabaseAdmin();
 
@@ -147,7 +148,7 @@ async function getAllUserRepos(userId: string): Promise<UserRepo[]> {
  * Get mention counts for all repos
  */
 async function getMentionCounts(
-  repoIds: string[]
+  repoIds: string[],
 ): Promise<Record<string, MentionCount>> {
   if (repoIds.length === 0) return {};
 
@@ -181,28 +182,6 @@ async function getMentionCounts(
 }
 
 /**
- * Calculate activity status based on last update date
- * - "Active": updated within 30 days
- * - "Recently updated": 30-90 days
- * - "Archived": 90+ days
- */
-function getActivityStatus(
-  updatedAt: string | null
-): "active" | "recent" | "archived" {
-  if (!updatedAt) return "archived";
-
-  const now = new Date();
-  const updated = new Date(updatedAt);
-  const daysDiff = Math.floor(
-    (now.getTime() - updated.getTime()) / (1000 * 60 * 60 * 24)
-  );
-
-  if (daysDiff <= 30) return "active";
-  if (daysDiff <= 90) return "recent";
-  return "archived";
-}
-
-/**
  * Extract unique languages from repos
  */
 function extractLanguages(repos: UserRepo[]): string[] {
@@ -232,12 +211,17 @@ function getLanguageCounts(repos: UserRepo[]): Record<string, number> {
  * Calculate activity status counts
  */
 function getStatusCounts(
-  repos: UserRepo[]
+  repos: UserRepo[],
 ): Record<"active" | "recent" | "archived", number> {
   const counts = { active: 0, recent: 0, archived: 0 };
   repos.forEach((repo) => {
-    const status = getActivityStatus(repo.updated_at);
-    counts[status]++;
+    const status = getActivityStatus(repo.updated_at, repo.created_at);
+    // Treat "new" as "active" for counting purposes
+    if (status === "new") {
+      counts.active++;
+    } else {
+      counts[status]++;
+    }
   });
   return counts;
 }
@@ -291,7 +275,7 @@ export default async function ProjectsPage({ params }: PageProps) {
   const totalStars = repos.reduce((sum, repo) => sum + repo.repo_stars, 0);
   const totalMentions = Object.values(mentionCounts).reduce(
     (sum, counts) => sum + counts.hackernews + counts.reddit,
-    0
+    0,
   );
   const languages = extractLanguages(repos);
   const languageCounts = getLanguageCounts(repos);
@@ -300,7 +284,7 @@ export default async function ProjectsPage({ params }: PageProps) {
   // Enrich repos with activity status and mentions
   const enrichedRepos = repos.map((repo) => ({
     ...repo,
-    activityStatus: getActivityStatus(repo.updated_at),
+    activityStatus: getActivityStatus(repo.updated_at, repo.created_at),
     mentions: mentionCounts[repo.id] || { hackernews: 0, reddit: 0 },
   }));
 
